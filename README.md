@@ -15,8 +15,8 @@ Clone the repository:
 ```bash
 mkdir -p ~/workspace
 
-git clone <repository-url> ~/workspace/codex-skills
-cd ~/workspace/codex-skills
+git clone git@github.com:rphlmr/codex.git ~/workspace/codex
+cd ~/workspace/codex
 ```
 
 Make the synchronization scripts executable:
@@ -37,7 +37,7 @@ The resulting layout is:
 ```text
                    Git repository
                          │
-             ~/workspace/codex-skills
+                  ~/workspace/codex
                          │
           ┌──────────────┼──────────────┐
           │              │              │
@@ -153,23 +153,46 @@ The resulting layout is:
 .
 ├── AGENTS.md
 ├── agents/
-│   ├── sol_verifier.toml
-│   ├── luna_commit_message.toml
-│   └── ...
+│   ├── commit-message.toml
+│   ├── future-architect.toml
+│   ├── luna-implementer.toml
+│   ├── pr-changelog.toml
+│   ├── sol-implementer.toml
+│   └── sol-verifier.toml
 ├── skills/
 │   ├── commit-message/
 │   │   ├── SKILL.md
 │   │   └── agents/
 │   │       └── openai.yaml
+│   ├── future-architect-mode/
+│   ├── implement-plan/
 │   ├── pr-changelog/
-│   │   ├── SKILL.md
-│   │   └── agents/
-│   │       └── openai.yaml
-│   └── ...
+│   └── verify-implementation/
 ├── sync-skills.sh
 ├── sync-agents-md.sh
 └── README.md
 ```
+
+## Included workflows
+
+| Skill | Purpose | Custom agent |
+| --- | --- | --- |
+| `commit-message` | Generate one Conventional Commit message from the staged diff. | `commit_message` |
+| `future-architect-mode` | Independently review an idea, design, architecture, or implementation plan. | `future_architect` |
+| `implement-plan` | Execute a complete approved plan with one implementation agent. | `luna_implementer` by default; `sol_implementer` only when explicitly requested |
+| `pr-changelog` | Generate PR/MR text, review prep, release notes, or a changelog from committed branch changes. | `pr_changelog` |
+| `verify-implementation` | Independently verify completed work against the approved plan and acceptance criteria. | `sol_verifier` |
+
+The repository provides these custom agents:
+
+| Definition | Agent name | Model and reasoning | Permissions |
+| --- | --- | --- | --- |
+| `agents/commit-message.toml` | `commit_message` | GPT-5.6 Luna, low | Read-only |
+| `agents/future-architect.toml` | `future_architect` | GPT-5.6 Sol, medium | Read-only |
+| `agents/luna-implementer.toml` | `luna_implementer` | GPT-5.6 Luna, xhigh | Inherits the invoking workspace permissions |
+| `agents/pr-changelog.toml` | `pr_changelog` | GPT-5.6 Luna, medium | Read-only |
+| `agents/sol-implementer.toml` | `sol_implementer` | GPT-5.6 Sol, low | Inherits the invoking workspace permissions |
+| `agents/sol-verifier.toml` | `sol_verifier` | GPT-5.6 Sol, medium | `workspace-safe` |
 
 ## Source of truth
 
@@ -178,9 +201,9 @@ Always edit files in this repository.
 Canonical paths:
 
 ```text
-~/workspace/codex-skills/AGENTS.md
-~/workspace/codex-skills/agents/*
-~/workspace/codex-skills/skills/*
+~/workspace/codex/AGENTS.md
+~/workspace/codex/agents/*
+~/workspace/codex/skills/*
 ```
 
 The copies under `~/.codex` are generated from this repository and should not be treated as canonical.
@@ -204,7 +227,7 @@ Repository skills live under:
 Example:
 
 ```text
-~/workspace/codex-skills/skills/commit-message
+~/workspace/codex/skills/commit-message
         ↓ copy
 ~/.codex/skills/commit-message
 ```
@@ -236,9 +259,9 @@ Custom agent definitions live under:
 Example:
 
 ```text
-~/workspace/codex-skills/agents/sol_verifier.toml
+~/workspace/codex/agents/sol-verifier.toml
         ↓ copy
-~/.codex/agents/sol_verifier.toml
+~/.codex/agents/sol-verifier.toml
 ```
 
 ### Global `AGENTS.md`
@@ -267,64 +290,6 @@ agents/* → ~/.codex/agents/*
 It copies files and directories rather than using symlinks.
 
 This means Codex always works with normal local files under `~/.codex`.
-
-### Script
-
-```bash
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-SKILLS_SOURCE="$REPO_DIR/skills"
-AGENTS_SOURCE="$REPO_DIR/agents"
-
-SKILLS_TARGET="$HOME/.codex/skills"
-AGENTS_TARGET="$HOME/.codex/agents"
-
-mkdir -p "$SKILLS_TARGET"
-mkdir -p "$AGENTS_TARGET"
-
-sync_directory_entries() {
-  local source_dir="$1"
-  local target_dir="$2"
-
-  [[ -d "$source_dir" ]] || return
-
-  for source in "$source_dir"/*; do
-    [[ -e "$source" ]] || continue
-
-    local name
-    name="$(basename "$source")"
-
-    local target="$target_dir/$name"
-
-    rm -rf "$target"
-    cp -R "$source" "$target"
-
-    echo "Synced: $target"
-  done
-}
-
-sync_directory_entries "$SKILLS_SOURCE" "$SKILLS_TARGET"
-
-if [[ -d "$AGENTS_SOURCE" ]]; then
-  for source in "$AGENTS_SOURCE"/*.toml; do
-    [[ -e "$source" ]] || continue
-
-    name="$(basename "$source")"
-    target="$AGENTS_TARGET/$name"
-
-    cp "$source" "$target"
-
-    echo "Synced: $target"
-  done
-fi
-
-echo
-echo "Codex skills and agents synced."
-```
 
 ### Behavior
 
@@ -370,34 +335,6 @@ or other unrelated entries.
 ~/.codex/AGENTS.md
 ```
 
-### Script
-
-```bash
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOURCE="$REPO_DIR/AGENTS.md"
-TARGET="$HOME/.codex/AGENTS.md"
-
-if [[ ! -f "$SOURCE" ]]; then
-  echo "Missing source file: $SOURCE" >&2
-  exit 1
-fi
-
-mkdir -p "$(dirname "$TARGET")"
-
-if [[ -f "$TARGET" ]] && cmp -s "$SOURCE" "$TARGET"; then
-  echo "Already up to date: $TARGET"
-  exit 0
-fi
-
-cp "$SOURCE" "$TARGET"
-
-echo "Updated: $TARGET"
-```
-
 The script copies only when the contents differ.
 
 ## Typical workflow
@@ -429,7 +366,7 @@ git commit
 Edit:
 
 ```bash
-$EDITOR agents/sol_verifier.toml
+$EDITOR agents/sol-verifier.toml
 ```
 
 Synchronize:
@@ -442,7 +379,7 @@ Then commit:
 
 ```bash
 git diff
-git add agents/sol_verifier.toml
+git add agents/sol-verifier.toml
 git commit
 ```
 
@@ -509,7 +446,7 @@ git commit
 Create:
 
 ```text
-agents/new_agent.toml
+agents/new-agent.toml
 ```
 
 Then run:
@@ -521,13 +458,13 @@ Then run:
 The agent is copied to:
 
 ```text
-~/.codex/agents/new_agent.toml
+~/.codex/agents/new-agent.toml
 ```
 
 Commit it:
 
 ```bash
-git add agents/new_agent.toml
+git add agents/new-agent.toml
 git commit
 ```
 
@@ -536,7 +473,7 @@ git commit
 Record the current revision and pull the latest changes:
 
 ```bash
-cd ~/workspace/codex-skills
+cd ~/workspace/codex
 previous_revision="$(git rev-parse HEAD)"
 git pull --ff-only
 ```
@@ -610,8 +547,8 @@ Clone the repository:
 ```bash
 mkdir -p ~/workspace
 
-git clone <repository-url> ~/workspace/codex-skills
-cd ~/workspace/codex-skills
+git clone git@github.com:rphlmr/codex.git ~/workspace/codex
+cd ~/workspace/codex
 ```
 
 Make the scripts executable:
