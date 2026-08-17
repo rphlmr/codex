@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0](https://github.com/rphlmr/codex/compare/v1.1.0...v1.2.0) (2026-08-17)
+
+
+### Features
+
+* **agents:** enforce authoritative sol implementation briefs ([ae4cd69](https://github.com/rphlmr/codex/commit/ae4cd69b243bf7e9df36159b53d0b7280dc4ebbc))
+* **planning:** define executable plan contracts ([4c18a58](https://github.com/rphlmr/codex/commit/4c18a58f6ba3b84318390a37df1de1562b23e1a9))
+
+
+### Bug Fixes
+
+* **implement-plan:** preserve only explicitly approved validation ([4c18a58](https://github.com/rphlmr/codex/commit/4c18a58f6ba3b84318390a37df1de1562b23e1a9))
+* **implement-plan:** reject incomplete approved plans ([4c18a58](https://github.com/rphlmr/codex/commit/4c18a58f6ba3b84318390a37df1de1562b23e1a9))
+
 ## [1.1.0](https://github.com/rphlmr/codex/compare/v1.0.0...v1.1.0) (2026-08-17)
 
 
