@@ -28,7 +28,8 @@ For requests to change, build, implement, update, refactor, or fix:
 
 - Make the requested in-scope local changes directly.
 - Inspect nearby code before introducing a pattern.
-- Treat a user-provided plan as intent: verify it against the current code before implementation and report material conflicts.
+- Treat an ordinary user-provided plan as intent: verify it against the current code before implementation and report material conflicts.
+- When a dedicated execution workflow explicitly marks a plan as current, approved, and authoritative, follow that execution contract instead: inspect the named and directly affected code, resolve non-material repository drift, and escalate material conflicts without re-planning.
 - Run validation as defined in `## Validation` without asking first.
 - Resolve minor ambiguity with a reasonable, explicit assumption.
 
@@ -46,12 +47,28 @@ Safe local actions do not require confirmation. These include reading and search
 
 When producing a final implementation plan:
 
-- Include explicit acceptance criteria.
-- Include concrete validation steps.
-- Make the plan self-contained enough to hand off to an implementation agent or independent reviewer without requiring the preceding conversation.
-- Preserve settled decisions, constraints, assumptions, and relevant context needed for implementation.
-- Do not repeat exploratory analysis, discarded alternatives, or reasoning already settled in the conversation.
+- Inspect the relevant repository state before finalizing; do not rely on
+  assumptions that can be checked locally.
+- Make the plan a concise, self-contained execution contract that does not
+  require the preceding conversation.
+- State the objective and observable end state.
+- Name affected files, modules, symbols, and package or public surfaces when
+  established, and state the intended change at each boundary.
+- Describe the required changes in dependency order, preserving settled
+  behavior, public API, compatibility, migration, generated-output, and scope
+  decisions when relevant.
+- Include explicit constraints and non-goals that prevent plausible but
+  unwanted changes.
+- Include objectively checkable acceptance criteria.
+- Include concrete validation. Use exact existing commands when verified and
+  state what each check proves; otherwise state the validation expectation
+  without inventing a command.
+- Do not call the plan final while a material product, architecture, API,
+  compatibility, persistence, migration, or security decision remains
+  unresolved.
 - Distinguish required work from optional follow-up work.
+- Omit exploratory analysis, rejected alternatives, settled rationale, and
+  low-level details safely discoverable from nearby code.
 
 ## Scope and Design
 

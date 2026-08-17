@@ -1,6 +1,6 @@
 ---
 name: implement-plan
-description: Execute a current, approved engineering plan through exactly one implementation subagent. Use after planning and material decisions are complete. Defaults to Luna Xhigh; use Terra or Sol only when explicitly requested.
+description: Execute a current, approved engineering plan through exactly one implementation subagent. Use after planning and material decisions are complete. Defaults to Luna xhigh; use Sol only when explicitly requested.
 ---
 
 # Implement Plan
@@ -40,13 +40,28 @@ important compatibility, validation, or acceptance details.
 If no complete approved plan can be identified, stop. Do not create a new plan
 under this skill.
 
+Treat a plan as complete only when it contains, at the level required by the
+task:
+
+- a clear outcome;
+- executable implementation boundaries or steps;
+- settled material decisions and constraints;
+- objectively checkable acceptance criteria;
+- required validation commands or validation expectations.
+
+For a simple change, these elements may be concise or combined. Do not require
+ceremonial sections when the required information is already explicit.
+
+If a material element is missing, stop and identify the missing element. Do not
+infer, reconstruct, or repair the plan under this skill.
+
 ## Validation contract
 
 Treat the validation specified by the approved plan as the complete required
 validation set.
 
-- Preserve exact validation commands when the plan or planning discussion
-  established them.
+- Preserve exact validation commands when they are present in the approved plan
+  or were explicitly added as a later approved amendment.
 - Do not add broader test suites or validation categories.
 - Do not remove or weaken required validation.
 - Do not convert descriptive validation requirements into guessed commands in
@@ -63,7 +78,7 @@ Spawn exactly one implementation agent:
 - `sol_implementer` only when the user explicitly requests Sol for this
   invocation.
 
-Do not automatically escalate from Luna or Terra to Sol.
+Do not automatically escalate from Luna to Sol.
 
 Do not spawn additional implementation, exploration, planning, review, or
 verification agents unless the user explicitly requests a separate review.
