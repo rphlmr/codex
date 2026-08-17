@@ -116,7 +116,23 @@ The resulting layout is:
 > "localhost" = "allow"
 > "127.0.0.1" = "allow"
 >
+> # npm / Yarn / pnpm / Bun / Deno npm: imports
 > "**.npmjs.org" = "allow"
+>
+> # Deno / JSR packages
+> "**.jsr.io" = "allow"
+>
+> # Node distributions / tooling that downloads Node
+> "**.nodejs.org" = "allow"
+>
+> # Bun installer / Bun binaries
+> "**.bun.sh" = "allow"
+>
+> # Playwright browser downloads
+> "**.playwright.dev" = "allow"
+>
+> # Chromium / browser artifacts used by some tooling
+> "**.googleapis.com" = "allow"
 >
 > "github.com" = "allow"
 > "**.github.com" = "allow"
