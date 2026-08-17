@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/rphlmr/codex/compare/v1.0.0...v1.1.0) (2026-08-17)
+
+
+### Features
+
+* **docs:** document runtime download domains ([6e8884d](https://github.com/rphlmr/codex/commit/6e8884d20c948ef2cccde3551d4b47a03390ff23))
+
 ## 1.0.0 (2026-08-17)
 
 
