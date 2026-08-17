@@ -8,6 +8,129 @@ This repository is the source of truth for:
 - custom agents;
 - global `AGENTS.md`.
 
+## Installation
+
+Clone the repository:
+
+```bash
+mkdir -p ~/workspace
+
+git clone <repository-url> ~/workspace/codex-skills
+cd ~/workspace/codex-skills
+```
+
+Make the synchronization scripts executable:
+
+```bash
+chmod +x sync-skills.sh sync-agents-md.sh
+```
+
+Synchronize skills, custom agents, and global instructions:
+
+```bash
+./sync-skills.sh
+./sync-agents-md.sh
+```
+
+The resulting layout is:
+
+```text
+                   Git repository
+                         │
+             ~/workspace/codex-skills
+                         │
+          ┌──────────────┼──────────────┐
+          │              │              │
+       skills/         agents/       AGENTS.md
+          │              │              │
+         copy           copy            copy
+          │              │              │
+          ▼              ▼              ▼
+~/.codex/skills/* ~/.codex/agents/* ~/.codex/AGENTS.md
+```
+
+> [!TIP]
+>
+> ## Optional Codex configuration
+>
+> This repository does not manage `~/.codex/config.toml`, but the following configuration can be a useful companion setup.
+>
+> It configures:
+>
+> - GPT-5.6 Sol with medium reasoning as the primary model;
+> - GPT-5.6 Luna with maximum reasoning as the default subagent;
+> - automatic approvals disabled;
+> - workspace-scoped permissions;
+> - protection for common secret and credential files;
+> - network access restricted to explicitly allowed development domains.
+>
+> ```toml
+> #:schema https://developers.openai.com/codex/config-schema.json
+>
+> model = "gpt-5.6-sol"
+> model_reasoning_effort = "medium"
+> personality = "pragmatic"
+> approval_policy = "never"
+> default_permissions = "workspace-safe"
+>
+> [agents]
+> default_subagent_model = "gpt-5.6-luna"
+> default_subagent_reasoning_effort = "max"
+>
+> [features]
+> network_proxy = true
+> js_repl = false
+> prevent_idle_sleep = true
+>
+> [permissions.workspace-safe]
+> extends = ":workspace"
+>
+> [permissions.workspace-safe.filesystem.":workspace_roots"]
+> "**/*.env" = "deny"
+> "**/.env.*" = "deny"
+>
+> # Private keys / certificates
+> "**/*.key" = "deny"
+> "**/*.pem" = "deny"
+> "**/*.p12" = "deny"
+> "**/*.pfx" = "deny"
+> "**/*.jks" = "deny"
+> "**/*.keystore" = "deny"
+>
+> # SSH material accidentally stored in a repo
+> "**/id_rsa" = "deny"
+> "**/id_ed25519" = "deny"
+> "**/id_ecdsa" = "deny"
+> "**/id_dsa" = "deny"
+>
+> # Common secret directories
+> "**/.ssh/**" = "deny"
+> "**/certs/**" = "deny"
+> "**/certificates/**" = "deny"
+> "**/secrets/**" = "deny"
+>
+> [permissions.workspace-safe.network]
+> enabled = true
+>
+> [permissions.workspace-safe.network.domains]
+> "localhost" = "allow"
+> "127.0.0.1" = "allow"
+>
+> "**.npmjs.org" = "allow"
+>
+> "github.com" = "allow"
+> "**.github.com" = "allow"
+> "**.githubusercontent.com" = "allow"
+>
+> "gitlab.com" = "allow"
+> "**.gitlab.com" = "allow"
+> "**.gitlab.io" = "allow"
+>
+> "pypi.org" = "allow"
+> "**.pypi.org" = "allow"
+> "files.pythonhosted.org" = "allow"
+> ```
+
 ## Repository structure
 
 ```text
@@ -114,30 +237,6 @@ The canonical global instructions live at:
 
 ```text
 ~/.codex/AGENTS.md
-```
-
-## Initial setup
-
-Clone the repository:
-
-```bash
-mkdir -p ~/workspace
-
-git clone <repository-url> ~/workspace/codex-skills
-cd ~/workspace/codex-skills
-```
-
-Make the scripts executable:
-
-```bash
-chmod +x sync-skills.sh sync-agents-md.sh
-```
-
-Then synchronize everything:
-
-```bash
-./sync-skills.sh
-./sync-agents-md.sh
 ```
 
 ## `sync-skills.sh`
@@ -434,6 +533,8 @@ Then synchronize:
 
 ## New machine
 
+The installation procedure is the same as the initial setup.
+
 Clone the repository:
 
 ```bash
@@ -443,33 +544,17 @@ git clone <repository-url> ~/workspace/codex-skills
 cd ~/workspace/codex-skills
 ```
 
-Synchronize skills and custom agents:
+Make the scripts executable:
+
+```bash
+chmod +x sync-skills.sh sync-agents-md.sh
+```
+
+Then synchronize:
 
 ```bash
 ./sync-skills.sh
-```
-
-Synchronize global instructions:
-
-```bash
 ./sync-agents-md.sh
-```
-
-The resulting layout is:
-
-```text
-                   Git repository
-                         │
-             ~/workspace/codex-skills
-                         │
-          ┌──────────────┼──────────────┐
-          │              │              │
-       skills/         agents/       AGENTS.md
-          │              │              │
-         copy           copy            copy
-          │              │              │
-          ▼              ▼              ▼
-~/.codex/skills/* ~/.codex/agents/* ~/.codex/AGENTS.md
 ```
 
 ## Copy semantics
@@ -503,3 +588,11 @@ This repository manages:
 ~/.codex/agents/*
 ~/.codex/skills/*
 ```
+
+It intentionally does not manage:
+
+```text
+~/.codex/config.toml
+```
+
+The Codex configuration shown above is an optional companion configuration and can be maintained independently per machine.
