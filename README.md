@@ -58,7 +58,7 @@ The resulting layout is:
 > It configures:
 >
 > - GPT-5.6 Sol with medium reasoning as the primary model;
-> - GPT-5.6 Luna with maximum reasoning as the default subagent;
+> - GPT-5.6 Luna with xhigh reasoning as the default subagent;
 > - automatic approvals disabled;
 > - workspace-scoped permissions;
 > - protection for common secret and credential files;
@@ -175,24 +175,24 @@ The resulting layout is:
 
 ## Included workflows
 
-| Skill | Purpose | Custom agent |
-| --- | --- | --- |
-| `commit-message` | Generate one Conventional Commit message from the staged diff. | `commit_message` |
-| `future-architect-mode` | Independently review an idea, design, architecture, or implementation plan. | `future_architect` |
-| `implement-plan` | Execute a complete approved plan with one implementation agent. | `luna_implementer` by default; `sol_implementer` only when explicitly requested |
-| `pr-changelog` | Generate PR/MR text, review prep, release notes, or a changelog from committed branch changes. | `pr_changelog` |
-| `verify-implementation` | Independently verify completed work against the approved plan and acceptance criteria. | `sol_verifier` |
+| Skill                   | Purpose                                                                                        | Custom agent                                                                    |
+| ----------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `commit-message`        | Generate one Conventional Commit message from the staged diff.                                 | `commit_message`                                                                |
+| `future-architect-mode` | Independently review an idea, design, architecture, or implementation plan.                    | `future_architect`                                                              |
+| `implement-plan`        | Execute a complete approved plan with one implementation agent.                                | `luna_implementer` by default; `sol_implementer` only when explicitly requested |
+| `pr-changelog`          | Generate PR/MR text, review prep, release notes, or a changelog from committed branch changes. | `pr_changelog`                                                                  |
+| `verify-implementation` | Independently verify completed work against the approved plan and acceptance criteria.         | `sol_verifier`                                                                  |
 
 The repository provides these custom agents:
 
-| Definition | Agent name | Model and reasoning | Permissions |
-| --- | --- | --- | --- |
-| `agents/commit-message.toml` | `commit_message` | GPT-5.6 Luna, low | Read-only |
-| `agents/future-architect.toml` | `future_architect` | GPT-5.6 Sol, medium | Read-only |
-| `agents/luna-implementer.toml` | `luna_implementer` | GPT-5.6 Luna, xhigh | Inherits the invoking workspace permissions |
-| `agents/pr-changelog.toml` | `pr_changelog` | GPT-5.6 Luna, medium | Read-only |
-| `agents/sol-implementer.toml` | `sol_implementer` | GPT-5.6 Sol, low | Inherits the invoking workspace permissions |
-| `agents/sol-verifier.toml` | `sol_verifier` | GPT-5.6 Sol, medium | `workspace-safe` |
+| Definition                     | Agent name         | Model and reasoning  | Permissions                                 |
+| ------------------------------ | ------------------ | -------------------- | ------------------------------------------- |
+| `agents/commit-message.toml`   | `commit_message`   | GPT-5.6 Luna, low    | Read-only                                   |
+| `agents/future-architect.toml` | `future_architect` | GPT-5.6 Sol, medium  | Read-only                                   |
+| `agents/luna-implementer.toml` | `luna_implementer` | GPT-5.6 Luna, xhigh  | Inherits the invoking workspace permissions |
+| `agents/pr-changelog.toml`     | `pr_changelog`     | GPT-5.6 Luna, medium | Read-only                                   |
+| `agents/sol-implementer.toml`  | `sol_implementer`  | GPT-5.6 Sol, low     | Inherits the invoking workspace permissions |
+| `agents/sol-verifier.toml`     | `sol_verifier`     | GPT-5.6 Sol, medium  | `workspace-safe`                            |
 
 ## Source of truth
 
