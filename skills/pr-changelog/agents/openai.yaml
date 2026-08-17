@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR Changelog"
+  short_description: "Draft PR/MR changelogs from branch commits"
+  default_prompt: "Use $pr-changelog to draft a PR/MR changelog from my current branch commits."

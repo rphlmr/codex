@@ -1,0 +1,6 @@
+interface:
+  display_name: "Commit Message"
+  short_description: "Generate a Conventional Commit message from staged changes"
+
+policy:
+  allow_implicit_invocation: true

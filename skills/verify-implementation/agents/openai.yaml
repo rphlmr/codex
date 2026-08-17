@@ -1,0 +1,7 @@
+interface:
+  display_name: "Verify Implementation"
+  short_description: "Independently verify an implementation with Sol"
+  default_prompt: "Independently verify the completed implementation against the approved plan and acceptance criteria."
+
+policy:
+  allow_implicit_invocation: false

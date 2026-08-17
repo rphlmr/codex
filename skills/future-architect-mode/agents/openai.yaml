@@ -1,0 +1,7 @@
+interface:
+  display_name: "Future Architect Mode"
+  short_description: "Evaluate technical decisions for long-term evolvability"
+  default_prompt: "Evaluate this in Future Architect Mode."
+
+policy:
+  allow_implicit_invocation: false
