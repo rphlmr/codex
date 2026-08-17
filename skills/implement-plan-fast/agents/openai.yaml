@@ -1,7 +1,0 @@
-interface:
-  display_name: "Implement Plan Fast"
-  short_description: "Implement an approved plan with Luna Max Fast"
-  default_prompt: "Implement the finalized plan from this conversation using the fast implementation workflow."
-
-policy:
-  allow_implicit_invocation: false

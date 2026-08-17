@@ -75,7 +75,7 @@ The resulting layout is:
 >
 > [agents]
 > default_subagent_model = "gpt-5.6-luna"
-> default_subagent_reasoning_effort = "max"
+> default_subagent_reasoning_effort = "xhigh"
 >
 > [features]
 > network_proxy = true
@@ -517,11 +517,20 @@ git commit
 
 ## Updating another machine
 
-Pull the latest changes:
+Record the current revision and pull the latest changes:
 
 ```bash
 cd ~/workspace/codex-skills
-git pull
+previous_revision="$(git rev-parse HEAD)"
+git pull --ff-only
+```
+
+Review the release notes and the commits received by the pull:
+
+```bash
+cat CHANGELOG.md
+git log --oneline "$previous_revision..HEAD"
+git diff --stat "$previous_revision..HEAD"
 ```
 
 Then synchronize:
@@ -530,6 +539,51 @@ Then synchronize:
 ./sync-skills.sh
 ./sync-agents-md.sh
 ```
+
+Run the review commands before performing another Git operation that changes
+`HEAD`. If the pull reports that the repository is already up to date, the log
+and diff are empty.
+
+## Versioning and releases
+
+Releases are automated by
+[Release Please](https://github.com/googleapis/release-please-action). It uses
+Conventional Commits merged into `main` to maintain `CHANGELOG.md`, update
+`version.txt`, propose the next Semantic Version, create the Git tag, and publish
+the GitHub Release.
+
+Use these commit types for user-visible changes:
+
+- `fix:` proposes a patch release;
+- `feat:` proposes a minor release;
+- `feat!:` or a `BREAKING CHANGE:` footer proposes a breaking release.
+
+Before `v1.0.0`, breaking changes increment the minor version. Other commit types,
+such as `docs:`, `test:`, and `chore:`, do not trigger a release by themselves.
+
+Do not edit release entries in `CHANGELOG.md` or versions in `version.txt`
+manually. Release Please owns both files.
+
+### Automated release flow
+
+1. Merge one or more Conventional Commits into `main`.
+2. The `Release Please` GitHub Actions workflow opens or updates a release PR.
+3. Review the proposed version and generated changelog in that PR.
+4. Merge the release PR when the changes should be published.
+5. The workflow creates the `vX.Y.Z` tag and corresponding GitHub Release.
+
+The repository is bootstrapped at `0.0.0`, so the first merged `feat:` change
+proposes `v0.1.0`.
+
+### One-time GitHub configuration
+
+In the repository, open **Settings → Actions → General**. Under **Workflow
+permissions**, enable **Read and write permissions** and allow GitHub Actions to
+create pull requests. The workflow uses the repository-provided `GITHUB_TOKEN`;
+no custom secret is required.
+
+If branch or tag protection rules are enabled, they must also allow the GitHub
+Actions bot to create the release PR and version tag.
 
 ## New machine
 

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Release Commit Message"
+  short_description: "Draft multi-entry Release Please commits"
+  default_prompt: "Use $release-commit-message to draft a Release Please-compatible commit message from my staged changes."
+
+policy:
+  allow_implicit_invocation: true

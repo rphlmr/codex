@@ -1,116 +1,133 @@
 ---
 name: implement-plan
-description: Implement an already-refined engineering plan using a dedicated implementation subagent. Use when planning and decision-making are complete and the user wants the agreed plan implemented. Defaults to Luna Max; use Terra High only when explicitly requested.
+description: Execute a current, approved engineering plan through exactly one implementation subagent. Use after planning and material decisions are complete. Defaults to Luna Xhigh; use Terra or Sol only when explicitly requested.
 ---
 
 # Implement Plan
 
-Implement the already-agreed plan through exactly one dedicated implementation
-subagent.
+Execute the current approved plan through exactly one implementation subagent.
 
-This is an execution handoff, not another planning phase.
+This is an execution handoff. Do not perform another planning, investigation,
+review, or implementation phase in the parent thread.
 
-## Parent role
+## Establish the implementation brief
 
-The parent agent owns:
+Treat the approved plan as current.
 
-- requirements;
-- architecture;
-- product and behavioral decisions;
-- resolving material ambiguity;
-- decisions reported by the implementation agent.
+### Pasted plan
 
-The implementation subagent owns execution only.
+When the current invocation contains a complete implementation plan:
 
-## Prepare the implementation brief
+- use that plan verbatim;
+- do not summarize, restructure, normalize, or reinterpret it;
+- include only explicit amendments stated after the plan.
 
-Extract the final agreed state from the current conversation.
+### Plan from the current conversation
 
-Pass the implementation agent a concise brief containing only information
-required for execution:
+Otherwise:
 
-- objective;
-- finalized implementation plan;
-- explicit decisions already made;
-- relevant constraints;
-- acceptance criteria;
-- known affected areas when established;
-- validation requirements;
-- explicit non-goals when relevant.
+- use the latest explicitly approved final plan from the current conversation;
+- preserve its wording and structure;
+- append only later explicit decisions or corrections;
+- exclude exploratory discussion, rejected alternatives, superseded plans, and
+  unrelated conversation.
 
-Do not pass the entire conversation or exploratory discussion.
+Do not inspect the repository to verify plan freshness.
 
-Discard superseded alternatives, rejected approaches, and planning noise.
+Do not recreate an already complete plan as a shorter brief. Rewriting can omit
+important compatibility, validation, or acceptance details.
+
+If no complete approved plan can be identified, stop. Do not create a new plan
+under this skill.
+
+## Validation contract
+
+Treat the validation specified by the approved plan as the complete required
+validation set.
+
+- Preserve exact validation commands when the plan or planning discussion
+  established them.
+- Do not add broader test suites or validation categories.
+- Do not remove or weaken required validation.
+- Do not convert descriptive validation requirements into guessed commands in
+  the parent thread.
+
+The implementation agent may resolve exact repository commands when they were
+not established during planning.
 
 ## Select the implementation agent
 
-By default, spawn exactly one:
+Spawn exactly one implementation agent:
 
-`luna_implementer`
-
-If the user explicitly requests Terra for this invocation, spawn exactly one:
-
-`terra_implementer`
-
-If the user explicitly requests Sol for this invocation, spawn exactly one:
-
-`sol_implementer`
+- `luna_implementer` by default;
+- `sol_implementer` only when the user explicitly requests Sol for this
+  invocation.
 
 Do not automatically escalate from Luna or Terra to Sol.
 
-Do not spawn more than one implementation agent.
-
-Do not spawn additional implementation, exploration, review, or planning agents
-unless explicitly requested.
+Do not spawn additional implementation, exploration, planning, review, or
+verification agents unless the user explicitly requests a separate review.
 
 ## Handoff
 
-Give the selected implementation agent the prepared implementation brief.
+Send the selected agent this short execution contract:
 
-Explicitly tell it to:
+> The following implementation plan is current, approved, and authoritative.
+> Implement it directly under your standing agent instructions.
+>
+> Treat its validation section as the complete required validation set.
 
-- implement the brief directly;
-- inspect the current repository state before editing;
-- complete the implementation and validation;
-- stop and report any unresolved material decision according to its agent
-  instructions.
+Append the approved implementation plan verbatim.
 
-Wait for the implementation agent to return.
+Do not duplicate the implementation agent's standing instructions in the
+handoff.
 
-Do not independently implement the same changes in the parent thread.
+Wait for the selected agent to return.
+
+Do not inspect, implement, validate, or review the same changes independently in
+the parent thread.
 
 ## Material decision escalation
 
-If the implementation agent returns `BLOCKED_DECISION`, the parent agent owns
-the decision.
+When the implementation agent returns `BLOCKED_DECISION`, the parent owns the
+decision.
 
-Analyze the reported facts yourself.
+Use the reported repository evidence together with:
 
-Do not ask the implementation agent to choose an architecture, evaluate
-high-level trade-offs, or recommend a product/design decision.
+- the approved plan;
+- explicit decisions already made;
+- active instructions;
+- the requested outcome.
 
-If the existing conversation, agreed goals, repository evidence, and active
-instructions are sufficient to resolve the decision confidently:
+When those establish one unambiguous answer:
 
 1. make the decision in the parent thread;
-2. send the resolved decision back to the same implementation agent;
-3. instruct it to continue implementing the approved plan.
+2. send only the resolved decision to the same implementation agent;
+3. instruct that agent to continue.
 
-If the decision genuinely requires user input because multiple valid outcomes
-depend on product intent or user preference:
+Ask the user only when multiple valid outcomes still depend on product intent or
+preference.
 
-1. explain the decision concisely to the user;
-2. obtain the required decision;
-3. send that decision back to the same implementation agent;
-4. have it continue.
+Do not:
 
-Do not replace the implementation agent merely because it escalated a decision.
+- ask the implementation agent to choose an architecture;
+- ask it to recommend between product or API alternatives;
+- replace it because it escalated;
+- spawn a second implementation agent;
+- send the complete plan again unless the agent requests missing context.
 
 ## Completion
 
 When the implementation agent completes:
 
 - inspect its completion report;
-- report the implementation outcome to the user;
-- include validation results and unresolved issues;
-- do not redo its implementation work.
+- report the implementation outcome;
+- include acceptance-criterion results;
+- include validation commands and results;
+- include deviations, unverified items, and unresolved issues;
+- clearly state any failed required validation.
+
+Do not redo the implementation or validation in the parent thread.
+
+Do not claim successful completion when a required acceptance criterion remains
+unsatisfied or required validation failed.

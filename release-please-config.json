@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "simple",
+  "include-component-in-tag": false,
+  "bump-minor-pre-major": true,
+  "bootstrap-sha": "f0b9bc6763e2ea21b9fbe9884f432d2fa50f2c93",
+  "packages": {
+    ".": {
+      "component": "codex",
+      "package-name": "codex",
+      "changelog-path": "CHANGELOG.md"
+    }
+  }
+}

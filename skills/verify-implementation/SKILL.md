@@ -1,86 +1,265 @@
 ---
 name: verify-implementation
-description: Independently verify a completed implementation against its approved plan, constraints, and acceptance criteria using a fresh Sol Medium verifier. Use after implementation when the user wants an independent correctness check.
+description: Independently verify a completed implementation against its final approved plan, decisions, constraints, acceptance criteria, and required validation using exactly one fresh sol_verifier custom agent.
 ---
 
 # Verify Implementation
 
-Independently verify the completed implementation using exactly one
-`sol_verifier` subagent.
+Independently verify a completed implementation using exactly one fresh
+`sol_verifier` custom agent.
 
-This is verification, not implementation.
+This workflow performs verification only.
 
-## Prepare the verification brief
+It does not:
+
+- implement changes;
+- repair failures;
+- revise the plan automatically;
+- ask the implementation agent to verify itself;
+- treat implementation-agent claims as proof.
+
+## Prepare the Verification Brief
 
 Extract the final approved state from the current conversation.
 
-Provide the verifier with:
+Prepare a concise verification brief containing:
 
-- original objective;
-- final approved implementation plan;
+- the original objective;
+- the final approved implementation plan;
 - explicit decisions;
 - relevant constraints;
-- acceptance criteria;
+- every acceptance criterion;
+- required validation commands or validation expectations;
 - explicit non-goals when relevant;
-- implementation agent's completion report, if available.
+- known affected areas when already established;
+- a known comparison base when already established;
+- the implementation agent's completion report, when available;
+- validation claimed by the implementation agent, when available;
+- known environmental limitations relevant to verification.
 
-Do not include superseded plans, rejected alternatives, or irrelevant planning
-discussion.
+Preserve existing acceptance-criterion identifiers.
 
-The repository itself is the source of truth for what was actually implemented.
+When acceptance criteria do not have identifiers, preserve their exact wording
+and allow the verifier to assign stable identifiers.
 
-## Spawn the verifier
+Treat the implementation agent's report as claims to verify.
 
-Spawn exactly one:
+Do not convert claimed validation into confirmed validation.
+
+Do not include:
+
+- superseded plans;
+- rejected approaches;
+- exploratory planning discussion;
+- implementation alternatives that were not approved;
+- unrelated repository context;
+- your own verification conclusion.
+
+The repository is the source of truth for what was actually implemented.
+
+If a material requirement is absent or ambiguous, identify that absence in the
+brief.
+
+Do not invent acceptance criteria merely to make verification possible.
+
+## Delegate
+
+Spawn exactly one fresh custom-agent thread using:
 
 `sol_verifier`
 
-The verifier must use a fresh agent thread.
+Give it the prepared verification brief.
 
-Do not ask the implementation agent to verify itself.
+Ask it to independently inspect the implementation and return exactly one of:
 
-Do not ask the verifier to modify or repair the implementation.
+- `PASS`;
+- `FAIL`;
+- `INCONCLUSIVE`.
 
-Wait for the verifier to finish.
+The verifier owns:
+
+- repository inspection;
+- diff inspection;
+- acceptance-criteria mapping;
+- evidence collection;
+- targeted validation;
+- classification of concrete findings;
+- identification of verification blockers;
+- the complete verification report.
+
+## Parent Boundaries
+
+Before the verifier returns, the parent agent must not:
+
+- run validation commands;
+- perform a second implementation review;
+- independently inspect the diff for correctness;
+- ask the implementation agent to self-verify;
+- spawn another verifier;
+- ask the verifier to modify or repair files.
+
+Do not bias the verifier with a parent-agent conclusion.
+
+Do not ask the verifier to approve a preferred implementation merely because it
+matches the plan superficially.
+
+## Validate the Result Contract
+
+The first non-empty line of the verifier response must be exactly one of:
+
+`PASS`
+
+`FAIL`
+
+`INCONCLUSIVE`
+
+Do not reinterpret an ambiguous or malformed response as `PASS`.
+
+## Preserve the Verification Report
+
+Return the complete verifier response without:
+
+- summarizing it in place of the original;
+- removing acceptance-criteria entries;
+- removing validation failures;
+- hiding unverified criteria;
+- rewriting findings;
+- weakening uncertainty;
+- adding fixes inside the verifier's report.
+
+The verifier report must remain independently inspectable.
 
 ## PASS
 
-If the verifier returns `PASS`:
+When the verifier returns `PASS`:
 
-- report that independent verification passed;
-- summarize the acceptance criteria verified;
-- include validation results;
-- clearly mention anything the verifier could not independently verify.
+- return the verifier report unchanged;
+- do not add another review;
+- do not perform implementation work;
+- do not manufacture follow-up concerns;
+- do not automatically invoke another agent.
 
-Do not perform additional implementation work.
+A `PASS` ends this verification workflow.
 
 ## FAIL
 
-If the verifier returns `FAIL`:
+When the verifier returns `FAIL`:
 
-Do not automatically ask the verifier to fix anything.
+1. return the complete verifier report unchanged;
+2. classify the workflow route using the evidence and classifications already
+   present in that report;
+3. do not begin another repository review merely to produce the classification;
+4. do not automatically implement a fix.
 
-Inspect the verifier's evidence in the parent thread.
+Append:
 
-Classify the failure as one of:
+## Workflow Route
 
-1. `IMPLEMENTATION_FAILURE`
-   - the approved plan is still valid;
-   - implementation does not correctly satisfy it.
+- **Classification:** `<classification>`
+- **Next action:** `<single concrete next action>`
 
-2. `PLAN_FAILURE`
-   - implementation exposed a flaw, ambiguity, or missing decision in the
-     approved plan itself.
+Use exactly one of these classifications:
 
-For `IMPLEMENTATION_FAILURE`:
+### `IMPLEMENTATION_FAILURE`
 
-- explain the concrete failure;
-- the implementation can subsequently be resumed with the original implementer
-  or another explicitly selected implementation agent.
+Use when:
 
-For `PLAN_FAILURE`:
+- the approved plan remains valid;
+- the implementation does not correctly satisfy it;
+- the issue is local to implementation execution.
 
-- return to parent-agent reasoning;
-- resolve the plan or ask the user only when product intent is genuinely
-  required;
-- do not delegate architectural decision-making to the verifier.
+The next action should be:
+
+Resume implementation using the approved plan and the verifier's failed
+findings as correction requirements.
+
+### `PLAN_FAILURE`
+
+Use when:
+
+- implementation exposed a flaw, contradiction, omission, or unresolved
+  decision in the approved plan;
+- correct implementation requires plan refinement first.
+
+The next action should be:
+
+Refine the approved plan before resuming implementation.
+
+### `MIXED_FAILURE`
+
+Use when:
+
+- at least one issue is local to implementation;
+- at least one issue requires plan reconsideration.
+
+The next action should be:
+
+Resolve the plan-level findings first, then resume implementation with the
+remaining implementation findings.
+
+### `UNRESOLVED_FAILURE`
+
+Use only when:
+
+- the verifier established a failure;
+- the report does not contain enough evidence to classify it reliably as
+  implementation-level, plan-level, or mixed.
+
+The next action should identify the exact classification evidence that remains
+missing.
+
+Do not guess.
+
+## INCONCLUSIVE
+
+When the verifier returns `INCONCLUSIVE`:
+
+1. return the complete verifier report unchanged;
+2. do not treat the implementation as passed;
+3. do not treat the implementation as failed;
+4. do not start implementation work;
+5. append:
+
+## Workflow Route
+
+- **Classification:** `VERIFICATION_BLOCKED`
+- **Next action:** `<single concrete action required to remove the highest-impact verification blocker>`
+
+The next action should come directly from the verifier's reported blockers.
+
+After the blocker is resolved, run this verification workflow again with a fresh
+`sol_verifier` thread.
+
+## Invalid Verifier Result
+
+If the custom agent returns a result whose first non-empty line is not `PASS`,
+`FAIL`, or `INCONCLUSIVE`, do not infer a status.
+
+Return:
+
+INCONCLUSIVE
+
+## Verdict
+
+The verifier did not follow the required result contract, so no reliable
+verification status can be assigned.
+
+## Verifier Output
+
+Then include the custom agent's original response unchanged.
+
+Do not silently repair or reinterpret its conclusion.
+
+## Agent Unavailable
+
+If the `sol_verifier` custom agent is unavailable or cannot be spawned, output:
+
+INCONCLUSIVE
+
+## Verdict
+
+The `sol_verifier` custom agent was unavailable, so independent verification
+was not performed.
+
+Do not fall back to parent-thread verification while presenting it as
+independent verification.

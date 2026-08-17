@@ -1,7 +1,7 @@
 interface:
-  display_name: "Future Architect Mode"
-  short_description: "Evaluate technical decisions for long-term evolvability"
-  default_prompt: "Evaluate this in Future Architect Mode."
+  display_name: "Future Architect"
+  short_description: "Independent long-term architecture review"
+  default_prompt: "Independently review my current technical idea, design, or plan and return prioritized architectural findings."
 
 policy:
   allow_implicit_invocation: false

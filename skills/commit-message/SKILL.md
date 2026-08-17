@@ -5,52 +5,78 @@ description: Generate exactly one concise Conventional Commit message from the c
 
 # Commit Message
 
-Generate one commit message from staged changes only.
+Generate exactly one commit message from the currently staged Git changes using
+exactly one `commit_message` custom agent.
 
-## Execution
+This skill generates text only.
 
-Delegate the complete task to exactly one `commit_message` custom agent.
+It does not stage files, create a commit, or modify the repository.
 
-The `commit_message` agent owns the entire workflow, including:
+## Delegate
 
-- validating that the current directory is inside a checked-out Git repository;
-- inspecting the staged Git diff;
-- determining the primary intent of the staged changes;
+Spawn exactly one fresh custom-agent thread using:
+
+`commit_message`
+
+Ask it to inspect the currently staged Git diff and return the result according
+to its own output contract.
+
+The custom agent owns the complete workflow, including:
+
+- confirming repository context;
+- inspecting staged changes;
+- determining the dominant intent;
 - selecting the Conventional Commit type and emoji;
-- writing the commit message;
-- enforcing the 50-character limit;
+- writing the description;
+- enforcing the complete 50-character limit;
 - handling the absence of staged changes.
 
-The parent agent must not perform any part of that workflow.
+Do not pass proposed wording, a proposed commit type, or assumptions about the
+staged changes as evidence.
 
-Specifically, the parent agent must not:
+The staged diff is the sole source of truth.
 
-- inspect the Git diff;
+## Parent Boundaries
+
+The parent agent must not:
+
 - run Git commands;
-- analyze staged changes;
+- inspect staged changes;
+- inspect unstaged changes;
+- inspect untracked files;
+- inspect branch or commit history;
 - determine the commit type;
-- generate the commit message;
-- revise the subagent's result;
-- spawn additional agents.
+- draft a competing message;
+- revise the custom agent's result;
+- provide alternatives;
+- spawn another agent;
+- commit the changes.
 
-Wait for the `commit_message` agent to complete.
+Do not fall back to parent-agent analysis.
 
 ## Output
 
-Return the `commit_message` agent's result unchanged.
+Return the `commit_message` custom agent's result unchanged.
 
 Do not add:
 
 - Markdown;
-- code fences;
+- a code fence;
 - quotation marks;
-- explanations;
-- alternatives;
+- an introduction;
+- an explanation;
+- an alternative;
 - commentary;
-- prefixes or suffixes.
+- a prefix;
+- a suffix.
 
-If the `commit_message` custom agent is unavailable or cannot be spawned, output exactly:
+The final response must contain only the custom agent's exact output.
+
+## Agent Unavailable
+
+If the `commit_message` custom agent is unavailable or cannot be spawned, output
+exactly:
 
 Commit-message agent unavailable.
 
-Do not fall back to performing the task in the parent agent.
+Do not fall back to generating the commit message in the parent thread.

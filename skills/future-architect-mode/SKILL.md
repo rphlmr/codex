@@ -1,329 +1,163 @@
 ---
 name: future-architect-mode
-description: Evaluate a raw technical idea, architecture question, emerging design, or implementation plan with long-term architectural reasoning. Use explicitly when the user wants to examine evolvability, reversibility, architectural risk, migration cost, or future constraints without introducing speculative complexity.
+description: Run an independent architecture review of a raw technical idea, architecture question, emerging design, or implementation plan, focused on evolvability, reversibility, migration cost, and credible future constraints.
 ---
 
 # Future Architect Mode
 
-Evaluate the user's current question or idea as a senior software architect responsible for the system over its full lifecycle.
+Obtain independent architectural feedback from exactly one
+`future_architect` custom agent.
 
-The objective is not to design for every possible future.
+This workflow is advisory.
 
-The objective is to make the best decision for the current system while preserving reasonable future options and avoiding unnecessary architectural commitments.
+It does not:
 
-## Core Principles
+- implement changes;
+- modify repository files;
+- rewrite a plan automatically;
+- decide on behalf of the user;
+- treat architectural feedback as mandatory.
 
-1. Solve today's real problem first.
+Invoking this skill explicitly means that an independent architecture review is
+requested.
 
-   Do not introduce complexity solely for hypothetical scale, team growth, reuse, or future requirements.
+Ordinary architecture questions that do not invoke this skill can be handled in
+the parent thread without spawning the custom agent.
 
-2. Preserve optionality.
-
-   Prefer decisions that are inexpensive to evolve, replace, migrate, or remove when requirements change.
-
-3. Distinguish reversible from hard-to-reverse decisions.
-
-   Spend more analysis on decisions that create durable coupling, persisted data formats, public contracts, infrastructure commitments, external integrations, or difficult migrations.
-
-4. Think in architectural trajectories rather than static end-state designs.
-
-   Prefer:
-
-   `simple now -> observable pressure -> targeted evolution`
-
-   over:
-
-   `complex now -> hypothetical future flexibility`
-
-5. Require evidence for complexity.
-
-   New abstractions, services, infrastructure, dependencies, state machines, queues, caches, indirection layers, plugin systems, or distributed boundaries must solve a demonstrated problem or protect against a credible risk.
-
-6. Prefer explicit evolution triggers over speculative preparation.
-
-   When recommending a simpler solution today, identify the observable conditions that would justify evolving it later when useful.
-
-7. Consider migration paths before making hard-to-reverse commitments.
-
-8. Optimize for total system cost.
-
-   Consider implementation effort, cognitive load, maintenance, debugging, operations, security, infrastructure, onboarding, testing, and migration cost.
-
-9. Protect meaningful architectural boundaries.
-
-   Avoid accidental coupling between domains, infrastructure, persistence, frameworks, and external systems when that coupling would materially increase future change cost.
-
-10. Treat compatibility and generality as costs.
-
-    Do not preserve hypothetical extensibility, backward compatibility, or generality without a concrete reason.
-
-## Adapt to Input Maturity
+## Supported Input
 
 The input may be:
 
-- a raw idea;
-- an architecture question;
+- a raw technical or product idea;
+- a broad architecture question;
 - an emerging design;
 - competing approaches;
-- a concrete implementation plan.
+- an existing architecture;
+- a migration proposal;
+- a draft implementation plan;
+- a refined implementation plan;
+- a specific hard-to-reverse decision.
 
-Do not require the user to provide a formal plan.
+Do not require a formal plan.
 
-### Raw Idea
+Do not force a raw idea into an implementation plan.
 
-For a raw idea:
+## Prepare the Review Brief
 
-- determine what the idea actually implies architecturally;
-- surface assumptions that materially affect its feasibility or direction;
-- identify important architectural boundaries only when they matter;
-- distinguish decisions needed now from decisions that can safely wait;
-- identify credible risks and future pressures;
-- suggest a promising direction when useful;
-- do not prematurely convert the idea into a detailed implementation plan.
+Extract the relevant architectural context from the current conversation.
 
-### Architecture Question
+Prepare a concise brief containing only what the independent agent needs:
 
-For an architecture question:
+- the exact question, idea, design, or plan to review;
+- the maturity of the input:
+  - raw idea;
+  - architecture question;
+  - emerging design;
+  - draft plan;
+  - refined plan;
+- the current objective;
+- explicit requirements and constraints;
+- relevant current-system or repository context already established;
+- explicit decisions that should be treated as current;
+- credible alternatives already under consideration;
+- material assumptions or uncertainties;
+- the aspect the user wants evaluated, when explicitly stated;
+- any known non-goals.
 
-- first determine whether there is actually a meaningful architectural choice;
-- identify alternatives only when credible alternatives genuinely exist;
-- if one approach is clearly preferable and no alternative deserves serious consideration, say so directly;
-- compare consequences only where they materially affect the decision;
-- identify tradeoffs only when real tradeoffs exist;
-- identify future conditions that would change the recommendation only when those conditions are credible.
+When reviewing a plan, include the final current version of that plan.
 
-### Emerging Design
+Do not include:
 
-For an emerging design:
+- the complete conversation;
+- superseded plans;
+- rejected alternatives unless their rejection remains architecturally relevant;
+- exploratory discussion that no longer affects the decision;
+- your own architectural conclusion;
+- recommendations that would bias the independent review.
 
-- identify architectural commitments that are already forming;
-- highlight decisions that may become expensive to reverse;
-- distinguish useful structure from premature architecture;
-- identify what should remain deliberately undecided.
+Do not silently convert assumptions into facts.
 
-### Concrete Plan
+When information is incomplete but a reasonable assumption permits useful
+analysis, ask the agent to state the assumption and continue.
 
-For a concrete design or implementation plan:
+Do not block the review merely because the input is not fully specified.
 
-- review its architectural commitments;
-- identify unnecessary complexity;
-- identify weak or accidental boundaries;
-- identify migration traps and hard-to-reverse decisions;
-- identify assumptions that could materially change the design;
-- identify decisions that appear sound and should not be disturbed without evidence;
-- suggest the smallest reasonable adjustment when a concern is meaningful.
+## Delegate
 
-## Decision Method
+Spawn exactly one fresh custom-agent thread using:
 
-When useful, evaluate significant decisions against the following dimensions.
+`future_architect`
 
-### Current Reality
+Give it the prepared review brief.
 
-Consider:
+Ask it to provide independent architectural feedback according to its own output
+contract.
 
-- the actual problem;
-- current requirements;
-- explicit constraints;
-- expected scale;
-- team and operational context;
-- existing architecture and conventions;
-- assumptions that materially affect the decision.
+Do not ask it to:
 
-Do not optimize against imagined requirements unless they are credible enough to influence today's decision.
+- implement anything;
+- modify files;
+- rewrite the complete plan;
+- make the final decision;
+- delegate to another agent.
 
-### Simplest Viable Direction
+The parent agent must not perform a duplicate architecture review before the
+subagent returns.
 
-Prefer the least complex solution that:
+Do not spawn additional architecture, exploration, or review agents.
 
-- solves the current requirement correctly;
-- maintains important boundaries;
-- avoids an obvious migration trap;
-- remains understandable and maintainable.
+## Present the Result
 
-### Future Pressures
+Return the `future_architect` response unchanged by default.
 
-Consider only credible pressures such as:
+Preserve:
 
-- increased scale or workload;
-- broader product requirements;
-- additional real consumers;
-- team growth;
-- data lifecycle changes;
-- reliability requirements;
-- security or compliance constraints;
-- dependency evolution;
-- framework or platform limitations;
-- operational complexity.
+- its headings;
+- finding identifiers;
+- priorities;
+- evidence;
+- actions;
+- evolution triggers;
+- uncertainty;
+- final next action.
 
-Separate likely pressures from merely possible ones.
+Do not:
 
-### Reversibility
+- compress the findings into a prose summary;
+- merge separate findings;
+- remove apparently optional findings;
+- rewrite the result into a plan;
+- silently accept or reject recommendations;
+- modify the user's current direction automatically.
 
-When relevant, classify an important decision as:
+Only when the user explicitly asks for the parent agent's own opinion, append a
+clearly separated section:
 
-- easy to reverse;
-- moderate to reverse;
-- hard to reverse.
+## Parent Assessment
 
-Give more attention to hard-to-reverse decisions.
+State where the parent agent agrees or disagrees with the independent review and
+why.
 
-### Evolution Path
+Do not alter the original independent findings.
 
-When useful, express evolution as:
+## Subsequent Plan Changes
 
-`current simple solution -> observable trigger -> targeted change`
+Treat incorporating the feedback as a separate action.
 
-Examples:
+When the user later asks to update or refine a plan:
 
-- introduce caching when measured latency or load justifies it;
-- extract a service when independent deployment or ownership becomes valuable;
-- introduce a queue when synchronous processing becomes a demonstrated reliability or latency problem;
-- generalize an abstraction when a second real use case proves the common shape;
-- introduce a state machine when transition complexity exceeds what simpler control flow handles clearly.
+1. use only the findings the user accepted, unless the user delegates that
+   decision;
+2. preserve decisions the user rejected or deferred;
+3. make targeted plan changes rather than rewriting unaffected sections;
+4. distinguish required corrections from optional future improvements.
 
-Do not introduce these mechanisms merely because they might eventually become useful.
+## Agent Unavailable
 
-## Failure Modes
+If the `future_architect` custom agent is unavailable or cannot be spawned,
+output exactly:
 
-Look for second-order consequences when credible:
+Future-architect agent unavailable.
 
-- hidden coupling;
-- abstraction leakage;
-- vendor or platform lock-in;
-- difficult migrations;
-- data ownership ambiguity;
-- operational burden;
-- observability gaps;
-- concurrency problems;
-- security boundary problems;
-- testing difficulty;
-- performance ceilings;
-- dependency risk;
-- knowledge concentration;
-- premature generalization.
-
-Prioritize credible risks over theoretical completeness.
-
-## Do Not Manufacture Analysis
-
-Do not invent:
-
-- alternatives;
-- risks;
-- tradeoffs;
-- architectural concerns;
-- decision points;
-- future requirements;
-- abstractions;
-- migration problems;
-
-merely to fill a response structure.
-
-If there are no meaningful alternatives, do not create alternatives.
-
-If there are no material risks, say so briefly.
-
-If there is no unresolved architectural decision, do not manufacture one.
-
-If the current direction is already the simplest defensible architecture, state that clearly.
-
-Prefer a short truthful answer over a mechanically complete architecture review containing artificial findings.
-
-## Challenging the Premise
-
-Do not assume that the architecture proposed by the user is necessary.
-
-If a simpler framing eliminates the architectural problem, say so.
-
-If the proposed approach is appropriate, confirm it without inventing additional complexity.
-
-If two approaches are effectively equivalent under current constraints, do not exaggerate their differences.
-
-## Independent Architect Agent
-
-A custom agent named `future_architect` may be available.
-
-The main Future Architect Mode does not require that agent.
-
-Use the current conversation's own reasoning by default.
-
-When the user explicitly asks for:
-
-- independent architectural feedback;
-- a second architectural opinion;
-- review by `future_architect`;
-- an independent review before changing a plan or direction;
-
-delegate the architectural review to `future_architect`.
-
-When delegating:
-
-1. Give the agent the relevant question, idea, constraints, decisions, and plan if one exists.
-2. Ask it for independent architectural feedback.
-3. Do not ask it to implement or modify anything.
-4. Wait for its findings.
-5. Present the meaningful findings to the user.
-6. Give the main agent's own assessment when it agrees or disagrees.
-7. Do not modify the user's plan or direction solely because of the subagent feedback.
-8. Leave the final decision about incorporating the feedback to the user.
-
-Do not invoke the independent agent merely to duplicate straightforward reasoning.
-
-## Evidence and Uncertainty
-
-When a recommendation depends on rapidly changing frameworks, platforms, libraries, standards, pricing, product capabilities, or documented limitations:
-
-- verify current authoritative documentation when possible;
-- distinguish documented behavior from inference;
-- state material uncertainty explicitly.
-
-Do not base long-lived architectural decisions on unverified assumptions about external systems.
-
-## Response Shape
-
-Do not force a fixed structure.
-
-Choose only the sections justified by the question.
-
-For a raw idea, useful sections may include:
-
-- Architectural Read
-- Hidden Assumptions
-- Promising Direction
-- Risks Worth Thinking About Now
-- Things Not Worth Deciding Yet
-- Next Decision
-
-For an architecture question, useful sections may include:
-
-- Recommendation
-- Alternatives
-- Tradeoffs
-- Evolution Triggers
-- Next Decision
-
-For a plan, useful sections may include:
-
-- Architectural Feedback
-- Findings
-- What Looks Sound
-- Decision Points
-
-Omit sections that would be empty, redundant, or artificial.
-
-## Response Discipline
-
-- Lead with the recommendation when there is one.
-- Do not provide multiple architectures when one is clearly preferable.
-- Do not inflate implementation details into architecture decisions.
-- Keep minor decisions concise.
-- Go deeper for expensive-to-reverse decisions.
-- State assumptions only when they could change the recommendation.
-- Prefer concrete consequences over abstract architecture terminology.
-- Separate current requirements from future possibilities.
-- Do not confuse flexibility with abstraction.
-- Do not recommend complexity merely because it is architecturally elegant.
-
-Treat the user's latest prompt as the question, idea, design, or plan to evaluate.
-
-Do not require wrapper syntax, special markers, or a formal plan.
+Do not substitute parent-thread reasoning while claiming that it is an
+independent review.
