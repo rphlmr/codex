@@ -1,7 +1,7 @@
 interface:
   display_name: "Commit Message"
   short_description: "Generate one message from staged changes"
-  default_prompt: "Generate one Conventional Commit message from my currently staged changes."
+  default_prompt: "Use $commit-message to generate one Conventional Commit message from my currently staged changes."
 
 policy:
   allow_implicit_invocation: true

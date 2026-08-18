@@ -92,22 +92,27 @@ Do not include:
 
 - a Conventional Commit scope;
 - parentheses after the type;
-- a breaking-change `!` marker;
 - a body;
 - a footer;
 - an issue number;
 - a trailing period;
 - quotation marks.
 
-Use exactly this shape:
+When the staged diff establishes a backward-incompatible public API, behavior,
+configuration, or data-contract change, add a breaking-change `!` marker after
+the type. Do not add the marker without concrete evidence in the staged diff.
+
+Use exactly one of these shapes:
 
     <type>: <emoji> <description>
+    <type>!: <emoji> <description>
 
 ### 6. Enforce the length limit
 
 Count the complete displayed message, including:
 
 - the type;
+- the optional breaking-change `!` marker;
 - colon;
 - spaces;
 - emoji;

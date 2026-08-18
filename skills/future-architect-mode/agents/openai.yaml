@@ -1,7 +1,7 @@
 interface:
   display_name: "Future Architect"
   short_description: "Independent long-term architecture review"
-  default_prompt: "Independently review my current technical idea, design, or plan and return prioritized architectural findings."
+  default_prompt: "Use $future-architect-mode to independently review my current technical idea, design, or plan and return prioritized architectural findings."
 
 policy:
   allow_implicit_invocation: false

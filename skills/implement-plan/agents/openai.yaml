@@ -1,7 +1,7 @@
 interface:
   display_name: "Implement Plan"
   short_description: "Implement an approved plan with a dedicated executor"
-  default_prompt: "Implement the finalized plan from this conversation."
+  default_prompt: "Use $implement-plan to implement the finalized plan from this conversation."
 
 policy:
   allow_implicit_invocation: false

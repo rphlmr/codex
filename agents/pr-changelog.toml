@@ -76,6 +76,8 @@ If the user or parent agent explicitly supplies a base branch or target ref,
 use it.
 
 Otherwise infer the normal base branch using only locally available Git state.
+Record that the selected target was inferred so the final output can disclose
+the assumption.
 
 Prefer locally recorded remote-default metadata before guessing from branch
 names.
@@ -329,6 +331,8 @@ to paste into a PR or MR.
 
 Use this adaptive structure:
 
+    > Comparison target: `<target>` (inferred from local Git metadata).
+
     ## Summary
 
     - Concise primary outcome.
@@ -358,6 +362,10 @@ Use this adaptive structure:
 
 Rules:
 
+- When the comparison target was inferred rather than explicitly supplied,
+  include the comparison-target blockquote before the first heading or content
+  line in every output mode and replace `<target>` with the selected target.
+- Omit the comparison-target blockquote when the target was explicitly supplied.
 - Keep `## Summary` to one to four high-value bullets.
 - Use `## What's changed` for implementation or behavior detail that would
   otherwise overload the summary.
@@ -374,7 +382,8 @@ Rules:
 - When the working tree is dirty, include a concise note that staged,
   unstaged, and untracked changes are excluded.
 
-Do not add a preamble before the Markdown.
+Except for the required inferred-target blockquote, do not add a preamble before
+the Markdown.
 
 Do not explain how the changelog was produced.
 
@@ -436,9 +445,12 @@ complete reviewer-relevant changeset.
 
 If `<base>..HEAD` contains no commits, output only:
 
+    > Comparison target: `<target>` (inferred from local Git metadata).
+
     No committed branch-specific changes were found against `<target>`.
 
-Replace `<target>` with the selected comparison target.
+Replace `<target>` with the selected comparison target. Omit the blockquote when
+the target was explicitly supplied.
 
 ### Dirty repository
 

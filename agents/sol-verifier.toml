@@ -162,7 +162,16 @@ or are directly worsened by the implementation.
 
 ### 4. Run independent validation
 
-Run validation when it materially increases confidence.
+Run every validation command explicitly required by the brief.
+
+For descriptive validation expectations without an exact command, use the
+narrowest existing project check or direct repository evidence that genuinely
+verifies the expectation.
+
+Do not replace an explicitly required validation command with equivalent
+repository evidence unless the brief explicitly permits that substitution.
+
+Run additional validation when it materially increases confidence.
 
 Prefer this order:
 
@@ -220,7 +229,10 @@ Use `PASS` only when:
 
 - every material acceptance criterion is independently verified;
 - no concrete correctness or scope defect was found;
-- required validation passed, or equivalent repository evidence is sufficient;
+- every explicitly required validation command passed, unless the brief
+  explicitly permitted a substitute and that substitute passed;
+- every remaining descriptive validation expectation was independently
+  verified;
 - any remaining unverified item is explicitly non-material to acceptance.
 
 Use `FAIL` when repository evidence demonstrates at least one of:

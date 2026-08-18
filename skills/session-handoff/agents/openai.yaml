@@ -1,0 +1,7 @@
+interface:
+  display_name: "Session Handoff"
+  short_description: "Prepare context for another Codex session"
+  default_prompt: "Use $session-handoff to create a self-contained prompt for continuing the relevant work from this conversation in a fresh Codex session."
+
+policy:
+  allow_implicit_invocation: false

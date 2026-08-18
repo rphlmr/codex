@@ -49,11 +49,13 @@ The resulting layout is:
 ~/.codex/skills/* ~/.codex/agents/* ~/.codex/AGENTS.md
 ```
 
-> [!TIP]
+> [!IMPORTANT]
 >
-> ## Optional Codex configuration
+> ## Codex configuration
 >
-> This repository does not manage `~/.codex/config.toml`, but the following configuration can be a useful companion setup.
+> The `sol_verifier` custom agent requires a permission profile named `workspace-safe`. Define `[permissions.workspace-safe]` in `~/.codex/config.toml` before using `$verify-implementation`; custom permission profile names must have a matching table. This repository does not manage that file.
+>
+> The example below provides the required profile plus optional companion defaults for models, agents, features, and top-level permissions.
 >
 > It configures:
 >
@@ -164,6 +166,7 @@ The resulting layout is:
 │   │   ├── SKILL.md
 │   │   └── agents/
 │   │       └── openai.yaml
+│   ├── final-implementation-plan/
 │   ├── future-architect-mode/
 │   ├── implement-plan/
 │   ├── pr-changelog/
@@ -175,13 +178,14 @@ The resulting layout is:
 
 ## Included workflows
 
-| Skill                   | Purpose                                                                                        | Custom agent                                                                    |
-| ----------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `commit-message`        | Generate one Conventional Commit message from the staged diff.                                 | `commit_message`                                                                |
-| `future-architect-mode` | Independently review an idea, design, architecture, or implementation plan.                    | `future_architect`                                                              |
-| `implement-plan`        | Execute a complete approved plan with one implementation agent.                                | `luna_implementer` by default; `sol_implementer` only when explicitly requested |
-| `pr-changelog`          | Generate PR/MR text, review prep, release notes, or a changelog from committed branch changes. | `pr_changelog`                                                                  |
-| `verify-implementation` | Independently verify completed work against the approved plan and acceptance criteria.         | `sol_verifier`                                                                  |
+| Skill                        | Purpose                                                                                        | Custom agent                                                                    |
+| ---------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `commit-message`             | Generate one Conventional Commit message from the staged diff.                                 | `commit_message`                                                                |
+| `final-implementation-plan`  | Finalize a completed Plan mode result into a self-contained implementation handoff.            | None                                                                            |
+| `future-architect-mode`      | Independently review an idea, design, architecture, or implementation plan.                    | `future_architect`                                                              |
+| `implement-plan`             | Execute a complete approved plan with one implementation agent.                                | `luna_implementer` by default; `sol_implementer` only when explicitly requested |
+| `pr-changelog`               | Generate PR/MR text, review prep, release notes, or a changelog from committed branch changes. | `pr_changelog`                                                                  |
+| `verify-implementation`      | Independently verify completed work against the approved plan and acceptance criteria.         | `sol_verifier`                                                                  |
 
 The repository provides these custom agents:
 

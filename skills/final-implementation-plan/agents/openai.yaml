@@ -1,0 +1,7 @@
+interface:
+  display_name: "Final Implementation Plan"
+  short_description: "Finalize a completed plan for implementation"
+  default_prompt: "Use $final-implementation-plan to finalize the latest completed Plan mode plan according to the active AGENTS.md requirements."
+
+policy:
+  allow_implicit_invocation: false

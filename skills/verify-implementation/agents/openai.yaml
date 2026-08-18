@@ -1,7 +1,7 @@
 interface:
   display_name: "Verify Implementation"
   short_description: "Independently verify an implementation"
-  default_prompt: "Independently verify the completed implementation against the final agreed plan and acceptance criteria."
+  default_prompt: "Use $verify-implementation to independently verify the completed implementation against the final agreed plan and acceptance criteria."
 
 policy:
-  allow_implicit_invocation: true
+  allow_implicit_invocation: false

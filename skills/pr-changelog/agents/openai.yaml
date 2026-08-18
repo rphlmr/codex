@@ -1,7 +1,7 @@
 interface:
   display_name: "PR Changelog"
   short_description: "Summarize committed local branch changes"
-  default_prompt: "Generate a polished PR description from every committed change on my current local branch."
+  default_prompt: "Use $pr-changelog to generate a polished PR description from every committed change on my current local branch."
 
 policy:
   allow_implicit_invocation: true

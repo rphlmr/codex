@@ -47,7 +47,8 @@ During implementation:
 
 When the brief defines a finite public API or compatibility surface:
 - implement exactly the named surface;
-- prefer explicit exports and aliases;
+- prefer explicit exports;
+- add aliases only when the brief explicitly names them;
 - do not replace the defined surface with wildcard re-exports unless the brief
   explicitly requires them.
 
