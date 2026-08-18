@@ -182,6 +182,7 @@ The resulting layout is:
 │   ├── future-architect-mode/
 │   ├── implement-plan/
 │   ├── pr-changelog/
+│   ├── session-handoff/
 │   └── verify-implementation/
 ├── sync-skills.sh
 ├── sync-agents-md.sh
@@ -197,6 +198,7 @@ The resulting layout is:
 | `future-architect-mode`      | Independently review an idea, design, architecture, or implementation plan.                    | `future_architect`                                                              |
 | `implement-plan`             | Execute a complete approved plan with one implementation agent.                                | `luna_implementer` by default; `sol_implementer` only when explicitly requested |
 | `pr-changelog`               | Generate PR/MR text, review prep, release notes, or a changelog from committed branch changes. | `pr_changelog`                                                                  |
+| `session-handoff`            | Create a self-contained prompt for continuing established work in a fresh Codex session.       | None                                                                            |
 | `verify-implementation`      | Independently verify completed work against the approved plan and acceptance criteria.         | `sol_verifier`                                                                  |
 
 The repository provides these custom agents:
