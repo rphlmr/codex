@@ -64,7 +64,8 @@ The resulting layout is:
 > - automatic approvals disabled;
 > - workspace-scoped permissions;
 > - protection for common secret and credential files;
-> - network access restricted to explicitly allowed development domains.
+> - network access restricted to explicitly allowed development domains;
+> - a sandbox-writable temporary directory for Bun.
 >
 > ```toml
 > #:schema https://developers.openai.com/codex/config-schema.json
@@ -74,6 +75,9 @@ The resulting layout is:
 > personality = "pragmatic"
 > approval_policy = "never"
 > default_permissions = "workspace-safe"
+>
+> [shell_environment_policy.set]
+> TMPDIR = "/tmp"
 >
 > [agents]
 > default_subagent_model = "gpt-5.6-luna"
@@ -121,6 +125,10 @@ The resulting layout is:
 > # npm / Yarn / pnpm / Bun / Deno npm: imports
 > "**.npmjs.org" = "allow"
 >
+> # Pull-request package previews
+> "pkg.pr.new" = "allow"
+> "**.pkg.pr.new" = "allow"
+>
 > # Deno / JSR packages
 > "**.jsr.io" = "allow"
 >
@@ -148,6 +156,10 @@ The resulting layout is:
 > "**.pypi.org" = "allow"
 > "files.pythonhosted.org" = "allow"
 > ```
+>
+> If `[shell_environment_policy.set]` already exists in `~/.codex/config.toml`, add `TMPDIR = "/tmp"` to that existing table. Do not create a second table with the same name.
+>
+> Permission profiles are resolved when a task starts. Restart the task after changing the profile. With `approval_policy = "never"`, a missing domain or filesystem permission fails immediately instead of presenting an approval prompt.
 
 ## Repository structure
 
