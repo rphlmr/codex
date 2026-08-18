@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.3.0](https://github.com/rphlmr/codex/compare/v1.2.1...v1.3.0) (2026-08-18)
+
+
+### Features
+
+* **skills:** add plan finalization and session handoff workflows ([b618ffa](https://github.com/rphlmr/codex/commit/b618ffaef4ed7be78070f80cc6bbf4fa3a0cd358))
+
+
+### Bug Fixes
+
+* **agents:** enforce explicit validation and public API boundaries ([b618ffa](https://github.com/rphlmr/codex/commit/b618ffaef4ed7be78070f80cc6bbf4fa3a0cd358))
+* **commit-message:** identify breaking staged changes ([b618ffa](https://github.com/rphlmr/codex/commit/b618ffaef4ed7be78070f80cc6bbf4fa3a0cd358))
+* **pr-changelog:** disclose inferred comparison targets ([b618ffa](https://github.com/rphlmr/codex/commit/b618ffaef4ed7be78070f80cc6bbf4fa3a0cd358))
+* **skills:** require explicit workflow invocation ([b618ffa](https://github.com/rphlmr/codex/commit/b618ffaef4ed7be78070f80cc6bbf4fa3a0cd358))
+
 ## [1.2.1](https://github.com/rphlmr/codex/compare/v1.2.0...v1.2.1) (2026-08-18)
 
 
