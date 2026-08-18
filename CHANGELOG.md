@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.1](https://github.com/rphlmr/codex/compare/v1.2.0...v1.2.1) (2026-08-18)
+
+
+### Bug Fixes
+
+* **agents:** sanitize legacy no-proxy package manager settings ([a0aed96](https://github.com/rphlmr/codex/commit/a0aed9628da5d77e72b6b8fa001b2b3eb69e0dea))
+* **architecture:** present concise independent review summaries ([a0aed96](https://github.com/rphlmr/codex/commit/a0aed9628da5d77e72b6b8fa001b2b3eb69e0dea))
+* **verification:** preserve findings in concise result digests ([a0aed96](https://github.com/rphlmr/codex/commit/a0aed9628da5d77e72b6b8fa001b2b3eb69e0dea))
+
 ## [1.2.0](https://github.com/rphlmr/codex/compare/v1.1.0...v1.2.0) (2026-08-17)
 
 
