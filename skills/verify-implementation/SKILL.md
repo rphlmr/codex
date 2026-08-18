@@ -115,41 +115,96 @@ The first non-empty line of the verifier response must be exactly one of:
 
 Do not reinterpret an ambiguous or malformed response as `PASS`.
 
-## Preserve the Verification Report
+## Present the Verification Result
 
-Return the complete verifier response without:
+Use the complete verifier response as authoritative evidence.
 
-- summarizing it in place of the original;
-- removing acceptance-criteria entries;
-- removing validation failures;
-- hiding unverified criteria;
-- rewriting findings;
-- weakening uncertainty;
-- adding fixes inside the verifier's report.
+Do not reproduce it verbatim by default. Present a concise, faithful digest
+without performing another repository review.
 
-The verifier report must remain independently inspectable.
+Always preserve:
+
+- the exact status and material verdict;
+- every finding or blocker and its identifier;
+- every failed or materially unverified acceptance criterion;
+- the evidence and impact needed to understand each finding;
+- each finding's implementation-level or plan-level classification;
+- every relevant failed, blocked, or unavailable validation command;
+- every material uncertainty or qualification.
+
+You may omit:
+
+- evidence for acceptance criteria that passed;
+- successful validation unrelated to the result;
+- repeated rationale and duplicated conclusions;
+- non-material detail that does not affect the status or next action.
+
+Do not add findings, merge distinct findings or blockers, weaken evidence,
+strengthen confidence, convert unverified criteria into verified criteria, or
+include implementation fixes.
+
+Do not append a separate parent review or assessment. For `FAIL` and
+`INCONCLUSIVE`, the only parent-authored addition is `## Workflow Route`.
+
+When the user explicitly requests the complete independent verification report,
+return the verifier response unchanged.
+
+If the report cannot be compressed without risking loss or reinterpretation,
+return it unchanged rather than guessing.
 
 ## PASS
 
-When the verifier returns `PASS`:
+When the verifier returns `PASS`, return:
 
-- return the verifier report unchanged;
-- do not add another review;
-- do not perform implementation work;
-- do not manufacture follow-up concerns;
-- do not automatically invoke another agent.
+PASS
+
+## Verification Summary
+
+- **Verdict:** `<concise verifier conclusion>`
+- **Acceptance criteria:** `<verified count>/<total count> verified`, when
+  reliably determinable; otherwise state that every material criterion was
+  verified.
+- **Validation:** `<each required or material command and its result>`
+- **Unverified:** `<reported non-material unverified items>`, when any exist.
+
+Do not reproduce evidence for every passed criterion unless it is needed to
+understand a material qualification or the user requested the complete report.
+
+Do not add another review, perform implementation work, manufacture follow-up
+concerns, or automatically invoke another agent.
 
 A `PASS` ends this verification workflow.
 
 ## FAIL
 
-When the verifier returns `FAIL`:
+When the verifier returns `FAIL`, return:
 
-1. return the complete verifier report unchanged;
-2. classify the workflow route using the evidence and classifications already
-   present in that report;
-3. do not begin another repository review merely to produce the classification;
-4. do not automatically implement a fix.
+FAIL
+
+## Verification Summary
+
+State the verifier's concise verdict.
+
+## Findings
+
+Include every finding, preserving its identifier, affected criterion, evidence,
+impact, and implementation-level or plan-level classification.
+
+## Failed or Unverified Criteria
+
+Include every failed or materially unverified acceptance criterion and its
+concise reason.
+
+## Validation
+
+Include every relevant failed, blocked, or unavailable validation command.
+
+Include successful validation only when it is necessary to understand the
+verified boundary.
+
+Do not begin another repository review merely to prepare the digest.
+
+Do not automatically implement a fix.
 
 Append:
 
@@ -212,20 +267,42 @@ Do not guess.
 
 ## INCONCLUSIVE
 
-When the verifier returns `INCONCLUSIVE`:
+When the verifier returns `INCONCLUSIVE`, return:
 
-1. return the complete verifier report unchanged;
-2. do not treat the implementation as passed;
-3. do not treat the implementation as failed;
-4. do not start implementation work;
-5. append:
+INCONCLUSIVE
+
+## Verification Summary
+
+State the verifier's concise verdict.
+
+## Verification Blockers
+
+Include every blocker, preserving its identifier, affected criteria, evidence,
+and required input or capability.
+
+## Blocked or Unverified Criteria
+
+Include every materially blocked or unverified acceptance criterion and its
+concise reason.
+
+## Validation
+
+Include every relevant blocked, unavailable, or unrun validation command.
+
+You may omit evidence for criteria that were already verified.
+
+Do not treat the implementation as passed or failed.
+
+Do not start implementation work.
+
+Append:
 
 ## Workflow Route
 
 - **Classification:** `VERIFICATION_BLOCKED`
 - **Next action:** `<single concrete action required to remove the highest-impact verification blocker>`
 
-The next action should come directly from the verifier's reported blockers.
+The next action must come directly from the verifier's reported blockers.
 
 After the blocker is resolved, run this verification workflow again with a fresh
 `sol_verifier` thread.

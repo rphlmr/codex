@@ -108,37 +108,57 @@ Do not spawn additional architecture, exploration, or review agents.
 
 ## Present the Result
 
-Return the `future_architect` response unchanged by default.
+Use the complete `future_architect` response as evidence for the parent response.
+
+Do not reproduce the response verbatim by default.
+
+Present a concise, faithful digest under:
+
+## Independent Review Summary
 
 Preserve:
 
-- its headings;
-- finding identifiers;
-- priorities;
-- evidence;
-- actions;
-- evolution triggers;
-- uncertainty;
-- final next action.
+- the overall recommendation, decisive reason, confidence, and next action;
+- one concise entry for every material finding, preserving its identifier,
+  priority, assessment, and recommended action;
+- every decision that genuinely remains with the user;
+- every material suggested plan adjustment;
+- material evolution triggers, validation requirements, assumptions, or
+  uncertainties that could change the decision.
+
+Omit:
+
+- repeated rationale;
+- duplicated conclusions;
+- supporting evidence that is not necessary to understand the finding;
+- optional detail that does not affect the current decision or a credible future
+  trigger.
 
 Do not:
 
-- compress the findings into a prose summary;
-- merge separate findings;
-- remove apparently optional findings;
-- rewrite the result into a plan;
+- merge distinct material findings;
+- weaken uncertainty;
 - silently accept or reject recommendations;
-- modify the user's current direction automatically.
+- omit a user-owned decision;
+- rewrite the result into a complete implementation plan.
 
-Only when the user explicitly asks for the parent agent's own opinion, append a
-clearly separated section:
+When the user explicitly requests the complete independent review, return the
+`future_architect` response unchanged.
+
+When the current request asks for the parent agent's recommendation, decision, or
+plan refinement, append a clearly separated section:
 
 ## Parent Assessment
 
-State where the parent agent agrees or disagrees with the independent review and
-why.
+State:
 
-Do not alter the original independent findings.
+- where the parent agrees or disagrees with the independent review;
+- the decisive reason for any disagreement;
+- which findings or adjustments should be accepted, rejected, deferred, or
+  validated;
+- the single recommended next action.
+
+Do not repeat the independent-review summary inside the parent assessment.
 
 ## Subsequent Plan Changes
 
