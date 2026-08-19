@@ -6,9 +6,6 @@ personality = "pragmatic"
 approval_policy = "never"
 default_permissions = "workspace-safe"
 
-[shell_environment_policy.set]
-TMPDIR = "/tmp"
-
 [agents]
 default_subagent_model = "gpt-5.6-luna"
 default_subagent_reasoning_effort = "xhigh"
@@ -24,6 +21,7 @@ extends = ":workspace"
 [permissions.workspace-safe.filesystem.":workspace_roots"]
 "**/*.env" = "deny"
 "**/.env.*" = "deny"
+"**/.env.test" = "read"
 
 # Private keys / certificates
 "**/*.key" = "deny"

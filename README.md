@@ -71,9 +71,8 @@ The resulting layout is:
 > - GPT-5.6 Luna with xhigh reasoning as the default subagent;
 > - automatic approvals disabled;
 > - workspace-scoped permissions;
-> - protection for common secret and credential files;
+> - protection for common secret and credential files, while allowing `.env.test`;
 > - network access restricted to explicitly allowed development domains;
-> - a sandbox-writable temporary directory for Bun.
 >
 > ```toml
 > #:schema https://developers.openai.com/codex/config-schema.json
@@ -83,9 +82,6 @@ The resulting layout is:
 > personality = "pragmatic"
 > approval_policy = "never"
 > default_permissions = "workspace-safe"
->
-> [shell_environment_policy.set]
-> TMPDIR = "/tmp"
 >
 > [agents]
 > default_subagent_model = "gpt-5.6-luna"
@@ -102,6 +98,7 @@ The resulting layout is:
 > [permissions.workspace-safe.filesystem.":workspace_roots"]
 > "**/*.env" = "deny"
 > "**/.env.*" = "deny"
+> "**/.env.test" = "read"
 >
 > # Private keys / certificates
 > "**/*.key" = "deny"
@@ -165,8 +162,6 @@ The resulting layout is:
 > "**.pypi.org" = "allow"
 > "files.pythonhosted.org" = "allow"
 > ```
->
-> If `[shell_environment_policy.set]` already exists in `~/.codex/config.toml`, add `TMPDIR = "/tmp"` to that existing table. Do not create a second table with the same name.
 >
 > Restart Codex after changing the configuration to ensure all new settings, including permission profiles, are loaded. With `approval_policy = "never"`, a missing domain or filesystem permission fails immediately instead of presenting an approval prompt.
 >
