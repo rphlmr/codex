@@ -5,6 +5,11 @@ model = "gpt-5.6-sol"
 model_reasoning_effort = "medium"
 
 default_permissions = "workspace-safe"
+web_search = "disabled"
+
+features.apps = false
+features.multi_agent = false
+features.remote_plugin = false
 
 developer_instructions = """
 You are an independent implementation verifier.

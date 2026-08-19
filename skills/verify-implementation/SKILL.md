@@ -152,61 +152,17 @@ return the verifier response unchanged.
 If the report cannot be compressed without risking loss or reinterpretation,
 return it unchanged rather than guessing.
 
-## PASS
+## Status Handling
 
-When the verifier returns `PASS`, return:
+The `sol_verifier` agent owns the verification report schema.
+The parent owns only faithful presentation and workflow routing.
 
-PASS
+When the verifier returns `PASS`, return the concise faithful digest described
+above and end the verification workflow.
 
-## Verification Summary
-
-- **Verdict:** `<concise verifier conclusion>`
-- **Acceptance criteria:** `<verified count>/<total count> verified`, when
-  reliably determinable; otherwise state that every material criterion was
-  verified.
-- **Validation:** `<each required or material command and its result>`
-- **Unverified:** `<reported non-material unverified items>`, when any exist.
-
-Do not reproduce evidence for every passed criterion unless it is needed to
-understand a material qualification or the user requested the complete report.
-
-Do not add another review, perform implementation work, manufacture follow-up
-concerns, or automatically invoke another agent.
-
-A `PASS` ends this verification workflow.
-
-## FAIL
-
-When the verifier returns `FAIL`, return:
-
-FAIL
-
-## Verification Summary
-
-State the verifier's concise verdict.
-
-## Findings
-
-Include every finding, preserving its identifier, affected criterion, evidence,
-impact, and implementation-level or plan-level classification.
-
-## Failed or Unverified Criteria
-
-Include every failed or materially unverified acceptance criterion and its
-concise reason.
-
-## Validation
-
-Include every relevant failed, blocked, or unavailable validation command.
-
-Include successful validation only when it is necessary to understand the
-verified boundary.
-
-Do not begin another repository review merely to prepare the digest.
-
-Do not automatically implement a fix.
-
-Append:
+When the verifier returns `FAIL`, return the concise faithful digest described
+above without performing another repository review or implementing a fix.
+Then append:
 
 ## Workflow Route
 
@@ -267,35 +223,11 @@ Do not guess.
 
 ## INCONCLUSIVE
 
-When the verifier returns `INCONCLUSIVE`, return:
+When the verifier returns `INCONCLUSIVE`, return the concise faithful digest
+described above. Do not treat the implementation as passed or failed and do
+not start implementation work.
 
-INCONCLUSIVE
-
-## Verification Summary
-
-State the verifier's concise verdict.
-
-## Verification Blockers
-
-Include every blocker, preserving its identifier, affected criteria, evidence,
-and required input or capability.
-
-## Blocked or Unverified Criteria
-
-Include every materially blocked or unverified acceptance criterion and its
-concise reason.
-
-## Validation
-
-Include every relevant blocked, unavailable, or unrun validation command.
-
-You may omit evidence for criteria that were already verified.
-
-Do not treat the implementation as passed or failed.
-
-Do not start implementation work.
-
-Append:
+Then append:
 
 ## Workflow Route
 
