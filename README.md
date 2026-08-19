@@ -19,11 +19,19 @@ git clone git@github.com:rphlmr/codex.git ~/workspace/codex
 cd ~/workspace/codex
 ```
 
-Make the synchronization scripts executable:
+Make the management scripts executable:
 
 ```bash
-chmod +x sync-skills.sh sync-agents-md.sh
+chmod +x sync-skills.sh sync-agents-md.sh update-config.sh
 ```
+
+Preview the recommended Codex configuration, then consent to applying it:
+
+```bash
+./update-config.sh
+```
+
+The updater uses a pinned TOML patcher through `npx`, preserves existing values and formatting, displays an exact diff, and changes `~/.codex/config.toml` only after an interactive confirmation. If the file already exists, it also creates a timestamped backup. Run `./update-config.sh --dry-run` to preview without being prompted. After applying changes, restart Codex to ensure the new settings are loaded.
 
 Synchronize skills, custom agents, and global instructions:
 
@@ -53,7 +61,7 @@ The resulting layout is:
 >
 > ## Codex configuration
 >
-> The `sol_verifier` custom agent requires a permission profile named `workspace-safe`. Define `[permissions.workspace-safe]` in `~/.codex/config.toml` before using `$verify-implementation`; custom permission profile names must have a matching table. This repository does not manage that file.
+> The `sol_verifier` custom agent requires a permission profile named `workspace-safe`. Define `[permissions.workspace-safe]` in `~/.codex/config.toml` before using `$verify-implementation`; custom permission profile names must have a matching table. The updater above can add missing recommendations without replacing machine-specific choices.
 >
 > The example below provides the required profile plus optional companion defaults for models, agents, features, and top-level permissions.
 >
@@ -159,7 +167,9 @@ The resulting layout is:
 >
 > If `[shell_environment_policy.set]` already exists in `~/.codex/config.toml`, add `TMPDIR = "/tmp"` to that existing table. Do not create a second table with the same name.
 >
-> Permission profiles are resolved when a task starts. Restart the task after changing the profile. With `approval_policy = "never"`, a missing domain or filesystem permission fails immediately instead of presenting an approval prompt.
+> Restart Codex after changing the configuration to ensure all new settings, including permission profiles, are loaded. With `approval_policy = "never"`, a missing domain or filesystem permission fails immediately instead of presenting an approval prompt.
+>
+> The complete example is also stored in [`recommended-config.toml`](recommended-config.toml), which is the updater's source configuration.
 
 ## Repository structure
 
@@ -184,6 +194,10 @@ The resulting layout is:
 │   ├── pr-changelog/
 │   ├── session-handoff/
 │   └── verify-implementation/
+├── scripts/
+│   └── update-config.mjs
+├── recommended-config.toml
+├── update-config.sh
 ├── sync-skills.sh
 ├── sync-agents-md.sh
 └── README.md
@@ -572,7 +586,7 @@ cd ~/workspace/codex
 Make the scripts executable:
 
 ```bash
-chmod +x sync-skills.sh sync-agents-md.sh
+chmod +x sync-skills.sh sync-agents-md.sh update-config.sh
 ```
 
 Then synchronize:
@@ -614,10 +628,10 @@ This repository manages:
 ~/.codex/skills/*
 ```
 
-It intentionally does not manage:
+The interactive updater can merge missing recommendations into:
 
 ```text
 ~/.codex/config.toml
 ```
 
-The Codex configuration shown above is an optional companion configuration and can be maintained independently per machine.
+Existing configuration values remain authoritative, so the optional companion configuration can still be maintained independently per machine. Unlike the one-way synchronization scripts, `update-config.sh` previews its changes and requires consent before writing.

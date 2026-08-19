@@ -1,0 +1,87 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+
+model = "gpt-5.6-sol"
+model_reasoning_effort = "medium"
+personality = "pragmatic"
+approval_policy = "never"
+default_permissions = "workspace-safe"
+
+[shell_environment_policy.set]
+TMPDIR = "/tmp"
+
+[agents]
+default_subagent_model = "gpt-5.6-luna"
+default_subagent_reasoning_effort = "xhigh"
+
+[features]
+network_proxy = true
+js_repl = false
+prevent_idle_sleep = true
+
+[permissions.workspace-safe]
+extends = ":workspace"
+
+[permissions.workspace-safe.filesystem.":workspace_roots"]
+"**/*.env" = "deny"
+"**/.env.*" = "deny"
+
+# Private keys / certificates
+"**/*.key" = "deny"
+"**/*.pem" = "deny"
+"**/*.p12" = "deny"
+"**/*.pfx" = "deny"
+"**/*.jks" = "deny"
+"**/*.keystore" = "deny"
+
+# SSH material accidentally stored in a repo
+"**/id_rsa" = "deny"
+"**/id_ed25519" = "deny"
+"**/id_ecdsa" = "deny"
+"**/id_dsa" = "deny"
+
+# Common secret directories
+"**/.ssh/**" = "deny"
+"**/certs/**" = "deny"
+"**/certificates/**" = "deny"
+"**/secrets/**" = "deny"
+
+[permissions.workspace-safe.network]
+enabled = true
+
+[permissions.workspace-safe.network.domains]
+"localhost" = "allow"
+"127.0.0.1" = "allow"
+
+# npm / Yarn / pnpm / Bun / Deno npm: imports
+"**.npmjs.org" = "allow"
+
+# Pull-request package previews
+"pkg.pr.new" = "allow"
+"**.pkg.pr.new" = "allow"
+
+# Deno / JSR packages
+"**.jsr.io" = "allow"
+
+# Node distributions / tooling that downloads Node
+"**.nodejs.org" = "allow"
+
+# Bun installer / Bun binaries
+"**.bun.sh" = "allow"
+
+# Playwright browser downloads
+"**.playwright.dev" = "allow"
+
+# Chromium / browser artifacts used by some tooling
+"**.googleapis.com" = "allow"
+
+"github.com" = "allow"
+"**.github.com" = "allow"
+"**.githubusercontent.com" = "allow"
+
+"gitlab.com" = "allow"
+"**.gitlab.com" = "allow"
+"**.gitlab.io" = "allow"
+
+"pypi.org" = "allow"
+"**.pypi.org" = "allow"
+"files.pythonhosted.org" = "allow"
