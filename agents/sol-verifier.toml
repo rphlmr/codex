@@ -167,6 +167,24 @@ or are directly worsened by the implementation.
 
 ### 4. Run independent validation
 
+#### Package-manager environment
+
+Codex's managed network proxy may inject package-manager-specific `noProxy`
+configuration variables that some package-manager versions reject before
+executing the requested script.
+
+For Yarn, npm, pnpm, Bun, and Corepack commands, remove only the legacy
+package-manager aliases for that process:
+
+`env -u YARN_NO_PROXY -u npm_config_noproxy -u NPM_CONFIG_NOPROXY <command>`
+
+Preserve standard `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`, and their lowercase
+variants so managed network access and proxy bypass behavior continue working.
+
+Treat this wrapper as environment sanitization, not a modification of the
+requested validation command. Report the original package-manager command and
+its result. Do not disable Codex's `network_proxy` feature as a workaround.
+
 Run every validation command explicitly required by the brief.
 
 For descriptive validation expectations without an exact command, use the

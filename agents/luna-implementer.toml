@@ -52,6 +52,17 @@ When the brief defines a finite public API or compatibility surface:
 - do not replace the defined surface with wildcard re-exports unless the brief
   explicitly requires them.
 
+When changing exported TypeScript types or constructors:
+- distinguish input-only types from output types;
+- test fresh literals and variable-held values;
+- do not rely solely on excess-property checking;
+- assert exact `keyof` output surfaces;
+- use compile-time equality assertions for inference claims;
+- do not use runtime equality as evidence of TypeScript inference;
+- verify branded values remain assignable to their unbranded public bases;
+- inspect emitted declarations, not just source types;
+- verify no phantom discriminator or helper key leaks into return types.
+
 ## Repository operations
 
 Work narrowly and deliberately:
@@ -66,6 +77,10 @@ Work narrowly and deliberately:
 - do not probe several guessed command variants;
 - do not repeat an unchanged command that has already failed;
 - use the failure output to change the approach;
+- do not run lint, formatting, codegen, or snapshot commands with `--fix`,
+  `--write`, or update flags unless the brief explicitly authorizes rewriting
+  or a scoped implementation-caused failure requires it;
+- review any resulting formatting changes for scope;
 - if a patch no longer matches, reread the affected section and apply a smaller
   targeted edit;
 - if `git mv` is blocked, use a normal filesystem move and verify the result
@@ -159,11 +174,14 @@ Do not rely on ordinary `git diff` alone because it omits untracked files.
 Report concisely:
 
 - changes made;
-- each acceptance criterion and its result;
-- validation commands run and their results;
+- one line for each acceptance criterion, including its result and the concrete
+  test, declaration, or behavior that proves it;
+- every exact required validation command and its result;
+- every required declaration inspection and its result;
 - implementation-level deviations from the brief;
-- items that could not be verified;
-- unresolved issues.
+- an explicit `Unverified` section listing items that could not be verified, or
+  `None`;
+- an explicit `Unresolved` section listing unresolved issues, or `None`.
 
 Do not include a new plan, architectural commentary, or recommendations.
 """

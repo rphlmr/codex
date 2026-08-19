@@ -64,7 +64,7 @@ Do not invent acceptance criteria merely to make verification possible.
 
 ## Delegate
 
-Spawn exactly one fresh custom-agent thread using:
+Spawn exactly one fresh custom-agent thread with `fork_turns: "none"` using:
 
 `sol_verifier`
 

@@ -210,7 +210,7 @@ The resulting layout is:
 | `commit-message`             | Generate one Conventional Commit message from the staged diff.                                 | `commit_message`                                                                |
 | `final-implementation-plan`  | Finalize a completed Plan mode result into a self-contained implementation handoff.            | None                                                                            |
 | `future-architect-mode`      | Independently review an idea, design, architecture, or implementation plan.                    | `future_architect`                                                              |
-| `implement-plan`             | Execute a complete approved plan with one implementation agent.                                | `luna_implementer` by default; `sol_implementer` only when explicitly requested |
+| `implement-plan`             | Execute a complete approved plan with one implementation agent.                                | Routes contract-heavy work to `sol_implementer`; narrow mechanical work to `luna_implementer` |
 | `pr-changelog`               | Generate PR/MR text, review prep, release notes, or a changelog from committed branch changes. | `pr_changelog`                                                                  |
 | `session-handoff`            | Create a self-contained prompt for continuing established work in a fresh Codex session.       | None                                                                            |
 | `verify-implementation`      | Independently verify completed work against the approved plan and acceptance criteria.         | `sol_verifier`                                                                  |
@@ -223,7 +223,7 @@ The repository provides these custom agents:
 | `agents/future-architect.toml` | `future_architect` | GPT-5.6 Sol, medium  | Read-only                                   |
 | `agents/luna-implementer.toml` | `luna_implementer` | GPT-5.6 Luna, xhigh  | Inherits the invoking workspace permissions |
 | `agents/pr-changelog.toml`     | `pr_changelog`     | GPT-5.6 Luna, medium | Read-only                                   |
-| `agents/sol-implementer.toml`  | `sol_implementer`  | GPT-5.6 Sol, low     | Inherits the invoking workspace permissions |
+| `agents/sol-implementer.toml`  | `sol_implementer`  | GPT-5.6 Sol, medium  | Inherits the invoking workspace permissions |
 | `agents/sol-verifier.toml`     | `sol_verifier`     | GPT-5.6 Sol, medium  | `workspace-safe`                            |
 
 ## Source of truth

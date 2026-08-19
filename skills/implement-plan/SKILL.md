@@ -1,6 +1,6 @@
 ---
 name: implement-plan
-description: Execute a current, approved engineering plan through exactly one implementation subagent. Use after planning and material decisions are complete. Defaults to Luna xhigh; use Sol only when explicitly requested.
+description: Execute a current, approved engineering plan through exactly one implementation subagent. Use after planning and material decisions are complete. Routes contract-heavy work to Sol and narrower mechanical work to Luna.
 ---
 
 # Implement Plan
@@ -72,13 +72,34 @@ not established during planning.
 
 ## Select the implementation agent
 
-Spawn exactly one implementation agent:
+Select the implementation agent from the approved plan before spawning it.
 
-- `luna_implementer` by default;
-- `sol_implementer` only when the user explicitly requests Sol for this
-  invocation.
+Use `sol_implementer` when the plan changes any of:
 
-Do not automatically escalate from Luna to Sol.
+- exported or public TypeScript APIs;
+- conditional, recursive, nominal, or inference-heavy types;
+- emitted declarations;
+- shared monorepo contracts;
+- compatibility or migration surfaces;
+- authentication, security, persistence, or build infrastructure.
+
+Use `luna_implementer` for:
+
+- localized runtime behavior;
+- mechanical refactors with exact instructions;
+- narrow UI changes;
+- documentation;
+- repetitive test additions;
+- corrections where a verifier has already identified the exact symbols and
+  expected types.
+
+The Sol criteria take precedence when categories overlap. Honor an explicit
+user request for either implementation agent.
+
+Spawn exactly one selected implementation agent with `fork_turns: "none"`:
+
+- `sol_implementer` for the contract-heavy and high-risk categories above;
+- `luna_implementer` for the narrow and mechanical categories above.
 
 Do not spawn additional implementation, exploration, planning, review, or
 verification agents unless the user explicitly requests a separate review.
@@ -135,7 +156,15 @@ Do not:
 
 When the implementation agent completes:
 
-- inspect its completion report;
+- inspect its completion report and require:
+  - one line for every acceptance criterion;
+  - the concrete test, declaration, or behavior proving each criterion;
+  - every exact required validation command and its result;
+  - every declaration-inspection requirement and its result;
+  - explicit `Unresolved` and `Unverified` sections, using `None` when empty;
+- if any required report element is absent, send the same implementation agent
+  a targeted follow-up identifying the missing report elements and wait for its
+  corrected completion report before proceeding;
 - report the implementation outcome;
 - include acceptance-criterion results;
 - include validation commands and results;

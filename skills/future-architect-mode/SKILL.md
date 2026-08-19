@@ -84,7 +84,7 @@ Do not block the review merely because the input is not fully specified.
 
 ## Delegate
 
-Spawn exactly one fresh custom-agent thread using:
+Spawn exactly one fresh custom-agent thread with `fork_turns: "none"` using:
 
 `future_architect`
 
