@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/rphlmr/codex/compare/v1.3.0...v1.4.0) (2026-08-19)
+
+
+### Features
+
+* **config:** add consent-first configuration updater ([ce39858](https://github.com/rphlmr/codex/commit/ce3985896cf4dc8fea57ab6462c398fd98a341d2))
+
+
+### Bug Fixes
+
+* **agents:** isolate specialized agent workflows ([a02a407](https://github.com/rphlmr/codex/commit/a02a407bcad5f0b245da08e84e3689157bbd03f3))
+
 ## [1.3.0](https://github.com/rphlmr/codex/compare/v1.2.1...v1.3.0) (2026-08-18)
 
 
