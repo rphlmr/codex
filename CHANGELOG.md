@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/rphlmr/codex/compare/v1.4.0...v1.5.0) (2026-08-19)
+
+
+### Features
+
+* **workflows:** route contract-heavy plans to Sol ([d673908](https://github.com/rphlmr/codex/commit/d6739081f6ee4e0318eb3f4d18280f22e5a243a6))
+
+
+### Bug Fixes
+
+* **verification:** sanitize legacy package-manager proxy variables ([d673908](https://github.com/rphlmr/codex/commit/d6739081f6ee4e0318eb3f4d18280f22e5a243a6))
+
 ## [1.4.0](https://github.com/rphlmr/codex/compare/v1.3.0...v1.4.0) (2026-08-19)
 
 
