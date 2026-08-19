@@ -71,7 +71,7 @@ The resulting layout is:
 > - GPT-5.6 Luna with xhigh reasoning as the default subagent;
 > - automatic approvals disabled;
 > - workspace-scoped permissions;
-> - protection for common secret and credential files, while allowing `.env.test`;
+> - protection for common secret and credential files;
 > - network access restricted to explicitly allowed development domains;
 >
 > ```toml
@@ -98,7 +98,6 @@ The resulting layout is:
 > [permissions.workspace-safe.filesystem.":workspace_roots"]
 > "**/*.env" = "deny"
 > "**/.env.*" = "deny"
-> "**/.env.test" = "read"
 >
 > # Private keys / certificates
 > "**/*.key" = "deny"

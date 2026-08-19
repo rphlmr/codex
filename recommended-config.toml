@@ -21,7 +21,6 @@ extends = ":workspace"
 [permissions.workspace-safe.filesystem.":workspace_roots"]
 "**/*.env" = "deny"
 "**/.env.*" = "deny"
-"**/.env.test" = "read"
 
 # Private keys / certificates
 "**/*.key" = "deny"
