@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/rphlmr/codex/compare/v1.5.0...v1.6.0) (2026-08-19)
+
+
+### Features
+
+* **config:** allow local binding in workspace-safe network permissions ([453c9bf](https://github.com/rphlmr/codex/commit/453c9bf6fbc444abb22cdd5b4693ca65342cce1e))
+
 ## [1.5.0](https://github.com/rphlmr/codex/compare/v1.4.0...v1.5.0) (2026-08-19)
 
 
