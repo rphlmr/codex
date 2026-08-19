@@ -47,6 +47,7 @@ extends = ":workspace"
 
 [permissions.workspace-safe.network]
 enabled = true
+allow_local_binding = true
 
 [permissions.workspace-safe.network.domains]
 "localhost" = "allow"

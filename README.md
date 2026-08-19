@@ -125,6 +125,7 @@ The resulting layout is:
 >
 > [permissions.workspace-safe.network]
 > enabled = true
+> allow_local_binding = true
 >
 > [permissions.workspace-safe.network.domains]
 > "localhost" = "allow"
@@ -205,15 +206,15 @@ The resulting layout is:
 
 ## Included workflows
 
-| Skill                        | Purpose                                                                                        | Custom agent                                                                    |
-| ---------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `commit-message`             | Generate one Conventional Commit message from the staged diff.                                 | `commit_message`                                                                |
-| `final-implementation-plan`  | Finalize a completed Plan mode result into a self-contained implementation handoff.            | None                                                                            |
-| `future-architect-mode`      | Independently review an idea, design, architecture, or implementation plan.                    | `future_architect`                                                              |
-| `implement-plan`             | Execute a complete approved plan with one implementation agent.                                | Routes contract-heavy work to `sol_implementer`; narrow mechanical work to `luna_implementer` |
-| `pr-changelog`               | Generate PR/MR text, review prep, release notes, or a changelog from committed branch changes. | `pr_changelog`                                                                  |
-| `session-handoff`            | Create a self-contained prompt for continuing established work in a fresh Codex session.       | None                                                                            |
-| `verify-implementation`      | Independently verify completed work against the approved plan and acceptance criteria.         | `sol_verifier`                                                                  |
+| Skill                       | Purpose                                                                                        | Custom agent                                                                                  |
+| --------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `commit-message`            | Generate one Conventional Commit message from the staged diff.                                 | `commit_message`                                                                              |
+| `final-implementation-plan` | Finalize a completed Plan mode result into a self-contained implementation handoff.            | None                                                                                          |
+| `future-architect-mode`     | Independently review an idea, design, architecture, or implementation plan.                    | `future_architect`                                                                            |
+| `implement-plan`            | Execute a complete approved plan with one implementation agent.                                | Routes contract-heavy work to `sol_implementer`; narrow mechanical work to `luna_implementer` |
+| `pr-changelog`              | Generate PR/MR text, review prep, release notes, or a changelog from committed branch changes. | `pr_changelog`                                                                                |
+| `session-handoff`           | Create a self-contained prompt for continuing established work in a fresh Codex session.       | None                                                                                          |
+| `verify-implementation`     | Independently verify completed work against the approved plan and acceptance criteria.         | `sol_verifier`                                                                                |
 
 The repository provides these custom agents:
 
