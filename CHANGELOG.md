@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.1](https://github.com/rphlmr/codex/compare/v1.6.0...v1.6.1) (2026-08-19)
+
+
+### Bug Fixes
+
+* **config:** allow reading test environment files ([061d379](https://github.com/rphlmr/codex/commit/061d379694d86ba92b112940ce6bfb5f185a6cab))
+* **config:** stop overriding the system temporary directory ([061d379](https://github.com/rphlmr/codex/commit/061d379694d86ba92b112940ce6bfb5f185a6cab))
+
 ## [1.6.0](https://github.com/rphlmr/codex/compare/v1.5.0...v1.6.0) (2026-08-19)
 
 
