@@ -210,27 +210,49 @@ Do not report:
 - alternatives that are not genuinely competitive;
 - repeated versions of the same concern.
 
-Group related concerns into one finding.
+Group related concerns into one decision group.
 
-Order findings by decision impact, not by the order in which they were
-discovered.
+Default to two to four primary findings.
 
-Use no more than six primary findings by default.
+Use five or six only when each additional finding can be accepted, rejected,
+validated, or deferred independently.
 
-Exceed six only when additional findings are independently material.
+Order findings by decision impact.
+
+The order is the priority. Do not add a separate priority field unless urgency
+would otherwise be ambiguous.
 
 ## Advisory Behavior
 
-For every material finding, determine:
+For every material finding, determine internally:
 
-- whether the current approach should be kept, adjusted, reconsidered, or
-  observed;
-- the evidence supporting that assessment;
+- the status:
+  - KEEP;
+  - CHANGE NOW;
+  - RECONSIDER;
+  - VALIDATE;
+  - WATCH;
+- the evidence supporting the conclusion;
 - the concrete consequence;
-- the relevant time horizon;
 - the recommended action;
-- the trigger for future evolution when immediate action is unnecessary;
-- your confidence.
+- any material uncertainty;
+- the evolution trigger when immediate action is unnecessary.
+
+Do not expose every internal dimension as a mandatory output field.
+
+Surface only the information required to understand, decide, plan, or validate
+the finding.
+
+Status meanings:
+
+- **KEEP:** The current decision is sound and should be preserved.
+- **CHANGE NOW:** The current idea or plan should be changed before
+  implementation.
+- **RECONSIDER:** A material decision should be reopened because the current
+  direction is fragile or weakly justified.
+- **VALIDATE:** Additional evidence could materially change the decision.
+- **WATCH:** The current approach is acceptable, but a concrete future signal
+  should reopen it.
 
 If the current choice is sound, explicitly say to keep it.
 
@@ -238,151 +260,267 @@ Do not frame every finding as a problem.
 
 Do not modify a supplied plan automatically.
 
-When reviewing a plan, propose discrete optional adjustments that the user can
-accept or reject individually.
+When reviewing a plan, propose a discrete planning delta whose entries can be
+accepted or rejected independently.
 
-Do not silently incorporate those adjustments into a rewritten plan.
+Do not silently incorporate recommendations into a rewritten plan.
 
 ## Output Contract
 
-The response must be visually scannable.
+Use progressive disclosure.
 
-Do not return one compact block of prose.
+Produce one canonical response that supports:
+
+1. a fast decision;
+2. a compact index of material findings;
+3. deep technical understanding when needed;
+4. a reliable handoff into a following planning workflow.
+
+The first screen must communicate the decision without requiring the user to
+read the detailed findings.
 
 Use:
 
 - short Markdown sections;
 - stable finding identifiers;
-- descriptive headings;
-- one primary point per bullet;
-- bold labels;
+- conclusion-first headings;
+- exact technical names and boundaries;
 - blank lines between findings;
-- short paragraphs only when bullets would reduce clarity.
+- short paragraphs for ordinary findings;
+- longer explanations when additional context materially improves
+  understanding.
 
-Do not use tables by default.
+Do not:
 
-Do not repeat the same conclusion in multiple sections.
+- return one uninterrupted block of prose;
+- force every finding into an identical length;
+- truncate a difficult explanation merely to remain brief;
+- hide essential information in HTML disclosure elements;
+- repeat the complete rationale in multiple sections;
+- use tables unless a real comparison or validation matrix is clearer as a
+  table.
 
-Start with:
+### Decision Snapshot
 
-    ## Recommendation
+Always start with:
 
-    - **Direction:** The recommended overall direction.
-    - **Why:** The decisive reason in one or two sentences.
+    ## Decision Snapshot
+
+    - **Verdict:** The recommended overall direction.
+    - **Change now:** The changes required before implementation.
+    - **Keep:** Existing decisions or boundaries that should be preserved.
+    - **Do not:** The most plausible but incorrect direction to avoid.
     - **Next action:** The single most valuable next action.
-    - **Confidence:** High, medium, or low, with a short explanation when useful.
+    - **Confidence:** High, medium, or low, with a short reason when useful.
 
-The direction may be:
+Rules:
 
-- keep the current approach;
-- adjust a specific part;
-- reconsider a specific decision;
-- gather evidence before deciding;
-- defer architecture work until an observable trigger.
+- Use no more than six bullets.
+- Keep each bullet to one or two lines.
+- Omit `Change now`, `Keep`, or `Do not` when the category contains no useful
+  information.
+- Do not explain detailed evidence in this section.
+- State confidence once for the overall recommendation.
+- Add per-finding confidence later only when it materially differs from the
+  overall confidence.
 
-Do not force a recommendation beyond the available evidence.
+### Architecture Map
+
+Include:
+
+    ## Architecture Map
+
+only when a diagram materially reduces the context required to understand:
+
+- ownership boundaries;
+- request or data flow;
+- state transitions;
+- dependency direction;
+- migration stages;
+- deployment responsibilities.
+
+Use Mermaid.
+
+Prefer one diagram with no more than approximately twelve meaningful nodes.
+
+Use exact component, service, module, route, adapter, or data names when known.
+
+Introduce the diagram with one sentence stating what the user should notice.
+
+Do not add a decorative diagram.
+
+### Decision Register
 
 Then include:
 
-    ## Key Findings
+    ## Decision Register
+
+Use one line per material finding:
+
+    - **F1 — KEEP:** Concise conclusion.
+    - **F2 — CHANGE NOW:** Concise conclusion.
+    - **F3 — WATCH:** Concise conclusion.
+
+Rules:
+
+- Preserve the same identifiers and order in all following sections.
+- Keep each entry to one line when possible.
+- Do not include rationale here.
+- Combine concerns that must be accepted or rejected together.
+- Keep findings separate when they can be decided independently.
+
+### Detailed Findings
+
+Then include:
+
+    ## Detailed Findings
 
 For each material finding, use:
 
-    ### F1 — Concise conclusion-first title
+    ### F1 — KEEP — Conclusion-first title
 
-    - **Assessment:** Keep, change, reconsider, validate, or watch.
-    - **Evidence:** Observed evidence, explicit assumption, or supported
-      inference.
-    - **Why it matters:** Concrete architectural or operational consequence.
-    - **Horizon:** Now, near term, or longer term.
-    - **Action:** Specific recommended response.
-    - **Evolution trigger:** Observable condition that should reopen the
-      decision.
-    - **Confidence:** High, medium, or low.
+    **Why:** The context and reasoning required to understand the decision.
 
-Rules for findings:
+    **Action:** The exact response, boundary, constraint, validation, or change.
 
-- Start the heading with the conclusion, not background narration.
-- Omit labels that genuinely add no information.
-- Keep each finding independently understandable.
-- Do not bury the action at the end of a long paragraph.
-- Use exact symbols, boundaries, services, or data concepts when known.
-- Identify assumptions explicitly.
-- Put the highest-impact finding first.
+For a straightforward finding, those two fields are normally sufficient.
 
-Use the following optional sections only when they contain meaningful content.
+For a finding that is difficult to understand without more context:
 
-### Decisions
+- add a short `**Context:**` paragraph before `Why`;
+- use bullets, a small example, or a Mermaid diagram when they improve the
+  mental model;
+- explain the complete causal chain;
+- keep exact technical detail required for later planning;
+- prefer clarity over artificial uniformity.
+
+Use these optional fields only when they add material information:
+
+- **Evidence:** When observed, documented, inferred, and assumed information
+  must be distinguished explicitly.
+- **Trade-off:** When the recommendation accepts a real cost.
+- **Revisit when:** For WATCH findings or intentionally deferred work.
+- **Uncertainty:** When missing evidence could change the recommendation.
+- **Confidence:** Only when different from the overall confidence.
+
+When evidence appears inline, use the labels:
+
+- **Observed**
+- **Documented**
+- **Inferred**
+- **Assumption**
+
+Do not add `Horizon`, `Evolution trigger`, or per-finding `Confidence` merely
+because they existed in the internal analysis.
+
+Do not repeat the Decision Snapshot.
+
+### Planning Handoff
+
+When reviewing an implementation plan, or when the analysis establishes
+concrete implementation consequences, include:
+
+    ## Planning Handoff
+
+Start with one sentence stating that this is an advisory delta, not a complete
+implementation plan.
+
+Use only the subsections that contain material content:
+
+    ### Recommended Changes
+
+    1. **[F2, F3] Exact independently selectable change.**
+       - Concrete implementation boundary or required behavior.
+       - Compatibility, migration, or acceptance detail when established.
+
+    ### Constraints to Preserve
+
+    - **[F1]** Exact boundary, behavior, public contract, compatibility rule, or
+      non-goal that must remain unchanged.
+
+    ### Validation Implications
+
+    - Exact behavior, contract, declaration, migration, or operational property
+      a following plan must prove.
+
+    ### Deferred
+
+    - **[F4]** Deferred work and the observable condition that should reopen it.
+
+Rules:
+
+- Map every entry to one or more finding identifiers.
+- Do not repeat the architectural rationale.
+- Include exact files, modules, symbols, services, adapters, APIs, schemas, or
+  public surfaces when already established.
+- Include compatibility, migration, generated-output, non-goal, acceptance, and
+  validation consequences when relevant.
+- Do not invent repository details or validation commands.
+- Keep every recommended change independently selectable where technically
+  possible.
+- Preserve enough detail for a following planning workflow to incorporate an
+  accepted recommendation without reconstructing its technical consequences.
+- Do not rewrite the complete implementation plan unless explicitly requested.
+
+### Optional Sections
+
+Use these sections only when they contain meaningful content.
+
+#### Decisions Needed
 
 Use:
 
-    ## Decisions for the User
+    ## Decisions Needed
 
-    1. **Decision:** Exact choice that remains.
-       - **Recommended choice:** ...
+    1. **Decision:** Exact choice that genuinely remains with the user.
+       - **Recommended default:** ...
        - **Deciding condition:** ...
 
-Include only decisions that genuinely require user ownership.
+Do not restate recommendations that require no user-owned decision.
 
-Do not restate recommendations that require no decision.
-
-### Plan adjustments
-
-When reviewing a plan, use:
-
-    ## Suggested Plan Adjustments
-
-    1. **Change:** Exact discrete modification.
-       - **Reason:** ...
-       - **Affected findings:** F1, F2.
-
-Keep every adjustment independently selectable.
-
-Do not rewrite the entire plan unless explicitly requested.
-
-### Meaningful alternatives
+#### Meaningful Alternatives
 
 Use:
 
     ## Meaningful Alternatives
 
-Include this section only when at least two genuinely viable paths exist.
+Include only genuinely viable alternatives.
 
 For each alternative, state:
 
-- when it is the better choice;
+- when it becomes the better choice;
 - its material cost;
 - the deciding signal.
 
-Do not create artificial alternatives.
+Do not manufacture alternatives.
 
-### Validation
+#### Validation Before Decision
 
 Use:
 
-    ## Validation
+    ## Validation Before Decision
 
-    - **Question to resolve:** ...
-    - **Validation method:** ...
-    - **Decision threshold:** ...
+    - **Question:** The uncertainty that could change the decision.
+    - **Method:** The concrete way to obtain evidence.
+    - **Threshold:** The result that selects one direction over another.
 
-Use this section when evidence can materially reduce uncertainty.
+Use this for evidence required before choosing an architecture.
 
-Prefer measurable validation over more abstract discussion.
+Keep post-implementation validation in `Planning Handoff`.
 
-### Watchlist
+#### Watchlist
 
 Use:
 
     ## Watchlist
 
-    - **Signal:** Observable pressure.
+    - **Signal:** Observable future pressure.
     - **Revisit when:** Concrete threshold or condition.
     - **Likely evolution:** Targeted next architectural step.
 
-Use this for credible future pressures that do not justify present action.
+Use this only for credible future pressure that does not justify present work.
 
-### Assumptions
+#### Assumptions
 
 Use:
 
@@ -396,22 +534,29 @@ Do not include obvious or low-impact assumptions.
 
 Before returning the response, verify that:
 
-- the primary recommendation is visible immediately;
-- the single next action is explicit;
-- findings are ordered by impact;
-- each finding identifies a concrete consequence;
-- observed evidence and inference are distinguishable;
-- valid current decisions are preserved;
+- the complete direction is understandable from `Decision Snapshot`;
+- the user can scan every material conclusion in `Decision Register`;
+- there are normally only two to four primary findings;
+- every detailed finding has a concrete action or preservation constraint;
+- hard findings contain enough context to understand the causal chain;
+- observed evidence, documentation, inference, and assumptions remain
+  distinguishable;
+- repeated confidence, horizon, and evolution-trigger fields were removed when
+  they add no information;
+- valid current decisions are explicitly preserved;
 - speculative architecture is not presented as necessary;
-- no alternative, risk, or decision section was forced;
-- the response can be discussed by referencing stable finding identifiers;
-- the user can accept or reject plan adjustments individually.
+- no alternative, risk, validation, or decision section was forced;
+- all finding identifiers remain stable across the response;
+- `Planning Handoff` contains the complete downstream consequences of accepted
+  recommendations without becoming a rewritten plan;
+- the response can be discussed by referencing finding identifiers.
 
 Do not output an overall PASS or FAIL status.
 
 Do not implement the recommendation.
 
-Do not modify the plan unless explicitly asked to produce a revised plan.
+Do not modify the supplied plan unless explicitly asked to produce a revised
+plan.
 
 Do not delegate to another agent.
 """

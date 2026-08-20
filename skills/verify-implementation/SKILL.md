@@ -117,51 +117,51 @@ Do not reinterpret an ambiguous or malformed response as `PASS`.
 
 ## Present the Verification Result
 
-Use the complete verifier response as authoritative evidence.
+Treat the complete `sol_verifier` response as the canonical independent
+verification report.
 
-Do not reproduce it verbatim by default. Present a concise, faithful digest
-without performing another repository review.
+Return that report unchanged.
 
-Always preserve:
+Do not create a second parent-authored digest.
 
-- the exact status and material verdict;
-- every finding or blocker and its identifier;
-- every failed or materially unverified acceptance criterion;
-- the evidence and impact needed to understand each finding;
-- each finding's implementation-level or plan-level classification;
-- every relevant failed, blocked, or unavailable validation command;
-- every material uncertainty or qualification.
+The verifier already owns:
 
-You may omit:
+- the user-facing status;
+- the verification snapshot;
+- findings and blockers;
+- the complete acceptance-criteria map;
+- validation evidence;
+- reported repository-state changes.
 
-- evidence for acceptance criteria that passed;
-- successful validation unrelated to the result;
-- repeated rationale and duplicated conclusions;
-- non-material detail that does not affect the status or next action.
+Do not:
 
-Do not add findings, merge distinct findings or blockers, weaken evidence,
-strengthen confidence, convert unverified criteria into verified criteria, or
-include implementation fixes.
+- add, remove, merge, or rewrite findings or blockers;
+- rewrite the verdict or snapshot;
+- omit passed acceptance criteria;
+- omit successful validation;
+- weaken evidence or uncertainty;
+- strengthen confidence;
+- convert failed or unverified criteria into verified criteria;
+- add implementation fixes;
+- append a separate parent review or assessment.
 
-Do not append a separate parent review or assessment. For `FAIL` and
-`INCONCLUSIVE`, the only parent-authored addition is `## Workflow Route`.
-
-When the user explicitly requests the complete independent verification report,
-return the verifier response unchanged.
-
-If the report cannot be compressed without risking loss or reinterpretation,
-return it unchanged rather than guessing.
+For `FAIL` and `INCONCLUSIVE`, the only parent-authored addition is
+`## Workflow Route`, appended after the unchanged verifier report.
 
 ## Status Handling
 
-The `sol_verifier` agent owns the verification report schema.
-The parent owns only faithful presentation and workflow routing.
+The `sol_verifier` agent owns the complete verification report schema.
 
-When the verifier returns `PASS`, return the concise faithful digest described
-above and end the verification workflow.
+The parent owns only workflow routing after a valid verification status is
+returned.
 
-When the verifier returns `FAIL`, return the concise faithful digest described
-above without performing another repository review or implementing a fix.
+When the verifier returns `PASS`, return the complete verifier report unchanged
+and end the verification workflow.
+
+When the verifier returns `FAIL`, return the complete verifier report unchanged.
+
+Do not perform another repository review or implement a fix.
+
 Then append:
 
 ## Workflow Route
@@ -176,21 +176,20 @@ Use exactly one of these classifications:
 Use when:
 
 - the approved plan remains valid;
-- the implementation does not correctly satisfy it;
-- the issue is local to implementation execution.
+- every reported finding is classified as `IMPLEMENTATION`.
 
 The next action should be:
 
-Resume implementation using the approved plan and the verifier's failed
-findings as correction requirements.
+Resume implementation using the approved plan and the verifier's failed findings
+as correction requirements.
 
 ### `PLAN_FAILURE`
 
 Use when:
 
-- implementation exposed a flaw, contradiction, omission, or unresolved
-  decision in the approved plan;
-- correct implementation requires plan refinement first.
+- every reported finding is classified as `PLAN`;
+- correct implementation requires plan refinement before implementation
+  resumes.
 
 The next action should be:
 
@@ -200,8 +199,8 @@ Refine the approved plan before resuming implementation.
 
 Use when:
 
-- at least one issue is local to implementation;
-- at least one issue requires plan reconsideration.
+- at least one finding is classified as `IMPLEMENTATION`;
+- at least one finding is classified as `PLAN`.
 
 The next action should be:
 
@@ -213,8 +212,10 @@ remaining implementation findings.
 Use only when:
 
 - the verifier established a failure;
-- the report does not contain enough evidence to classify it reliably as
-  implementation-level, plan-level, or mixed.
+- one or more findings do not have a reliable `IMPLEMENTATION` or `PLAN`
+  classification;
+- the available evidence does not support `IMPLEMENTATION_FAILURE`,
+  `PLAN_FAILURE`, or `MIXED_FAILURE`.
 
 The next action should identify the exact classification evidence that remains
 missing.
@@ -223,9 +224,12 @@ Do not guess.
 
 ## INCONCLUSIVE
 
-When the verifier returns `INCONCLUSIVE`, return the concise faithful digest
-described above. Do not treat the implementation as passed or failed and do
-not start implementation work.
+When the verifier returns `INCONCLUSIVE`, return the complete verifier report
+unchanged.
+
+Do not treat the implementation as passed or failed.
+
+Do not start implementation work.
 
 Then append:
 

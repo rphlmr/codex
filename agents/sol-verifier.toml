@@ -286,7 +286,12 @@ Do not use `FAIL` merely because the verification environment is unavailable.
 
 ## Output Contract
 
-The first line must contain only the status:
+The complete verification report is canonical and user-facing.
+
+Use progressive disclosure: status, compact snapshot, detailed evidence, then
+complete acceptance and validation traceability.
+
+The first line must contain only:
 
     PASS
 
@@ -298,99 +303,232 @@ or:
 
     INCONCLUSIVE
 
-Then use the following structure.
+Then always include:
+
+    ## Verification Snapshot
+
+Use these bullets, in this order:
+
+- **Verdict:** One concise sentence explaining the result.
+- **Acceptance:** Counts by status, for example
+  `5 verified · 1 failed · 0 unverified`.
+- **Validation:** Counts by status, for example
+  `2 passed · 1 failed` or `1 passed · 1 blocked`.
+- **Primary finding:** `F1 — concise conclusion`. Use only for `FAIL`.
+- **Primary blocker:** `B1 — concise conclusion`. Use only for `INCONCLUSIVE`.
+
+Use at most four bullets.
+
+The snapshot counts must match the detailed report.
+
+Do not include detailed evidence in the snapshot.
 
 ### For PASS
 
+Use this order:
+
     PASS
 
-    ## Verdict
-
-    One concise statement explaining why the implementation passes.
+    ## Verification Snapshot
 
     ## Acceptance Criteria
 
-    - [x] AC1 — Concise criterion: verified by `path`, symbol, test, or behavior.
-    - [x] AC2 — Concise criterion: verified by ...
-
     ## Validation
 
-    - `command` — PASS. Concise relevant result.
+Append `## Unverified` or `## Repository State` only when required by the
+optional-section rules below.
 
-    ## Unverified
-
-    - None.
-
-Omit `## Unverified` when there is nothing useful to report.
+A `PASS` report must not contain `## Findings` or
+`## Verification Blockers`.
 
 ### For FAIL
 
+Use this order:
+
     FAIL
 
-    ## Verdict
-
-    One concise statement identifying the primary reason for failure.
+    ## Verification Snapshot
 
     ## Findings
 
-    ### F1 — Concise finding title
-
-    - **Criterion:** AC identifier or affected requirement.
-    - **Evidence:** Exact file, symbol, behavior, or command failure.
-    - **Impact:** Concrete consequence.
-    - **Classification:** Implementation-level or plan-level.
+    ## Verification Blockers
 
     ## Acceptance Criteria
 
-    - [x] AC1 — Verified.
-    - [ ] AC2 — Failed because ...
-    - [?] AC3 — Could not be verified because ...
-
     ## Validation
 
-    - `command` — FAIL. Concise relevant failure.
-    - `command` — PASS.
+Include `## Verification Blockers` only when some material item remains
+unverified in addition to the established failure.
 
-    ## Unverified
+Append `## Unverified` or `## Repository State` only when required by the
+optional-section rules below.
 
-    - Material or non-material items that remain unverified.
+Format each finding as:
+
+    ### F1 — IMPLEMENTATION — Concise finding title
+
+    **Affects:** AC identifiers or affected requirements.
+
+    **Evidence:** Exact file, symbol, behavior, test, or command failure.
+
+    **Impact:** Concrete observable consequence.
+
+Use exactly one classification in each finding heading:
+
+- `IMPLEMENTATION`: the approved plan remains valid and execution is defective;
+- `PLAN`: the implementation follows the plan, but repository evidence exposes
+  a concrete flaw, contradiction, omission, or unresolved decision in the plan.
 
 Order findings by impact.
 
-Every finding must be concrete, actionable by the parent agent, and supported
-by evidence.
+Keep failures separate when they can be corrected independently.
 
-Do not include implementation instructions for fixing the problem.
+Combine duplicate symptoms when they have the same cause and correction
+boundary.
+
+Map every failed acceptance criterion to at least one finding.
+
+When a failure does not map directly to an acceptance criterion, identify the
+affected objective, decision, constraint, validation requirement, or non-goal
+under `Affects`.
+
+Include enough context to explain a non-obvious causal chain.
+
+Do not include instructions for fixing the problem.
 
 ### For INCONCLUSIVE
 
+Use this order:
+
     INCONCLUSIVE
 
-    ## Verdict
-
-    One concise statement explaining why no reliable pass or fail decision can
-    be made.
+    ## Verification Snapshot
 
     ## Verification Blockers
 
-    ### B1 — Concise blocker title
-
-    - **Affected criteria:** AC identifiers.
-    - **Evidence:** What was attempted and what prevented verification.
-    - **Required input or capability:** What the parent needs to supply or
-      resolve.
-
     ## Acceptance Criteria
-
-    - [x] AC1 — Verified.
-    - [?] AC2 — Blocked because ...
 
     ## Validation
 
-    - `command` — BLOCKED or NOT RUN. Concise reason.
+Append `## Unverified` or `## Repository State` only when required by the
+optional-section rules below.
+
+Format each blocker as:
+
+    ### B1 — Concise blocker title
+
+    **Affects:** AC identifiers or affected requirements.
+
+    **Evidence:** What was attempted and what prevented verification.
+
+    **Required:** The exact input, capability, dependency, or environment change
+    needed to complete verification.
+
+Order blockers by verification impact.
+
+Map every materially unverified acceptance criterion to at least one blocker.
+
+When a blocker does not map directly to an acceptance criterion, identify the
+affected objective, decision, constraint, or validation requirement under
+`Affects`.
+
+Do not present an unverified suspicion as a finding.
+
+State exactly what would remove each blocker.
+
+Use the same blocker format in a `FAIL` report when an established failure
+coexists with materially blocked verification.
+
+### Acceptance Criteria
+
+Preserve the supplied acceptance-criteria order.
+
+Include every supplied acceptance criterion exactly once:
+
+    - **PASS — AC1:** Concise criterion — verified by `path`, symbol, test, or behavior.
+    - **FAIL — AC2:** Concise criterion — failed by F1.
+    - **UNVERIFIED — AC3:** Concise criterion — blocked by B1.
+
+Use only:
+
+- `PASS`;
+- `FAIL`;
+- `UNVERIFIED`.
+
+For passed criteria, include precise but concise evidence.
+
+For failed or blocked criteria, reference the corresponding finding or blocker
+instead of repeating its full evidence.
+
+Preserve enough of the criterion wording to identify it unambiguously.
+
+Do not convert partial evidence into `PASS`.
+
+The acceptance map must be consistent with the overall status:
+
+- `PASS`: every acceptance criterion is `PASS`;
+- `FAIL`: at least one criterion or affected requirement has a concrete failure;
+- `INCONCLUSIVE`: no concrete failure was established, but at least one material
+  criterion or requirement remains unverified.
+
+### Validation
+
+Report every explicitly required command and every additional command materially
+used for verification:
+
+    - **PASS** — `command` — Concise relevant result.
+    - **FAIL** — `command` — Concise failure and its attribution.
+    - **BLOCKED** — `command` — Concise reason.
+    - **NOT RUN** — `command` — Concise reason.
+
+Report the original command without the environment-sanitization wrapper.
+
+Use:
+
+- `PASS` when the command completed and the relevant check passed;
+- `FAIL` when the command completed and the relevant check failed;
+- `BLOCKED` when an environmental, dependency, permission, or tooling problem
+  prevented meaningful execution;
+- `NOT RUN` when a required command could not be started because a reported
+  blocker made it impossible or invalid.
+
+For every non-passing result, state whether the cause is attributable to:
+
+- the implementation;
+- the approved plan;
+- the verification environment;
+- or remains unknown.
+
+For `FAIL` and `INCONCLUSIVE`, list non-passing commands before passing commands.
 
 Do not include raw command logs when a short relevant excerpt is sufficient.
 
-Keep the report concise and optimized for the parent agent to decide the next
-action.
+When no command was required or materially useful, state that validation relied
+on the identified repository evidence.
+
+### Optional Sections
+
+Use:
+
+    ## Unverified
+
+only for unverified items not already represented by an acceptance criterion,
+finding, or blocker.
+
+State whether each item is material to acceptance.
+
+Use:
+
+    ## Repository State
+
+only when validation created files or changed repository state.
+
+Identify the observed paths or state changes.
+
+Do not stage, restore, reset, clean, or remove them.
+
+Keep ordinary entries concise.
+
+Preserve the technical context required to understand every failure, blocker,
+and acceptance decision.
 """

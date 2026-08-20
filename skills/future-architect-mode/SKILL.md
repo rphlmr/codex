@@ -108,31 +108,50 @@ Do not spawn additional architecture, exploration, or review agents.
 
 ## Present the Result
 
-Use the complete `future_architect` response as evidence for the parent response.
+Treat the complete `future_architect` response as the canonical independent
+review.
 
-Do not reproduce the response verbatim by default.
+The custom agent owns both:
 
-Present a concise, faithful digest under:
+- the fast decision layer:
+  - `Decision Snapshot`;
+  - `Decision Register`;
+- the technical record:
+  - `Detailed Findings`;
+  - `Planning Handoff`;
+  - any material optional sections.
 
-## Independent Review Summary
+Before presenting the result, verify that:
 
-Preserve:
+- the overall recommendation and next action are immediately visible;
+- every material finding has a stable identifier and status;
+- every detailed finding preserves its material reasoning and action;
+- any plan review includes a `Planning Handoff` containing the concrete
+  consequences of the recommendations;
+- material decisions, validation requirements, assumptions, uncertainties, and
+  evolution triggers are present when relevant.
 
-- the overall recommendation, decisive reason, confidence, and next action;
-- one concise entry for every material finding, preserving its identifier,
-  priority, assessment, and recommended action;
-- every decision that genuinely remains with the user;
-- every material suggested plan adjustment;
-- material evolution triggers, validation requirements, assumptions, or
-  uncertainties that could change the decision.
+When the response materially violates its output contract, send one targeted
+formatting correction to the same `future_architect` thread.
 
-Omit:
+Ask it to:
 
-- repeated rationale;
-- duplicated conclusions;
-- supporting evidence that is not necessary to understand the finding;
-- optional detail that does not affect the current decision or a credible future
-  trigger.
+- preserve every conclusion, finding identifier, technical explanation,
+  recommendation, planning consequence, uncertainty, and validation
+  requirement;
+- reorganize the existing content according to its standing output contract;
+- avoid performing a new review.
+
+Wait for the corrected response.
+
+Do not spawn another agent.
+
+Return the complete conforming `future_architect` response unchanged by default.
+
+Do not create a second digest in the parent thread.
+
+A second summary would duplicate conclusions and could separate findings from
+their evidence or omit details required by a following planning workflow.
 
 Do not:
 
@@ -142,11 +161,8 @@ Do not:
 - omit a user-owned decision;
 - rewrite the result into a complete implementation plan.
 
-When the user explicitly requests the complete independent review, return the
-`future_architect` response unchanged.
-
-When the current request asks for the parent agent's recommendation, decision, or
-plan refinement, append a clearly separated section:
+When the current request asks for the parent agent's recommendation, decision,
+or plan refinement, append a clearly separated section:
 
 ## Parent Assessment
 
@@ -154,11 +170,11 @@ State:
 
 - where the parent agrees or disagrees with the independent review;
 - the decisive reason for any disagreement;
-- which findings or adjustments should be accepted, rejected, deferred, or
-  validated;
+- which findings or planning-handoff entries should be accepted, rejected,
+  deferred, or validated;
 - the single recommended next action.
 
-Do not repeat the independent-review summary inside the parent assessment.
+Do not repeat the independent review inside the parent assessment.
 
 ## Subsequent Plan Changes
 
