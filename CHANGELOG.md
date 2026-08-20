@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.0](https://github.com/rphlmr/codex/compare/v1.6.2...v1.7.0) (2026-08-20)
+
+
+### Features
+
+* **future-architect:** add canonical progressive-disclosure reviews ([8b112cb](https://github.com/rphlmr/codex/commit/8b112cb3333443606c87bea522ce8cbf53c9fd83))
+* **sol-verifier:** add traceable canonical verification reports ([8b112cb](https://github.com/rphlmr/codex/commit/8b112cb3333443606c87bea522ce8cbf53c9fd83))
+
 ## [1.6.2](https://github.com/rphlmr/codex/compare/v1.6.1...v1.6.2) (2026-08-19)
 
 
