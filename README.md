@@ -96,8 +96,9 @@ The resulting layout is:
 > extends = ":workspace"
 >
 > [permissions.workspace-safe.filesystem.":workspace_roots"]
-> "**/*.env" = "deny"
-> "**/.env.*" = "deny"
+> "**/.env.p*" = "deny"
+> "**/.env.s*" = "deny"
+> "**/.env.d*" = "deny"
 >
 > # Private keys / certificates
 > "**/*.key" = "deny"
