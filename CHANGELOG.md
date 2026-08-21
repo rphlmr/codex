@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/rphlmr/codex/compare/v1.7.0...v1.7.1) (2026-08-21)
+
+
+### Bug Fixes
+
+* **config:** narrow environment file deny patterns ([60a4ae2](https://github.com/rphlmr/codex/commit/60a4ae24ec138908e52570efcf7a85ffedf14694))
+
 ## [1.7.0](https://github.com/rphlmr/codex/compare/v1.6.2...v1.7.0) (2026-08-20)
 
 
