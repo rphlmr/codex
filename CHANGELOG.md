@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.8.0](https://github.com/rphlmr/codex/compare/v1.7.0...v1.8.0) (2026-09-05)
+
+
+### Features
+
+* **codex:** adopt GPT-6 Astra guidance ([cd3aaf0](https://github.com/rphlmr/codex/commit/cd3aaf06d56f4a2aaa3c8a8d0d8356ed8661194b))
+
+
+### Bug Fixes
+
+* **config:** narrow environment file deny patterns ([60a4ae2](https://github.com/rphlmr/codex/commit/60a4ae24ec138908e52570efcf7a85ffedf14694))
+
 ## [1.7.0](https://github.com/rphlmr/codex/compare/v1.6.2...v1.7.0) (2026-08-20)
 
 
