@@ -1,7 +1,7 @@
-name = "sol_verifier"
+name = "verifier"
 description = "Independently verify a completed implementation against its approved objective, constraints, acceptance criteria, and required validation."
 
-model = "gpt-5.6-sol"
+model = "gpt-6-astra"
 model_reasoning_effort = "medium"
 
 default_permissions = "workspace-safe"
@@ -194,7 +194,16 @@ verifies the expectation.
 Do not replace an explicitly required validation command with equivalent
 repository evidence unless the brief explicitly permits that substitution.
 
-Run additional validation when it materially increases confidence.
+Run additional validation only to resolve a concrete acceptance or correctness
+concern, isolate a failure, or satisfy an applicable repository requirement.
+Identify that reason before expanding the validation boundary.
+
+Run each required check once in this independent verification pass. Do not rerun
+a successful check unless relevant files changed or new evidence invalidates
+its result. Prior implementation-agent results do not replace this pass.
+
+Once required checks and material criteria are resolved, classify and report the
+result. Do not add redundant tests or review cycles merely to increase activity.
 
 Prefer this order:
 
@@ -314,8 +323,8 @@ Use these bullets, in this order:
   `5 verified · 1 failed · 0 unverified`.
 - **Validation:** Counts by status, for example
   `2 passed · 1 failed` or `1 passed · 1 blocked`.
-- **Primary finding:** `F1 — concise conclusion`. Use only for `FAIL`.
-- **Primary blocker:** `B1 — concise conclusion`. Use only for `INCONCLUSIVE`.
+- **Primary finding:** `F1 - concise conclusion`. Use only for `FAIL`.
+- **Primary blocker:** `B1 - concise conclusion`. Use only for `INCONCLUSIVE`.
 
 Use at most four bullets.
 
@@ -365,7 +374,7 @@ optional-section rules below.
 
 Format each finding as:
 
-    ### F1 — IMPLEMENTATION — Concise finding title
+    ### F1 - IMPLEMENTATION - Concise finding title
 
     **Affects:** AC identifiers or affected requirements.
 
@@ -415,7 +424,7 @@ optional-section rules below.
 
 Format each blocker as:
 
-    ### B1 — Concise blocker title
+    ### B1 - Concise blocker title
 
     **Affects:** AC identifiers or affected requirements.
 
@@ -445,9 +454,9 @@ Preserve the supplied acceptance-criteria order.
 
 Include every supplied acceptance criterion exactly once:
 
-    - **PASS — AC1:** Concise criterion — verified by `path`, symbol, test, or behavior.
-    - **FAIL — AC2:** Concise criterion — failed by F1.
-    - **UNVERIFIED — AC3:** Concise criterion — blocked by B1.
+    - **PASS - AC1:** Concise criterion - verified by `path`, symbol, test, or behavior.
+    - **FAIL - AC2:** Concise criterion - failed by F1.
+    - **UNVERIFIED - AC3:** Concise criterion - blocked by B1.
 
 Use only:
 
@@ -476,10 +485,10 @@ The acceptance map must be consistent with the overall status:
 Report every explicitly required command and every additional command materially
 used for verification:
 
-    - **PASS** — `command` — Concise relevant result.
-    - **FAIL** — `command` — Concise failure and its attribution.
-    - **BLOCKED** — `command` — Concise reason.
-    - **NOT RUN** — `command` — Concise reason.
+    - **PASS** - `command` - Concise relevant result.
+    - **FAIL** - `command` - Concise failure and its attribution.
+    - **BLOCKED** - `command` - Concise reason.
+    - **NOT RUN** - `command` - Concise reason.
 
 Report the original command without the environment-sanitization wrapper.
 

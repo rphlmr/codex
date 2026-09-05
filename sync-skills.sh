@@ -36,6 +36,12 @@ sync_directory_entries() {
 
 sync_directory_entries "$SKILLS_SOURCE" "$SKILLS_TARGET"
 
+# Remove repository-managed agent names superseded by model-agnostic roles.
+rm -f \
+  "$AGENTS_TARGET/sol-implementer.toml" \
+  "$AGENTS_TARGET/sol-verifier.toml" \
+  "$AGENTS_TARGET/luna-implementer.toml"
+
 for source in "$AGENTS_SOURCE"/*.toml; do
   [[ -e "$source" ]] || continue
 

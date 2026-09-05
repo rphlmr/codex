@@ -61,15 +61,15 @@ The resulting layout is:
 >
 > ## Codex configuration
 >
-> The `sol_verifier` custom agent requires a permission profile named `workspace-safe`. Define `[permissions.workspace-safe]` in `~/.codex/config.toml` before using `$verify-implementation`; custom permission profile names must have a matching table. The updater above can add missing recommendations without replacing machine-specific choices.
+> The `verifier` custom agent requires a permission profile named `workspace-safe`. Define `[permissions.workspace-safe]` in `~/.codex/config.toml` before using `$verify-implementation`; custom permission profile names must have a matching table. The updater above can add missing recommendations without replacing machine-specific choices.
 >
 > The example below provides the required profile plus optional companion defaults for models, agents, features, and top-level permissions.
 >
 > It configures:
 >
-> - GPT-5.6 Sol with medium reasoning as the primary model;
+> - GPT-6 Astra with medium reasoning as the primary model;
 > - GPT-5.6 Luna with xhigh reasoning as the default subagent;
-> - automatic approvals disabled;
+> - approval prompts disabled;
 > - workspace-scoped permissions;
 > - protection for common secret and credential files;
 > - network access restricted to explicitly allowed development domains;
@@ -77,7 +77,7 @@ The resulting layout is:
 > ```toml
 > #:schema https://developers.openai.com/codex/config-schema.json
 >
-> model = "gpt-5.6-sol"
+> model = "gpt-6-astra"
 > model_reasoning_effort = "medium"
 > personality = "pragmatic"
 > approval_policy = "never"
@@ -175,10 +175,10 @@ The resulting layout is:
 ├── agents/
 │   ├── commit-message.toml
 │   ├── future-architect.toml
+│   ├── implementer.toml
 │   ├── luna-implementer.toml
 │   ├── pr-changelog.toml
-│   ├── sol-implementer.toml
-│   └── sol-verifier.toml
+│   └── verifier.toml
 ├── skills/
 │   ├── commit-message/
 │   │   ├── SKILL.md
@@ -201,26 +201,89 @@ The resulting layout is:
 
 ## Included workflows
 
-| Skill                       | Purpose                                                                                        | Custom agent                                                                                  |
-| --------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `commit-message`            | Generate one Conventional Commit message from the staged diff.                                 | `commit_message`                                                                              |
-| `final-implementation-plan` | Finalize a completed Plan mode result into a self-contained implementation handoff.            | None                                                                                          |
-| `future-architect-mode`     | Independently review an idea, design, architecture, or implementation plan.                    | `future_architect`                                                                            |
-| `implement-plan`            | Execute a complete approved plan with one implementation agent.                                | Routes contract-heavy work to `sol_implementer`; narrow mechanical work to `luna_implementer` |
-| `pr-changelog`              | Generate PR/MR text, review prep, release notes, or a changelog from committed branch changes. | `pr_changelog`                                                                                |
-| `session-handoff`           | Create a self-contained prompt for continuing established work in a fresh Codex session.       | None                                                                                          |
-| `verify-implementation`     | Independently verify completed work against the approved plan and acceptance criteria.         | `sol_verifier`                                                                                |
+| Skill                       | Purpose                                                                                        | Custom agent                                                                              |
+| --------------------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `commit-message`            | Generate one Conventional Commit message from the staged diff.                                 | `commit_message`                                                                          |
+| `final-implementation-plan` | Finalize a completed Plan mode result into a self-contained implementation handoff.            | None                                                                                      |
+| `future-architect-mode`     | Independently review an idea, design, architecture, or implementation plan.                    | `future_architect`                                                                        |
+| `implement-plan`            | Execute a complete approved plan with one implementation agent.                                | Routes contract-heavy work to `implementer`; narrow mechanical work to `luna_implementer` |
+| `pr-changelog`              | Generate PR/MR text, review prep, release notes, or a changelog from committed branch changes. | `pr_changelog`                                                                            |
+| `session-handoff`           | Create a self-contained prompt for continuing established work in a fresh Codex session.       | None                                                                                      |
+| `verify-implementation`     | Independently verify completed work against the approved plan and acceptance criteria.         | `verifier`                                                                                |
 
 The repository provides these custom agents:
 
 | Definition                     | Agent name         | Model and reasoning  | Permissions                                 |
 | ------------------------------ | ------------------ | -------------------- | ------------------------------------------- |
 | `agents/commit-message.toml`   | `commit_message`   | GPT-5.6 Luna, low    | Read-only                                   |
-| `agents/future-architect.toml` | `future_architect` | GPT-5.6 Sol, medium  | Read-only                                   |
+| `agents/future-architect.toml` | `future_architect` | GPT-6 Astra, medium  | Read-only                                   |
+| `agents/implementer.toml`      | `implementer`      | GPT-6 Astra, medium  | Inherits the invoking workspace permissions |
 | `agents/luna-implementer.toml` | `luna_implementer` | GPT-5.6 Luna, xhigh  | Inherits the invoking workspace permissions |
 | `agents/pr-changelog.toml`     | `pr_changelog`     | GPT-5.6 Luna, medium | Read-only                                   |
-| `agents/sol-implementer.toml`  | `sol_implementer`  | GPT-5.6 Sol, medium  | Inherits the invoking workspace permissions |
-| `agents/sol-verifier.toml`     | `sol_verifier`     | GPT-5.6 Sol, medium  | `workspace-safe`                            |
+| `agents/verifier.toml`         | `verifier`         | GPT-6 Astra, medium  | `workspace-safe`                            |
+
+The main execution roles use model-agnostic identifiers: `implementer` and
+`verifier`. Their configured model is GPT-6 Astra. Luna remains a separate,
+explicitly model-specific executor for narrow mechanical tasks.
+
+## GPT-6 Astra migration
+
+Reviewed against OpenAI's [GPT-6 Astra guidance](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra)
+on September 5, 2026. The [Codex configuration reference](https://developers.openai.com/codex/config-reference)
+and [custom-agent documentation](https://developers.openai.com/codex/subagents)
+define the configuration fields and per-agent model overrides used here.
+
+### Model settings
+
+The primary model, architecture advisor, contract-heavy implementer, and
+independent verifier use `gpt-6-astra` with the existing `medium` reasoning
+setting. OpenAI recommends preserving an already supported reasoning effort
+during migration. Luna remains assigned to mechanical implementation and text
+workflows; this split is a repository workflow choice, not an Astra requirement.
+
+OpenAI currently positions Astra as the flagship model for complex reasoning and
+coding, Terra as the balanced intelligence/cost tier, and Luna as the
+cost-sensitive, high-volume tier. There is no separate Astra light model, so
+this setup keeps Luna for the intentionally cheaper mechanical path instead of
+using Astra at a lower reasoning effort.
+
+These are Codex configuration files, not a Responses API client. API features
+such as async tool definitions and `configuration_update` input items are not
+new TOML settings to add here. Permission profiles, network restrictions, and
+approval policy remain unchanged.
+
+### Existing installations
+
+`update-config.sh` adds missing settings but deliberately preserves existing
+values. Running it does **not** replace an existing primary model selection.
+
+1. Confirm that GPT-6 Astra is available in your Codex account and installation.
+   Keep a backup of `~/.codex/config.toml`, then change its existing top-level
+   `model` value to `"gpt-6-astra"`. Keep `model_reasoning_effort = "medium"`
+   for these defaults; do not append a duplicate key. Check any selected profile
+   or command-line model override as well.
+2. After pulling this revision, run `./sync-skills.sh` and
+   `./sync-agents-md.sh` from this repository. The first command updates the
+   custom-agent files and removes the retired `sol-implementer.toml` and
+   `sol-verifier.toml` copies from `~/.codex/agents`.
+3. Restart Codex and confirm the active model. The sync scripts do not modify
+   your main configuration, and changing only its model does not replace a
+   custom agent's explicit model selection.
+
+### Workflow adjustments
+
+Global instructions distinguish already-authorized actions from decisions that
+still need approval, make skill conflicts traceable, and bound validation by
+acceptance criteria and concrete evidence. They also specify concise writing
+and explicit delegation boundaries. The one-executor implementation workflow
+and opt-in, advisory architecture review remain intact.
+
+After migration, use representative tasks to check behavior: a review-only
+request must not edit files; `$implement-plan` must use its single selected
+executor; required validation must finish without unrelated repeated suites;
+and a request to create a PR must not stop for duplicate authorization or merge
+it without permission. These are manual acceptance checks, not automated model
+evaluation results.
 
 ## Source of truth
 
@@ -287,9 +350,9 @@ Custom agent definitions live under:
 Example:
 
 ```text
-~/workspace/codex/agents/sol-verifier.toml
+~/workspace/codex/agents/verifier.toml
         ↓ copy
-~/.codex/agents/sol-verifier.toml
+~/.codex/agents/verifier.toml
 ```
 
 ### Global `AGENTS.md`
@@ -327,9 +390,10 @@ The script:
 2. creates `~/.codex/skills` if necessary;
 3. creates `~/.codex/agents` if necessary;
 4. copies every repository skill into `~/.codex/skills`;
-5. copies every repository custom agent into `~/.codex/agents`;
-6. replaces only entries whose names exist in this repository;
-7. leaves unrelated Codex files untouched.
+5. removes retired repository-managed agent filenames;
+6. copies every repository custom agent into `~/.codex/agents`;
+7. replaces only entries whose names exist in this repository;
+8. leaves unrelated Codex files untouched.
 
 For example, if the repository contains:
 
@@ -394,7 +458,7 @@ git commit
 Edit:
 
 ```bash
-$EDITOR agents/sol-verifier.toml
+$EDITOR agents/verifier.toml
 ```
 
 Synchronize:
@@ -407,7 +471,7 @@ Then commit:
 
 ```bash
 git diff
-git add agents/sol-verifier.toml
+git add agents/verifier.toml
 git commit
 ```
 
