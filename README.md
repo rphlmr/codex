@@ -67,7 +67,7 @@ The resulting layout is:
 >
 > It configures:
 >
-> - GPT-5.6 Sol with medium reasoning as the primary model;
+> - GPT-6 Astra with medium reasoning as the primary model;
 > - GPT-5.6 Luna with xhigh reasoning as the default subagent;
 > - automatic approvals disabled;
 > - workspace-scoped permissions;
@@ -77,7 +77,7 @@ The resulting layout is:
 > ```toml
 > #:schema https://developers.openai.com/codex/config-schema.json
 >
-> model = "gpt-5.6-sol"
+> model = "gpt-6-astra"
 > model_reasoning_effort = "medium"
 > personality = "pragmatic"
 > approval_policy = "never"
@@ -167,6 +167,79 @@ The resulting layout is:
 >
 > The complete example is also stored in [`recommended-config.toml`](recommended-config.toml), which is the updater's source configuration.
 
+## GPT-6 Astra migration
+
+Reviewed against [OpenAI's GPT-6 Astra guidance](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra)
+on September 5, 2026. Model access depends on your Codex installation and account;
+confirm that `gpt-6-astra` is available before changing an existing setup.
+
+This repository keeps medium reasoning for the primary model and the three
+Astra roles. Luna keeps its existing narrow-task assignments and reasoning
+levels. The identifiers `sol_implementer` and `sol_verifier` remain stable, but
+now select Astra. No agent rename or removal is needed during synchronization.
+
+The instruction updates cover authorized follow-through, skill conflicts,
+concise communication, useful delegation, and bounded validation. Explicit
+single-agent workflows and independent verification remain intentional. The
+permission profiles, network policy, and approval configuration are unchanged.
+
+### Existing installations
+
+`update-config.sh` adds missing settings; it does **not** replace an existing
+`model` or reasoning value. A successful sync or updater run alone does not
+migrate the primary model.
+
+After pulling this revision, back up your configuration and edit its existing
+model entry, rather than appending a duplicate key:
+
+```bash
+cp ~/.codex/config.toml ~/.codex/config.toml.backup-$(date +%Y%m%d-%H%M%S)
+$EDITOR ~/.codex/config.toml
+```
+
+For this repository's default setup, the top-level entries are:
+
+```toml
+model = "gpt-6-astra"
+model_reasoning_effort = "medium"
+```
+
+Retain another effective reasoning level when it already suits your workflow;
+for an existing `none` or `minimal` setting, begin with `low` and evaluate it.
+Check active profile, project, and command-line overrides as well as the global
+file. See the [Codex configuration reference](https://developers.openai.com/codex/config-reference)
+and [custom-agent configuration](https://developers.openai.com/codex/subagents).
+
+Then synchronize the updated definitions and global instructions:
+
+```bash
+./update-config.sh --dry-run
+./sync-skills.sh
+./sync-agents-md.sh
+```
+
+Review any missing settings in the preview and run `./update-config.sh` to apply
+them with consent when needed. Restart Codex and verify the selected model.
+Syncing agents replaces their repository-managed model settings even though the
+config updater preserves the primary model setting.
+
+### Migration checks
+
+In a disposable checkout, exercise a small authorized edit, an approved-plan
+handoff, and an independent verification. Check that required validation runs,
+the one-agent workflows retain their boundaries, and verification never reports
+`PASS` for blocked required checks. For a PR request, check that text-generation
+skills return control for delivery instead of ending the task at a description.
+Use explicit dry-run instructions or a disposable remote for publication tests.
+
+These are behavioral checks to run in Codex, not guarantees established by
+parsing the configuration. Compare representative tasks before changing
+reasoning levels or expanding delegation further.
+
+This repository configures Codex rather than a custom Responses API client.
+API request parameters for async tools, caching, or `configuration_update`
+items are therefore not added as TOML settings.
+
 ## Repository structure
 
 ```text
@@ -216,11 +289,11 @@ The repository provides these custom agents:
 | Definition                     | Agent name         | Model and reasoning  | Permissions                                 |
 | ------------------------------ | ------------------ | -------------------- | ------------------------------------------- |
 | `agents/commit-message.toml`   | `commit_message`   | GPT-5.6 Luna, low    | Read-only                                   |
-| `agents/future-architect.toml` | `future_architect` | GPT-5.6 Sol, medium  | Read-only                                   |
+| `agents/future-architect.toml` | `future_architect` | GPT-6 Astra, medium  | Read-only                                   |
 | `agents/luna-implementer.toml` | `luna_implementer` | GPT-5.6 Luna, xhigh  | Inherits the invoking workspace permissions |
 | `agents/pr-changelog.toml`     | `pr_changelog`     | GPT-5.6 Luna, medium | Read-only                                   |
-| `agents/sol-implementer.toml`  | `sol_implementer`  | GPT-5.6 Sol, medium  | Inherits the invoking workspace permissions |
-| `agents/sol-verifier.toml`     | `sol_verifier`     | GPT-5.6 Sol, medium  | `workspace-safe`                            |
+| `agents/sol-implementer.toml`  | `sol_implementer`  | GPT-6 Astra, medium  | Inherits the invoking workspace permissions |
+| `agents/sol-verifier.toml`     | `sol_verifier`     | GPT-6 Astra, medium  | `workspace-safe`                            |
 
 ## Source of truth
 

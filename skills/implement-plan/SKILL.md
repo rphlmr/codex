@@ -1,6 +1,6 @@
 ---
 name: implement-plan
-description: Execute a current, approved engineering plan through exactly one implementation subagent. Use after planning and material decisions are complete. Routes contract-heavy work to Sol and narrower mechanical work to Luna.
+description: Execute a current, approved engineering plan through exactly one implementation subagent. Use after planning and material decisions are complete. Routes contract-heavy work to Astra and narrower mechanical work to Luna.
 ---
 
 # Implement Plan
@@ -9,6 +9,20 @@ Execute the current approved plan through exactly one implementation subagent.
 
 This is an execution handoff. Do not perform another planning, investigation,
 review, or implementation phase in the parent thread.
+
+## Workflow scope
+
+These are execution defaults, subject to explicit user instructions and enforced
+permissions. If the user explicitly requests parent-thread implementation or a
+different delegation arrangement, use that arrangement instead of this
+single-implementer workflow. Do not spawn an agent just to satisfy this skill.
+
+An explicit request to implement a supplied complete plan is approval to execute
+it. Do not require a second approval phrase or a separate planning ceremony.
+
+The parent may complete separately authorized delivery actions after the
+implementation report, such as committing, pushing, and opening a requested PR.
+It must not repeat the delegate's implementation or validation merely to do so.
 
 ## Establish the implementation brief
 
@@ -57,12 +71,14 @@ infer, reconstruct, or repair the plan under this skill.
 
 ## Validation contract
 
-Treat the validation specified by the approved plan as the complete required
-validation set.
+Treat the validation specified by the approved plan as the required baseline.
+Preserve any explicit validation limits in the user's request.
 
 - Preserve exact validation commands when they are present in the approved plan
   or were explicitly added as a later approved amendment.
-- Do not add broader test suites or validation categories.
+- Do not routinely add broader test suites or validation categories. The
+  implementation agent may add focused checks to resolve a concrete acceptance
+  gap, isolate a failure, or satisfy active repository requirements; report why.
 - Do not remove or weaken required validation.
 - Do not convert descriptive validation requirements into guessed commands in
   the parent thread.
@@ -74,7 +90,7 @@ not established during planning.
 
 Select the implementation agent from the approved plan before spawning it.
 
-Use `sol_implementer` when the plan changes any of:
+Use `sol_implementer` (GPT-6 Astra; stable agent identifier) when the plan changes any of:
 
 - exported or public TypeScript APIs;
 - conditional, recursive, nominal, or inference-heavy types;
@@ -93,7 +109,7 @@ Use `luna_implementer` for:
 - corrections where a verifier has already identified the exact symbols and
   expected types.
 
-The Sol criteria take precedence when categories overlap. Honor an explicit
+The Astra criteria take precedence when categories overlap. Honor an explicit
 user request for either implementation agent.
 
 Spawn exactly one selected implementation agent with `fork_turns: "none"`:
@@ -111,7 +127,8 @@ Send the selected agent this short execution contract:
 > The following implementation plan is current, approved, and authoritative.
 > Implement it directly under your standing agent instructions.
 >
-> Treat its validation section as the complete required validation set.
+> Run its required validation. Add focused checks only for a concrete acceptance
+> gap, a failure, or active repository requirements, within explicit user limits.
 
 Append the approved implementation plan verbatim.
 

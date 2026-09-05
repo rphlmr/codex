@@ -12,6 +12,18 @@ This skill generates text only.
 
 It does not stage files, create a commit, or modify the repository.
 
+## Workflow scope
+
+The delegation and output rules below are defaults for the message-generation
+step. Explicit user instructions take precedence over these skill guidelines.
+When another arrangement is requested, perform that step outside this skill
+rather than silently dropping the user's requirement.
+
+Text-only restrictions apply to this step and its custom agent. For a broader
+request to commit or open a PR, the parent may perform authorized preparation
+before delegation and delivery afterward. A generated message alone does not
+complete a request to create a commit or PR.
+
 ## Delegate
 
 Spawn exactly one fresh custom-agent thread using:
@@ -52,7 +64,7 @@ The parent agent must not:
 - spawn another agent;
 - commit the changes.
 
-Do not fall back to parent-agent analysis.
+Do not duplicate the delegated analysis in the parent while this step is running.
 
 ## Output
 
@@ -74,9 +86,12 @@ The final response must contain only the custom agent's exact output.
 
 ## Agent Unavailable
 
-If the `commit_message` custom agent is unavailable or cannot be spawned, output
-exactly:
+If the `commit_message` custom agent is unavailable or cannot be spawned, report:
 
 Commit-message agent unavailable.
 
-Do not fall back to generating the commit message in the parent thread.
+When the user did not require that specific agent, the parent may complete the
+requested text-generation step directly using the same evidence boundaries.
+Do not claim that the custom agent produced the result. When the user did
+require that agent, report the blocked step and continue only other authorized
+work that does not depend on its result.

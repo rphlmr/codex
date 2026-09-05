@@ -19,6 +19,18 @@ It does not:
 - modify Git state;
 - include staged, unstaged, or untracked changes.
 
+## Workflow scope
+
+The delegation and output rules below are defaults for the changelog-generation
+step. Explicit user instructions take precedence over these skill guidelines.
+The custom agent retains its committed-only, read-only scope; use another
+workflow for requirements outside that scope.
+
+For a request to create or update a PR, the parent may perform authorized
+preparation before this step and publish the description afterward. Returning
+text alone does not complete a request for a PR. Parent restrictions below apply
+while the delegated changelog analysis runs, not to the rest of the task.
+
 ## Supported Output Modes
 
 The supported modes are:
@@ -78,13 +90,10 @@ This workflow always excludes:
 - untracked files.
 
 If the user explicitly requires uncommitted changes to be included, do not
-silently omit them and do not ask the custom agent to violate its scope.
-
-Output exactly:
-
-PR-changelog supports committed branch changes only.
-
-A different workflow is required to summarize uncommitted work.
+silently omit them or ask the custom agent to violate its scope. Explain this
+committed-only boundary and return control to the parent to fulfill the request
+outside this skill. Do not commit uncommitted work just to fit the skill unless
+the user authorized committing it.
 
 ## Delegate
 
@@ -152,9 +161,12 @@ Do not add:
 
 ## Agent Unavailable
 
-If the `pr_changelog` custom agent is unavailable or cannot be spawned, output
-exactly:
+If the `pr_changelog` custom agent is unavailable or cannot be spawned, report:
 
 PR-changelog agent unavailable.
 
-Do not fall back to Git analysis in the parent thread.
+When the user did not require that specific agent, the parent may complete the
+requested text-generation step directly using the same evidence boundaries.
+Do not claim that the custom agent produced the result. When the user did
+require that agent, report the blocked step and continue only other authorized
+work that does not depend on its result.

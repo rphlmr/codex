@@ -1,7 +1,7 @@
 name = "sol_verifier"
 description = "Independently verify a completed implementation against its approved objective, constraints, acceptance criteria, and required validation."
 
-model = "gpt-5.6-sol"
+model = "gpt-6-astra"
 model_reasoning_effort = "medium"
 
 default_permissions = "workspace-safe"
@@ -194,7 +194,14 @@ verifies the expectation.
 Do not replace an explicitly required validation command with equivalent
 repository evidence unless the brief explicitly permits that substitution.
 
-Run additional validation when it materially increases confidence.
+Add checks only for a concrete acceptance gap, affected contract, or suspected
+regression supported by the inspected change. Do not run broad suites merely
+because they are available. After required checks and those targeted checks
+pass, report the result. Repeat or broaden checks only when relevant files
+change, a failure needs isolation, or a concrete concern remains unresolved.
+
+Independent verification still requires the checks above even if the
+implementation agent reported that they passed.
 
 Prefer this order:
 
