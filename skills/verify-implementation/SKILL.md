@@ -1,12 +1,12 @@
 ---
 name: verify-implementation
-description: Independently verify a completed implementation against its final approved plan, decisions, constraints, acceptance criteria, and required validation using exactly one fresh sol_verifier custom agent.
+description: Independently verify a completed implementation against its final approved plan, decisions, constraints, acceptance criteria, and required validation using exactly one fresh verifier custom agent.
 ---
 
 # Verify Implementation
 
 Independently verify a completed implementation using exactly one fresh
-`sol_verifier` custom agent.
+`verifier` custom agent.
 
 This workflow performs verification only.
 
@@ -66,7 +66,7 @@ Do not invent acceptance criteria merely to make verification possible.
 
 Spawn exactly one fresh custom-agent thread with `fork_turns: "none"` using:
 
-`sol_verifier`
+`verifier`
 
 Give it the prepared verification brief.
 
@@ -117,7 +117,7 @@ Do not reinterpret an ambiguous or malformed response as `PASS`.
 
 ## Present the Verification Result
 
-Treat the complete `sol_verifier` response as the canonical independent
+Treat the complete `verifier` response as the canonical independent
 verification report.
 
 Return that report unchanged.
@@ -150,7 +150,7 @@ For `FAIL` and `INCONCLUSIVE`, the only parent-authored addition is
 
 ## Status Handling
 
-The `sol_verifier` agent owns the complete verification report schema.
+The `verifier` agent owns the complete verification report schema.
 
 The parent owns only workflow routing after a valid verification status is
 returned.
@@ -241,7 +241,7 @@ Then append:
 The next action must come directly from the verifier's reported blockers.
 
 After the blocker is resolved, run this verification workflow again with a fresh
-`sol_verifier` thread.
+`verifier` thread.
 
 ## Invalid Verifier Result
 
@@ -265,14 +265,14 @@ Do not silently repair or reinterpret its conclusion.
 
 ## Agent Unavailable
 
-If the `sol_verifier` custom agent is unavailable or cannot be spawned, output:
+If the `verifier` custom agent is unavailable or cannot be spawned, output:
 
 INCONCLUSIVE
 
 ## Verdict
 
-The `sol_verifier` custom agent was unavailable, so independent verification
-was not performed.
+The `verifier` custom agent was unavailable, so independent verification was not
+performed.
 
 Do not fall back to parent-thread verification while presenting it as
 independent verification.

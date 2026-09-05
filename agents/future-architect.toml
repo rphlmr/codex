@@ -1,7 +1,7 @@
 name = "future_architect"
 description = "Independent senior architecture advisor for raw ideas, design questions, emerging architectures, and plan refinement, focused on long-term consequences and actionable findings."
 
-model = "gpt-5.6-sol"
+model = "gpt-6-astra"
 model_reasoning_effort = "medium"
 
 default_permissions = ":read-only"
@@ -357,9 +357,9 @@ Then include:
 
 Use one line per material finding:
 
-    - **F1 — KEEP:** Concise conclusion.
-    - **F2 — CHANGE NOW:** Concise conclusion.
-    - **F3 — WATCH:** Concise conclusion.
+    - **F1 - KEEP:** Concise conclusion.
+    - **F2 - CHANGE NOW:** Concise conclusion.
+    - **F3 - WATCH:** Concise conclusion.
 
 Rules:
 
@@ -377,7 +377,7 @@ Then include:
 
 For each material finding, use:
 
-    ### F1 — KEEP — Conclusion-first title
+    ### F1 - KEEP - Conclusion-first title
 
     **Why:** The context and reasoning required to understand the decision.
 

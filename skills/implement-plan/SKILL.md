@@ -1,6 +1,6 @@
 ---
 name: implement-plan
-description: Execute a current, approved engineering plan through exactly one implementation subagent. Use after planning and material decisions are complete. Routes contract-heavy work to Sol and narrower mechanical work to Luna.
+description: Execute a current, approved engineering plan through exactly one implementation subagent. Use after planning and material decisions are complete. Routes contract-heavy work to GPT-6 Astra and narrower mechanical work to the light implementer.
 ---
 
 # Implement Plan
@@ -74,7 +74,11 @@ not established during planning.
 
 Select the implementation agent from the approved plan before spawning it.
 
-Use `sol_implementer` when the plan changes any of:
+`implementer` is the GPT-6 Astra executor.
+`light_implementer` is the lighter executor for narrow mechanical work. It
+currently uses GPT-5.6 Luna.
+
+Use `implementer` when the plan changes any of:
 
 - exported or public TypeScript APIs;
 - conditional, recursive, nominal, or inference-heavy types;
@@ -83,7 +87,7 @@ Use `sol_implementer` when the plan changes any of:
 - compatibility or migration surfaces;
 - authentication, security, persistence, or build infrastructure.
 
-Use `luna_implementer` for:
+Use `light_implementer` for:
 
 - localized runtime behavior;
 - mechanical refactors with exact instructions;
@@ -93,13 +97,13 @@ Use `luna_implementer` for:
 - corrections where a verifier has already identified the exact symbols and
   expected types.
 
-The Sol criteria take precedence when categories overlap. Honor an explicit
-user request for either implementation agent.
+The `implementer` criteria take precedence when categories overlap. Honor an
+explicit user request for either implementation agent.
 
 Spawn exactly one selected implementation agent with `fork_turns: "none"`:
 
-- `sol_implementer` for the contract-heavy and high-risk categories above;
-- `luna_implementer` for the narrow and mechanical categories above.
+- `implementer` for the contract-heavy and high-risk categories above;
+- `light_implementer` for the narrow and mechanical categories above.
 
 Do not spawn additional implementation, exploration, planning, review, or
 verification agents unless the user explicitly requests a separate review.

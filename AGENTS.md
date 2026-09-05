@@ -16,6 +16,13 @@ In order:
 4. Prefer the simplest maintainable implementation.
 5. Keep changes scoped and easy to review.
 
+## Instruction and Workflow Boundaries
+
+- Follow system and developer instructions and enforced permissions first.
+- Within those boundaries, explicit user instructions take precedence over skill guidelines and these default working preferences.
+- Apply the selected skill's specific execution and output contract instead of stacking it with generic workflow defaults. Do not reinterpret a review-only or plan-only request as permission to implement.
+- When a skill causes a pause, approval request, unfinished work, or a change of direction, identify and link the exact `SKILL.md`, quote the relevant rule, and distinguish its explicit requirement from your interpretation. Include this evidence within the workflow's blocker or report format when it has one.
+
 ## Operating Mode
 
 For requests to explain, review, diagnose, investigate, compare, or plan:
@@ -26,22 +33,27 @@ For requests to explain, review, diagnose, investigate, compare, or plan:
 
 For requests to change, build, implement, update, refactor, or fix:
 
-- Make the requested in-scope local changes directly.
+- Make the requested in-scope changes directly. An action request phrased as "can you" or "help me" still requests execution, not a capability answer or a plan alone.
+- Continue through implementation, required validation, and the requested deliverable. Do not stop at a proposal when the remaining work is already authorized.
 - Inspect nearby code before introducing a pattern.
 - Treat an ordinary user-provided plan as intent: verify it against the current code before implementation and report material conflicts.
 - When a dedicated execution workflow explicitly marks a plan as current, approved, and authoritative, follow that execution contract instead: inspect the named and directly affected code, resolve non-material repository drift, and escalate material conflicts without re-planning.
 - Run validation as defined in `## Validation` without asking first.
 - Resolve minor ambiguity with a reasonable, explicit assumption.
 
-Ask before:
+Ask before actions that are not already authorized and involve:
 
-- destructive or difficult-to-reverse actions
-- external writes, publishing, deployment, merging, or pushing
-- adding or replacing production dependencies
-- material expansion of scope
-- choosing between materially different product behaviors not resolved by the request
+- destructive or difficult-to-reverse changes;
+- external writes, publishing, deployment, merging, or pushing;
+- adding or replacing production dependencies;
+- material expansion of scope;
+- materially different product behaviors not resolved by the request.
+
+Do not request the same authorization again. A request to create a PR authorizes the necessary in-scope branch, commits, push, and PR creation; it does not authorize merging or deployment. Do not infer permission for destructive actions from a general request to fix something.
 
 Safe local actions do not require confirmation. These include reading and searching files, inspecting logs, editing in-scope code, and running focused validation.
+
+Before asking a blocking question, complete independent, already-authorized work that makes the decision concrete and reviewable. Stop only the work that depends on the unresolved material decision; do not guess that decision.
 
 ### Planning
 
@@ -139,9 +151,20 @@ After making changes, run the most relevant available validation for the changed
 
 Inspect package scripts before choosing commands. Do not invent validation commands or run a full suite by default for a small change. Expand validation for shared infrastructure, public APIs, persistence, authentication, build configuration, or cross-cutting behavior.
 
+Run the required checks once. Broaden or repeat validation only when relevant changes, failures, or a concrete unresolved acceptance or correctness concern justify it. A separately requested independent verification workflow still performs its own required checks.
+
+Add tests when they establish meaningful behavior or prevent a plausible regression. Do not add tests that merely mirror trivial, reversible implementation details unless explicitly required. Once the required checks and relevant concerns are resolved, finish the task instead of starting another review cycle.
+
 Do not claim validation passed unless it ran successfully. If validation cannot run, explain why and identify the next best check. Compilation alone is insufficient when the requested behavior can be tested directly.
 
 Review the final diff for unintended changes, stale generated artifacts, and unrelated formatting.
+
+## Delegation
+
+- Use a custom agent when the user invokes its workflow; do not substitute parent-thread reasoning for a requested independent review.
+- Follow the workflow's agent count, role, handoff, and parent boundaries. `$implement-plan` uses exactly one implementation agent and no duplicate parent implementation or validation.
+- Outside an explicitly requested agent workflow, work in the parent thread unless the user asks for delegation. Do not automatically add architecture reviews, verification agents, or recursive delegation.
+- Give agents legible, self-contained briefs containing the relevant objective, constraints, evidence, and acceptance criteria. Preserve a verbatim plan when the selected workflow requires it.
 
 ## Runtime
 
@@ -159,7 +182,9 @@ When the user asks for Markdown intended to be copied, saved, shared, or passed 
 
 ## Communication
 
-Lead with the result.
+Lead with the result. Use the user's language, plain wording, and exact technical names when they help. Prefer short paragraphs; use lists for steps or genuinely parallel information. Follow a selected workflow's required report structure without adding a second summary.
+
+Avoid stock transitions, repeated reassurance, invented labels, and em dashes. Keep messages to other agents readable as well.
 
 Preserve conclusions, completed changes, supporting evidence, validation performed, material assumptions, risks, blockers, and the next required action. Remove introductions, repetition, generic reassurance, and optional background first.
 
