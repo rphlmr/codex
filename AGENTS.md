@@ -34,11 +34,11 @@ For requests to explain, review, diagnose, investigate, compare, or plan:
 For requests to change, build, implement, update, refactor, or fix:
 
 - Make the requested in-scope changes directly. An action request phrased as "can you" or "help me" still requests execution, not a capability answer or a plan alone.
-- Continue through implementation, required validation, and the requested deliverable. Do not stop at a proposal when the remaining work is already authorized.
+- Continue through implementation, required validation, and the requested deliverable without stopping at a proposal or repeating authorization requests.
 - Inspect nearby code before introducing a pattern.
 - Treat an ordinary user-provided plan as intent: verify it against the current code before implementation and report material conflicts.
 - When a dedicated execution workflow explicitly marks a plan as current, approved, and authoritative, follow that execution contract instead: inspect the named and directly affected code, resolve non-material repository drift, and escalate material conflicts without re-planning.
-- Run validation as defined in `## Validation` without asking first.
+- Follow `## Validation`.
 - Resolve minor ambiguity with a reasonable, explicit assumption.
 
 Ask before actions that are not already authorized and involve:
@@ -49,11 +49,11 @@ Ask before actions that are not already authorized and involve:
 - material expansion of scope;
 - materially different product behaviors not resolved by the request.
 
-Do not request the same authorization again. A request to create a PR authorizes the necessary in-scope branch, commits, push, and PR creation; it does not authorize merging or deployment. Do not infer permission for destructive actions from a general request to fix something.
+A request to create a PR authorizes the necessary in-scope branch, commits, push, and PR creation; it does not authorize merging or deployment. Do not infer permission for destructive actions from a general request to fix something.
 
 Safe local actions do not require confirmation. These include reading and searching files, inspecting logs, editing in-scope code, and running focused validation.
 
-Before asking a blocking question, complete independent, already-authorized work that makes the decision concrete and reviewable. Stop only the work that depends on the unresolved material decision; do not guess that decision.
+Gather local evidence before asking questions. Ask only when missing information materially affects behavior, architecture, security, data integrity, or scope. Before asking a blocking question, complete independent, authorized work that makes the decision concrete and reviewable. Stop only dependent work; do not guess the unresolved material decision.
 
 ### Planning
 
@@ -84,15 +84,13 @@ When producing a final implementation plan:
 
 ## Scope and Design
 
-- Prefer the smallest coherent change that fully solves the task.
-- Do not make unrelated changes or opportunistic cleanup.
-- Avoid broad rewrites unless explicitly requested or required for correctness.
+- Make the smallest coherent change that fully solves the task, without unrelated changes or opportunistic cleanup. Use broad rewrites only when explicitly requested or required for correctness.
 - Protect separation of concerns and keep dependency direction explicit.
 - Do not leak infrastructure concerns into business logic.
 - Prefer existing project patterns and straightforward functions or modules over new frameworks.
 - Do not introduce speculative abstractions, optimization, caching, batching, concurrency, or scalability mechanisms.
 - Mention non-essential improvements without implementing them.
-- Challenge a fragile design when relevant, but do not silently broaden the task.
+- Challenge a fragile design when relevant.
 
 If the existing design cannot support the request safely:
 
@@ -153,7 +151,7 @@ Inspect package scripts before choosing commands. Do not invent validation comma
 
 Run the required checks once. Broaden or repeat validation only when relevant changes, failures, or a concrete unresolved acceptance or correctness concern justify it. A separately requested independent verification workflow still performs its own required checks.
 
-Add tests when they establish meaningful behavior or prevent a plausible regression. Do not add tests that merely mirror trivial, reversible implementation details unless explicitly required. Once the required checks and relevant concerns are resolved, finish the task instead of starting another review cycle.
+Add tests when they establish meaningful behavior or prevent a plausible regression. Do not add tests that merely mirror trivial, reversible implementation details unless explicitly required. Finish once the requested outcome, required checks, and relevant concerns are resolved; do not start another review cycle.
 
 Do not claim validation passed unless it ran successfully. If validation cannot run, explain why and identify the next best check. Compilation alone is insufficient when the requested behavior can be tested directly.
 
@@ -168,7 +166,8 @@ Review the final diff for unintended changes, stale generated artifacts, and unr
 
 ## Runtime
 
-- Do not start cloud, background, scheduled, watch-mode, daemonized, interactive, or indefinitely running workflows unless explicitly requested.
+- Temporary local development servers and other bounded processes needed to validate an authorized change may run without a separate request, including background, watch-mode, or interactive processes. Stop them before finishing.
+- Otherwise, do not start cloud, unattended, scheduled, background, watch-mode, daemonized, interactive, or indefinitely running workflows unless explicitly requested.
 - Do not leave processes running.
 
 ## Markdown Output
@@ -188,6 +187,4 @@ Avoid stock transitions, repeated reassurance, invented labels, and em dashes. K
 
 Preserve conclusions, completed changes, supporting evidence, validation performed, material assumptions, risks, blockers, and the next required action. Remove introductions, repetition, generic reassurance, and optional background first.
 
-Gather available local evidence before asking questions. Ask only when the missing information materially affects behavior, architecture, security, data integrity, or scope.
-
-Finish when the requested outcome is complete and relevant validation has been performed. If blocked, report the blocker and the smallest next action needed.
+If blocked, report the blocker and the smallest next action needed.
