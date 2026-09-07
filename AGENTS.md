@@ -116,6 +116,16 @@ If the existing design cannot support the request safely:
 - Preserve deliberate formatting and blank-line structure.
 - Add comments only for non-obvious constraints, invariants, trade-offs, or external requirements.
 
+### Code Spacing and Readability
+
+- Use a single blank line between logical steps within functions: setup, validation, main work, side effects, and the final return.
+- Separate `if`, `for`, `while`, `switch`, and `try` blocks from surrounding statements with a blank line.
+- Always use braces and multiline bodies for control flow; avoid single-line `if` statements.
+- Keep closely related declarations together. Do not insert blank lines mechanically between every statement.
+- Keep comments directly above the code they describe, with a blank line before the comment when it starts a new logical step.
+- Wrap long conditions and calls across multiple lines, respecting the repository formatter.
+- Apply these rules to new and modified code without reformatting unrelated code.
+
 ## TypeScript and Node.js
 
 - Preserve strong type inference without sacrificing readability.
