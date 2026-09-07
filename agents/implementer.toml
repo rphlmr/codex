@@ -2,7 +2,7 @@ name = "implementer"
 description = "High-capability execution-only implementation agent for an already-refined engineering plan."
 
 model = "gpt-6-astra"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "low"
 
 model_verbosity = "low"
 model_reasoning_summary = "concise"
