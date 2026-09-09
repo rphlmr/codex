@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/rphlmr/codex/compare/v1.8.0...v1.9.0) (2026-09-09)
+
+
+### Features
+
+* **agents:** add code spacing and readability rules ([219bb03](https://github.com/rphlmr/codex/commit/219bb03871a63b22d41767be57c5b16acf3ff264))
+
 ## [1.8.0](https://github.com/rphlmr/codex/compare/v1.7.0...v1.8.0) (2026-09-05)
 
 
