@@ -1,7 +1,7 @@
 name = "future_architect"
 description = "Independent senior architecture advisor for raw ideas, design questions, emerging architectures, and plan refinement, focused on long-term consequences and actionable findings."
 
-model = "gpt-6-astra"
+model = "gpt-5.6-sol"
 model_reasoning_effort = "medium"
 
 default_permissions = ":read-only"
