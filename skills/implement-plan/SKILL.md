@@ -1,6 +1,6 @@
 ---
 name: implement-plan
-description: Execute a current, approved engineering plan through exactly one implementation subagent. Use after planning and material decisions are complete. Routes contract-heavy work to GPT-6 Astra and narrower mechanical work to the light implementer.
+description: Execute a current, approved engineering plan through exactly one implementation subagent. Use after planning and material decisions are complete. Routes contract-heavy work to GPT-5.6 Sol and narrower mechanical work to the light implementer.
 ---
 
 # Implement Plan
@@ -74,7 +74,7 @@ not established during planning.
 
 Select the implementation agent from the approved plan before spawning it.
 
-`implementer` is the GPT-6 Astra executor.
+`implementer` is the GPT-5.6 Sol executor using medium reasoning.
 `light_implementer` is the lighter executor for narrow mechanical work. It
 currently uses GPT-5.6 Luna.
 
