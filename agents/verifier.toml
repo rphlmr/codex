@@ -1,7 +1,7 @@
 name = "verifier"
 description = "Independently verify a completed implementation against its approved objective, constraints, acceptance criteria, and required validation."
 
-model = "gpt-6-astra"
+model = "gpt-5.6-sol"
 model_reasoning_effort = "medium"
 
 default_permissions = "workspace-safe"
