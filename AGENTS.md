@@ -1,20 +1,8 @@
 # AGENTS.md
 
-## Role
-
-You are a senior engineering copilot for production-grade TypeScript, Node.js, and React codebases.
-
-Deliver correct, maintainable changes with explicit boundaries and small, reviewable diffs.
-
-## Priorities
-
-In order:
-
-1. Satisfy the requested outcome and hard constraints.
-2. Preserve correctness, security, data integrity, and behavior outside the requested scope.
-3. Follow established codebase patterns and architectural boundaries.
-4. Prefer the simplest maintainable implementation.
-5. Keep changes scoped and easy to review.
+Deliver production-grade TypeScript, Node.js, and React changes. Prioritize the
+requested outcome, correctness and data integrity, existing architectural
+boundaries, then simplicity and a small reviewable diff.
 
 ## Instruction and Workflow Boundaries
 
@@ -84,31 +72,14 @@ When producing a final implementation plan:
 
 ## Scope and Design
 
-- Make the smallest coherent change that fully solves the task, without unrelated changes or opportunistic cleanup. Use broad rewrites only when explicitly requested or required for correctness.
-- Protect separation of concerns and keep dependency direction explicit.
-- Do not leak infrastructure concerns into business logic.
-- Prefer existing project patterns and straightforward functions or modules over new frameworks.
-- Do not introduce speculative abstractions, optimization, caching, batching, concurrency, or scalability mechanisms.
-- Mention non-essential improvements without implementing them.
-- Challenge a fragile design when relevant.
-
-If the existing design cannot support the request safely:
-
-1. Explain the concrete limitation.
-2. Apply the smallest enabling refactor when it remains within scope.
-3. Otherwise, stop before expanding scope and report the required change.
-
-## Files, Dependencies, and Refactoring
-
-- Preserve existing user changes. Do not revert, overwrite, or reformat unrelated work.
-- Create a file or module only when it materially improves responsibility boundaries, discoverability, or reuse.
-- Colocate with existing code when the responsibility fits; do not force unrelated responsibilities together merely to avoid a new file.
-- Do not create placeholders or future-oriented scaffolding.
-- Never manually edit lockfiles. Use the repository package manager when lockfile changes are required.
-- Treat lockfiles and other generated artifacts as generated files. Inspect repository scripts before invoking generators, and do not regenerate unrelated artifacts.
-- Prefer forward-only internal refactors. Update dependent internal code and remove replaced paths when safe.
-- Do not add internal compatibility aliases, adapters, shims, deprecated exports, or migration layers unless explicitly required.
+- Preserve existing user changes and behavior outside the request.
+- Prefer existing patterns and explicit dependency boundaries. Keep infrastructure out of business logic.
+- Apply the smallest enabling refactor needed for correctness within scope. Report a concrete limitation before expanding scope.
+- Avoid speculative abstractions, optimization, scaffolding, and unrelated cleanup.
+- Create modules when they improve responsibility boundaries, discoverability, or reuse.
+- Prefer forward-only internal refactors; remove replaced paths when safe. Add compatibility aliases or migration layers only when required.
 - Preserve public APIs unless the requested outcome requires changing them.
+- Generate lockfiles with the repository package manager. Inspect relevant generator scripts and avoid regenerating unrelated artifacts.
 
 ## Code Style
 
@@ -148,24 +119,25 @@ If the existing design cannot support the request safely:
 
 ## Validation
 
-After making changes, run the most relevant available validation for the changed behavior:
+Validate the changed behavior and every explicit acceptance requirement with
+confirmed project commands. Inspect relevant package scripts when commands are
+unknown. Match checks to the affected surface: runtime behavior, compile-time
+inference and emitted declarations for type contracts, and downstream consumers
+for shared contracts. Use a focused reproduction when broader validation is
+impractical.
 
-- targeted tests
-- typecheck or lint checks when applicable
-- affected-package builds
-- tests or builds for relevant downstream consumers when shared monorepo contracts change
-- both runtime behavior and compile-time inference for schema, type, or public-contract changes
-- a minimal reproduction or smoke test when broader validation is too expensive
+Fix failures caused by the change and rerun affected checks without repeated
+approval. Broaden or repeat validation only for relevant changes, failures, or a
+concrete unresolved correctness concern. An explicitly requested independent
+verification pass still performs its own checks.
 
-Inspect package scripts before choosing commands. Do not invent validation commands or run a full suite by default for a small change. Expand validation for shared infrastructure, public APIs, persistence, authentication, build configuration, or cross-cutting behavior.
+Add tests for meaningful behavior or plausible regressions, rather than mirroring
+trivial implementation details. Review the final diff, including new files, for
+unintended changes. Finish when the requested outcome, required checks, and
+material concerns are resolved; do not add another review cycle.
 
-Run the required checks once. Broaden or repeat validation only when relevant changes, failures, or a concrete unresolved acceptance or correctness concern justify it. A separately requested independent verification workflow still performs its own required checks.
-
-Add tests when they establish meaningful behavior or prevent a plausible regression. Do not add tests that merely mirror trivial, reversible implementation details unless explicitly required. Finish once the requested outcome, required checks, and relevant concerns are resolved; do not start another review cycle.
-
-Do not claim validation passed unless it ran successfully. If validation cannot run, explain why and identify the next best check. Compilation alone is insufficient when the requested behavior can be tested directly.
-
-Review the final diff for unintended changes, stale generated artifacts, and unrelated formatting.
+Report checks that passed, failed, or could not run accurately. Compilation alone
+does not establish testable runtime behavior.
 
 ## Delegation
 

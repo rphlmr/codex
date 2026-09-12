@@ -176,7 +176,7 @@ The resulting layout is:
 │   ├── commit-message.toml
 │   ├── future-architect.toml
 │   ├── implementer.toml
-│   ├── luna-implementer.toml
+│   ├── light-implementer.toml
 │   ├── pr-changelog.toml
 │   └── verifier.toml
 ├── skills/
@@ -206,7 +206,7 @@ The resulting layout is:
 | `commit-message`            | Generate one Conventional Commit message from the staged diff.                                 | `commit_message`                                                                          |
 | `final-implementation-plan` | Finalize a completed Plan mode result into a self-contained implementation handoff.            | None                                                                                      |
 | `future-architect-mode`     | Independently review an idea, design, architecture, or implementation plan.                    | `future_architect`                                                                        |
-| `implement-plan`            | Execute a complete approved plan with one implementation agent.                                | Routes contract-heavy work to `implementer`; narrow mechanical work to `luna_implementer` |
+| `implement-plan`            | Execute a complete approved plan with one implementation agent.                                | Routes contract-heavy work to `implementer`; narrow mechanical work to `light_implementer` |
 | `pr-changelog`              | Generate PR/MR text, review prep, release notes, or a changelog from committed branch changes. | `pr_changelog`                                                                            |
 | `session-handoff`           | Create a self-contained prompt for continuing established work in a fresh Codex session.       | None                                                                                      |
 | `verify-implementation`     | Independently verify completed work against the approved plan and acceptance criteria.         | `verifier`                                                                                |
@@ -216,15 +216,15 @@ The repository provides these custom agents:
 | Definition                     | Agent name         | Model and reasoning  | Permissions                                 |
 | ------------------------------ | ------------------ | -------------------- | ------------------------------------------- |
 | `agents/commit-message.toml`   | `commit_message`   | GPT-5.6 Luna, low    | Read-only                                   |
-| `agents/future-architect.toml` | `future_architect` | GPT-6 Astra, medium  | Read-only                                   |
-| `agents/implementer.toml`      | `implementer`      | GPT-6 Astra, medium  | Inherits the invoking workspace permissions |
-| `agents/luna-implementer.toml` | `luna_implementer` | GPT-5.6 Luna, xhigh  | Inherits the invoking workspace permissions |
+| `agents/future-architect.toml` | `future_architect` | GPT-5.6 Sol, medium  | Read-only                                   |
+| `agents/implementer.toml`      | `implementer`      | GPT-5.6 Sol, medium  | Inherits the invoking workspace permissions |
+| `agents/light-implementer.toml` | `light_implementer` | GPT-5.6 Luna, xhigh  | Inherits the invoking workspace permissions |
 | `agents/pr-changelog.toml`     | `pr_changelog`     | GPT-5.6 Luna, medium | Read-only                                   |
-| `agents/verifier.toml`         | `verifier`         | GPT-6 Astra, medium  | `workspace-safe`                            |
+| `agents/verifier.toml`         | `verifier`         | GPT-5.6 Sol, medium  | `workspace-safe`                            |
 
 The main execution roles use model-agnostic identifiers: `implementer` and
-`verifier`. Their configured model is GPT-6 Astra. Luna remains a separate,
-explicitly model-specific executor for narrow mechanical tasks.
+`verifier`. Their configured model is GPT-5.6 Sol. `light_implementer` uses GPT-5.6 Luna
+for narrow mechanical tasks.
 
 ## GPT-6 Astra migration
 
@@ -235,11 +235,11 @@ define the configuration fields and per-agent model overrides used here.
 
 ### Model settings
 
-The primary model, architecture advisor, contract-heavy implementer, and
-independent verifier use `gpt-6-astra` with the existing `medium` reasoning
-setting. OpenAI recommends preserving an already supported reasoning effort
-during migration. Luna remains assigned to mechanical implementation and text
-workflows; this split is a repository workflow choice, not an Astra requirement.
+The recommended primary model is `gpt-6-astra` with `medium` reasoning.
+The architecture advisor, contract-heavy implementer, and independent verifier
+remain on `gpt-5.6-sol` with `medium` reasoning. Luna handles mechanical
+implementation and text workflows. These per-agent choices are independent of
+the primary model and are preserved by the prompt cleanup.
 
 OpenAI currently positions Astra as the flagship model for complex reasoning and
 coding, Terra as the balanced intelligence/cost tier, and Luna as the
@@ -269,6 +269,21 @@ values. Running it does **not** replace an existing primary model selection.
 3. Restart Codex and confirm the active model. The sync scripts do not modify
    your main configuration, and changing only its model does not replace a
    custom agent's explicit model selection.
+
+### Prompt and skill maintenance
+
+Reviewed against [Rethinking skills and prompts for GPT-6 Astra](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra)
+on September 12, 2026. Keep skill descriptions focused on selection, shared
+instructions on meaningful constraints, and conditional detail in references
+loaded only when needed. Preserve the contracts needed by the Sol and Luna
+agents as well as the primary Astra session.
+
+This pass shortens skill descriptions, consolidates repeated instructions, and
+moves verification failure routing into a conditional reference. It preserves
+invocation policies, agent assignments, approval boundaries, and output
+contracts. Structural validation checks packaging; it does not establish model
+quality or latency improvements. The representative tasks below remain manual
+behavioral checks.
 
 ### Workflow adjustments
 

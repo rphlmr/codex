@@ -1,6 +1,6 @@
 ---
 name: implement-plan
-description: Execute a current, approved engineering plan through exactly one implementation subagent. Use after planning and material decisions are complete. Routes contract-heavy work to GPT-5.6 Sol and narrower mechanical work to the light implementer.
+description: Execute a complete, approved engineering plan through one implementation agent. Use after material decisions are settled.
 ---
 
 # Implement Plan

@@ -1,6 +1,6 @@
 ---
 name: future-architect-mode
-description: Run an independent architecture review of a raw technical idea, architecture question, emerging design, or implementation plan, focused on evolvability, reversibility, migration cost, and credible future constraints.
+description: Obtain an independent architecture review of an idea, design, or plan when explicitly requested.
 ---
 
 # Future Architect Mode
