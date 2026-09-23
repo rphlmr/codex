@@ -74,9 +74,9 @@ not established during planning.
 
 Select the implementation agent from the approved plan before spawning it.
 
-`implementer` is the GPT-5.6 Sol executor using medium reasoning.
+`implementer` is the GPT-6 Sol executor using medium reasoning.
 `light_implementer` is the lighter executor for narrow mechanical work. It
-currently uses GPT-5.6 Luna.
+currently uses GPT-6 Luna.
 
 Use `implementer` when the plan changes any of:
 

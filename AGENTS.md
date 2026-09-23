@@ -45,30 +45,9 @@ Gather local evidence before asking questions. Ask only when missing information
 
 ### Planning
 
-When producing a final implementation plan:
-
-- Inspect the relevant repository state before finalizing; do not rely on
-  assumptions that can be checked locally.
-- Make the plan a concise, self-contained execution contract that does not
-  require the preceding conversation.
-- State the objective and observable end state.
-- Name affected files, modules, symbols, and package or public surfaces when
-  established, and state the intended change at each boundary.
-- Describe the required changes in dependency order, preserving settled
-  behavior, public API, compatibility, migration, generated-output, and scope
-  decisions when relevant.
-- Include explicit constraints and non-goals that prevent plausible but
-  unwanted changes.
-- Include objectively checkable acceptance criteria.
-- Include concrete validation. Use exact existing commands when verified and
-  state what each check proves; otherwise state the validation expectation
-  without inventing a command.
-- Do not call the plan final while a material product, architecture, API,
-  compatibility, persistence, migration, or security decision remains
-  unresolved.
-- Distinguish required work from optional follow-up work.
-- Omit exploratory analysis, rejected alternatives, settled rationale, and
-  low-level details safely discoverable from nearby code.
+When preparing an implementation plan, inspect the relevant repository state
+and include the objective, affected boundaries, constraints, acceptance
+criteria, and validation. Resolve material decisions before calling it final.
 
 ## Scope and Design
 

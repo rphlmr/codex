@@ -57,6 +57,9 @@ The resulting layout is:
 ~/.codex/skills/* ~/.codex/agents/* ~/.codex/AGENTS.md
 ```
 
+In this repository, `AGENTS.override.md` supplies repository-specific guidance
+instead of loading the repository copy of the synced global `AGENTS.md` again.
+
 > [!IMPORTANT]
 >
 > ## Codex configuration
@@ -68,7 +71,7 @@ The resulting layout is:
 > It configures:
 >
 > - GPT-6 Astra with medium reasoning as the primary model;
-> - GPT-5.6 Luna with xhigh reasoning as the default subagent;
+> - GPT-6 Luna with xhigh reasoning as the default subagent;
 > - approval prompts disabled;
 > - workspace-scoped permissions;
 > - protection for common secret and credential files;
@@ -84,7 +87,7 @@ The resulting layout is:
 > default_permissions = "workspace-safe"
 >
 > [agents]
-> default_subagent_model = "gpt-5.6-luna"
+> default_subagent_model = "gpt-6-luna"
 > default_subagent_reasoning_effort = "xhigh"
 >
 > [features]
@@ -172,6 +175,7 @@ The resulting layout is:
 ```text
 .
 ├── AGENTS.md
+├── AGENTS.override.md
 ├── agents/
 │   ├── commit-message.toml
 │   ├── future-architect.toml
@@ -215,37 +219,34 @@ The repository provides these custom agents:
 
 | Definition                     | Agent name         | Model and reasoning  | Permissions                                 |
 | ------------------------------ | ------------------ | -------------------- | ------------------------------------------- |
-| `agents/commit-message.toml`   | `commit_message`   | GPT-5.6 Luna, low    | Read-only                                   |
-| `agents/future-architect.toml` | `future_architect` | GPT-5.6 Sol, medium  | Read-only                                   |
-| `agents/implementer.toml`      | `implementer`      | GPT-5.6 Sol, medium  | Inherits the invoking workspace permissions |
-| `agents/light-implementer.toml` | `light_implementer` | GPT-5.6 Luna, xhigh  | Inherits the invoking workspace permissions |
-| `agents/pr-changelog.toml`     | `pr_changelog`     | GPT-5.6 Luna, medium | Read-only                                   |
-| `agents/verifier.toml`         | `verifier`         | GPT-5.6 Sol, medium  | `workspace-safe`                            |
+| `agents/commit-message.toml`   | `commit_message`   | GPT-6 Luna, low    | Read-only                                   |
+| `agents/future-architect.toml` | `future_architect` | GPT-6 Sol, medium  | Read-only                                   |
+| `agents/implementer.toml`      | `implementer`      | GPT-6 Sol, medium  | Inherits the invoking workspace permissions |
+| `agents/light-implementer.toml` | `light_implementer` | GPT-6 Luna, xhigh  | Inherits the invoking workspace permissions |
+| `agents/pr-changelog.toml`     | `pr_changelog`     | GPT-6 Luna, medium | Read-only                                   |
+| `agents/verifier.toml`         | `verifier`         | GPT-6 Sol, medium  | `workspace-safe`                            |
 
 The main execution roles use model-agnostic identifiers: `implementer` and
-`verifier`. Their configured model is GPT-5.6 Sol. `light_implementer` uses GPT-5.6 Luna
+`verifier`. Their configured model is GPT-6 Sol. `light_implementer` uses GPT-6 Luna
 for narrow mechanical tasks.
 
-## GPT-6 Astra migration
+## GPT-6 model configuration
 
-Reviewed against OpenAI's [GPT-6 Astra guidance](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra)
-on September 5, 2026. The [Codex configuration reference](https://developers.openai.com/codex/config-reference)
-and [custom-agent documentation](https://developers.openai.com/codex/subagents)
-define the configuration fields and per-agent model overrides used here.
+Reviewed against OpenAI's [model catalog](https://developers.openai.com/api/docs/models)
+and [Codex subagent guidance](https://developers.openai.com/codex/subagents)
+on September 22, 2026. The [Codex configuration reference](https://developers.openai.com/codex/config-reference)
+defines the configuration fields used here.
 
 ### Model settings
 
 The recommended primary model is `gpt-6-astra` with `medium` reasoning.
 The architecture advisor, contract-heavy implementer, and independent verifier
-remain on `gpt-5.6-sol` with `medium` reasoning. Luna handles mechanical
-implementation and text workflows. These per-agent choices are independent of
-the primary model and are preserved by the prompt cleanup.
+use `gpt-6-sol` with `medium` reasoning. Luna handles mechanical implementation
+and text workflows. These per-agent choices are independent of the primary model.
 
-OpenAI currently positions Astra as the flagship model for complex reasoning and
-coding, Terra as the balanced intelligence/cost tier, and Luna as the
-cost-sensitive, high-volume tier. There is no separate Astra light model, so
-this setup keeps Luna for the intentionally cheaper mechanical path instead of
-using Astra at a lower reasoning effort.
+OpenAI positions Astra for the hardest work, Sol for complex coding and agentic
+workflows, and Luna for focused, high-volume tasks. This setup uses Sol for
+demanding agent roles and Luna for narrower work.
 
 These are Codex configuration files, not a Responses API client. API features
 such as async tool definitions and `configuration_update` input items are not
@@ -255,20 +256,20 @@ approval policy remain unchanged.
 ### Existing installations
 
 `update-config.sh` adds missing settings but deliberately preserves existing
-values. Running it does **not** replace an existing primary model selection.
+values. Running it does **not** replace an existing default subagent model.
 
-1. Confirm that GPT-6 Astra is available in your Codex account and installation.
-   Keep a backup of `~/.codex/config.toml`, then change its existing top-level
-   `model` value to `"gpt-6-astra"`. Keep `model_reasoning_effort = "medium"`
-   for these defaults; do not append a duplicate key. Check any selected profile
-   or command-line model override as well.
+1. Confirm that GPT-6 Sol and Luna are available in your Codex account and
+   installation. Keep a backup of `~/.codex/config.toml`, then change the
+   existing `[agents]` `default_subagent_model` value to `"gpt-6-luna"`.
+   Keep `default_subagent_reasoning_effort = "xhigh"` for these defaults;
+   do not append a duplicate key.
 2. After pulling this revision, run `./sync-skills.sh` and
    `./sync-agents-md.sh` from this repository. The first command updates the
    custom-agent files and removes the retired `sol-implementer.toml` and
    `sol-verifier.toml` copies from `~/.codex/agents`.
-3. Restart Codex and confirm the active model. The sync scripts do not modify
-   your main configuration, and changing only its model does not replace a
-   custom agent's explicit model selection.
+3. Restart Codex. The sync scripts do not modify your main configuration, and
+   changing only its default subagent model does not replace a custom agent's
+   explicit model selection.
 
 ### Prompt and skill maintenance
 

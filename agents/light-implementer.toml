@@ -1,7 +1,7 @@
 name = "light_implementer"
 description = "Execution-only implementation agent for a current, approved engineering plan."
 
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 model_reasoning_effort = "xhigh"
 
 model_verbosity = "low"
