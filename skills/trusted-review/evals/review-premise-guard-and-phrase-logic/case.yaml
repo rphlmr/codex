@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: review-premise-guard-and-phrase-logic
+expected_outcome: |
+  Reports that shouldWarnOnLeave decides behavior by comparing display text ("Saved") produced by getSaveStatus, which works today but breaks silently when the label is reworded, and recommends a state key or the saved flag instead; reports that the body-shaped draft branch in loadDraft guards against drafts that docs/decisions.md says cannot exist, and recommends deleting it rather than keeping it as robustness; changes no file.
+context:
+  scaffold_script: place-files.sh

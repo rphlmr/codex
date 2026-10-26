@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: react-router-wizard-injects-save
+expected_outcome: |
+  Takes the API calls out of the onboarding machine: it only declares its draft save and submit actors, and imports nothing from React Router or the service. The route component provides them with direct calls to the service, not fetcher.submit or a route action, because the machine needs the draft id and whether each call failed. The test provides a fake for each actor it reaches, so it no longer hits the network.
+context:
+  scaffold_script: place-files.sh

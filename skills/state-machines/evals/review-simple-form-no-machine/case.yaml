@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: review-simple-form-no-machine
+expected_outcome: |
+  Gives ordinary review feedback on ContactForm.tsx, such as the missing error state when sending fails. Recommends no state machine, because a simple form with one submitting flag is covered by the skip list. Changes no file.
+context:
+  scaffold_script: place-files.sh

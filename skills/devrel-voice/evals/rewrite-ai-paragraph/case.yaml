@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: rewrite-ai-paragraph
+expected_outcome: |
+  A short rewrite that keeps the facts (one folder per migration, no journal file, fewer merge conflicts across branches) and drops the hype and AI phrases.

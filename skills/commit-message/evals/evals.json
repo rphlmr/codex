@@ -1,0 +1,26 @@
+{
+  "skill_name": "commit-message",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "write me a commit message for what i staged",
+      "setup": "In an empty directory, run `bash <skill-dir>/evals/files/make-repo.sh feature` and start the run from that directory.",
+      "expected_output": "Exactly one plain-text line of at most 50 displayed characters, shaped `feat: ✨ <imperative lowercase description>`, describing the new retry option for fetchJson. No scope, body, quotes, Markdown, code fence, or commentary. Nothing is staged, unstaged, or committed.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Generate a Conventional Commit message for the staged changes. Don't commit anything.",
+      "setup": "In an empty directory, run `bash <skill-dir>/evals/files/make-repo.sh fix` and start the run from that directory.",
+      "expected_output": "Exactly one plain-text line of at most 50 displayed characters, shaped `fix: 🐛 <description>`, describing the corrected last-page calculation. The unstaged README edit is not mentioned, and nothing is committed.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "commit msg for my changes pls",
+      "setup": "In an empty directory, run `bash <skill-dir>/evals/files/make-repo.sh unstaged-only` and start the run from that directory.",
+      "expected_output": "Exactly `No staged diff available.` The skill does not fall back to the unstaged README edit and does not stage anything.",
+      "files": []
+    }
+  ]
+}

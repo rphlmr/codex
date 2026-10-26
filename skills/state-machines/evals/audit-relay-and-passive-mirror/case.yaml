@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: audit-relay-and-passive-mirror
+expected_outcome: |
+  Recommends an XState machine for the small, bug-free RelayClient (connecting, open, retrying, closed) and says UploadController decides outside uploadMachine, which only mirrors status, so the decisions move into the machine's guards and actors. Calls formatBytes fine with its skip reason. Invents no bug and changes no file.
+context:
+  scaffold_script: place-files.sh

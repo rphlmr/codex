@@ -1,12 +1,12 @@
 # Codex Skills
 
-Personal Codex skills, custom agents, and global instructions tracked in Git.
+Personal Codex skills, global instructions, and recommended configuration tracked in Git.
 
 This repository is the source of truth for:
 
-- custom skills;
-- custom agents;
-- global `AGENTS.md`.
+- custom skills and their evaluation fixtures;
+- global `AGENTS.md`, scoped coding rules, and reply style;
+- recommended Codex configuration.
 
 ## Codex Usage for macOS
 
@@ -47,29 +47,18 @@ Preview the recommended Codex configuration, then consent to applying it:
 
 The updater uses a pinned TOML patcher through `npx`, preserves existing values and formatting, displays an exact diff, and changes `~/.codex/config.toml` only after an interactive confirmation. If the file already exists, it also creates a timestamped backup. Run `./update-config.sh --dry-run` to preview without being prompted. After applying changes, restart Codex to ensure the new settings are loaded.
 
-Synchronize skills, custom agents, and global instructions:
+Synchronize skills and global instructions, and remove retired custom workflows and agents:
 
 ```bash
 ./sync-skills.sh
 ./sync-agents-md.sh
 ```
 
-The resulting layout is:
-
-```text
-                   Git repository
-                         │
-                  ~/workspace/codex
-                         │
-          ┌──────────────┼──────────────┐
-          │              │              │
-       skills/         agents/       AGENTS.md
-          │              │              │
-         copy           copy            copy
-          │              │              │
-          ▼              ▼              ▼
-~/.codex/skills/* ~/.codex/agents/* ~/.codex/AGENTS.md
-```
+Synchronization copies skills to `~/.agents/skills/`, and instructions, rules,
+and reply style to `~/.codex/`. Both scripts honor `CODEX_HOME` for the Codex
+configuration directory; user skills remain in `~/.agents/skills/`. The skill
+sync removes older Codex-only copies and retired custom workflows and agents.
+Unrelated entries and bundled skills remain.
 
 In this repository, `AGENTS.override.md` supplies repository-specific guidance
 instead of loading the repository copy of the synced global `AGENTS.md` again.
@@ -78,14 +67,12 @@ instead of loading the repository copy of the synced global `AGENTS.md` again.
 >
 > ## Codex configuration
 >
-> The `verifier` custom agent requires a permission profile named `workspace-safe`. Define `[permissions.workspace-safe]` in `~/.codex/config.toml` before using `$verify-implementation`; custom permission profile names must have a matching table. The updater above can add missing recommendations without replacing machine-specific choices.
->
-> The example below provides the required profile plus optional companion defaults for models, agents, features, and top-level permissions.
+> The example below provides optional defaults for the primary model, features,
+> and workspace permissions. Subagents use Codex's native defaults.
 >
 > It configures:
 >
 > - GPT-6 Astra with medium reasoning as the primary model;
-> - GPT-6 Luna with xhigh reasoning as the default subagent;
 > - approval prompts disabled;
 > - workspace-scoped permissions;
 > - protection for common secret and credential files;
@@ -99,10 +86,6 @@ instead of loading the repository copy of the synced global `AGENTS.md` again.
 > personality = "pragmatic"
 > approval_policy = "never"
 > default_permissions = "workspace-safe"
->
-> [agents]
-> default_subagent_model = "gpt-6-luna"
-> default_subagent_reasoning_effort = "xhigh"
 >
 > [features]
 > network_proxy = true
@@ -184,138 +167,194 @@ instead of loading the repository copy of the synced global `AGENTS.md` again.
 >
 > The complete example is also stored in [`recommended-config.toml`](recommended-config.toml), which is the updater's source configuration.
 
+## Native workflows
+
+Use Codex's native planning, implementation, review, and subagent orchestration.
+This repository no longer defines custom agents or a fixed execution pipeline.
+Delegate when requested, using the built-in `default`, `worker`, or `explorer`
+roles. Custom agents can be reconsidered if a concrete need emerges.
+
+OpenAI documents these built-in roles and optional customizations in its
+[subagent guide](https://learn.chatgpt.com/docs/agent-configuration/subagents).
+Its [customization guide](https://learn.chatgpt.com/docs/customization/overview)
+positions skills as reusable task guidance and subagents as optional delegation.
+Using the native workflow is this repository's preference, not a claim that
+custom agents are always worse.
+
+## Included skills
+
+These workflows carry over the Claude configuration's behavior, with Codex tool
+names and invocation policies. Commit messages and PR changelogs each spawn
+one fresh built-in agent with an explicit model and reasoning effort,
+independent of the parent chat:
+
+| Workflow | Model | Reasoning effort |
+| --- | --- | --- |
+| `commit-message` | `gpt-6-luna` | `low` |
+| `pr-changelog` | `gpt-6-luna` | `medium` |
+
+Both return the agent’s output unchanged. If the configured model or effort
+is unavailable, they report that instead of substituting the parent settings.
+No custom agent definitions are needed.
+
+| Skill | Purpose | Invocation |
+| --- | --- | --- |
+| `apple-hig` | Read current Apple design guidance with the lookup script | Automatic or explicit |
+| `brainstorm` | Reach an agreed design before implementation | Explicit `$brainstorm` |
+| `commit-message` | Produce one staged-only Conventional Commit message | Automatic or explicit |
+| `devrel-voice` | Write articles and tutorials in the user's voice | Automatic or explicit |
+| `pr-changelog` | Describe the complete committed branch changeset | Automatic or explicit |
+| `session-handoff` | Prepare context for a fresh Codex chat | Explicit `$session-handoff` |
+| `security-audit` | Run Cloudflare’s source-first security audit workflow | Automatic or explicit |
+| `state-machines` | Model workflows as explicit transitions | Automatic or explicit |
+| `trusted-review` | Run bundled `review-agent` with extra checks in a fresh agent | Automatic or explicit |
+
+`trusted-review` uses the installed bundled `review-agent` procedure plus
+`references/review.md` for the additional maintainer, evidence, impact, and fix
+checks. It uses `fork_turns: "none"` and a neutral scope/requirements brief. The reviewer receives no parent conversation, implementation report,
+suspected findings, or proposed fixes. It reads the code and establishes proof
+itself. Fixing existing findings stays in the parent unless separately
+delegated; fixes do not automatically start another review.
+
+The repository-local `release-commit-message` skill stays in `.agents/skills/`.
+Existing evaluation prompts, fixtures, and graders are carried over with the
+skills. Run behavioral evaluations only when requested; packaging checks
+alone do not establish equivalent model behavior.
+
+### Behavioral evaluations
+
+The bounded suite in `evals/behavioral/cases.json` covers all nine global
+repository skills and the local release-commit-message skill. It reuses the
+existing disposable Git and source fixtures. It explicitly invokes skills;
+it does not measure automatic skill selection or compare against a no-skill
+baseline. Each case is one sample, not a reliability estimate.
+
+Run the grader regression tests without model calls:
+
+```bash
+python3 -m unittest discover -s scripts -p 'test_skill_evals.py' -v
+```
+
+List cases, run the suite, or rerun one case:
+
+```bash
+python3 scripts/run_skill_evals.py --list
+python3 scripts/run_skill_evals.py
+python3 scripts/run_skill_evals.py --case review-real-bug
+```
+
+The runner uses the installed `codex` CLI and existing sign-in. It launches
+finite non-interactive sessions, with two concurrent cases and a 180-second
+timeout per case by default. Model runs consume account usage. It leaves the
+user configuration, authentication, and installed skills unchanged. Fixture
+repositories are temporary and deleted after each run. Agents use read-only
+sandboxing except for the rewrite output and Apple HIG cache cases, which
+use workspace-write. The Apple HIG case also enables sandbox network access
+to retrieve public Apple documentation; its success checks require both page
+reads to exit successfully. No eval installs dependencies or runs a full security
+audit. No shared background Codex daemon is started.
+
+Ignored `eval-results/<timestamp>/` directories contain case definitions,
+source hashes, CLI version, answers, events, selected parent/child trace
+evidence, per-check results, and Markdown/JSON summaries. Normal Codex session
+logs remain in the user's Codex home so actual child contexts can be checked.
+The runner reads only sessions identified by its own run and child IDs; it
+does not copy session metadata, credentials, or global instructions into the
+selected `trace.json`. Treat full CLI event files as local diagnostic data.
+
+Delegation checks compare spawn arguments with the child's recorded model and
+effort. Fresh-context checks require `fork_turns: "none"` and verify that a
+random parent-only marker is absent from child user inputs. Trusted Review
+checks the child's executed calls for both the bundled reviewer and the extra
+checks. File hashes, staged entries, and HEAD detect unintended changes.
+The commit-message grader also rejects forbidden Git inspection, even when
+the final message looks correct. Missing traces or runtime failures are
+reported as errors, not passes.
+
+Output assertions are deliberately small, deterministic checks. A pass does
+not establish all semantic qualities in the original prose rubrics, guarantee
+that every output fact is true, or establish resistance to all context leaks.
+Inspect the saved answers and traces when diagnosing a failed case. Preserve
+the assertions when comparing a later skill change against this baseline.
+
+### Cloudflare security audit
+
+`skills/security-audit/` is vendored unchanged from
+[cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill),
+revision `c1c8a8c1471069fb0e188eeaff69b8e8db6564a8`
+(`skills/security-audit/`). Its MIT license is included. The sync script manages
+its single installed copy under `~/.agents/skills/security-audit/`.
+
+A security question uses guidance mode. An explicit full codebase audit or
+requested audit report uses Cloudflare's multi-phase workflow, including its
+own isolated agents and verification. Trusted Review does not wrap that
+workflow in a second generic review or reduce it to one reviewer. Installing
+this skill does not run an audit.
+
+### Coding rules and reply style
+
+`AGENTS.md` explicitly routes matching work to the six files in
+`~/.codex/rules/`: architecture, code style, file naming, React, React Router,
+and TypeScript. Their `paths` frontmatter records the intended scope; these
+files are read through the instruction router rather than assumed to be
+loaded automatically by Codex.
+
+The reply style is in `~/.codex/output-styles/scannable.md`, also explicitly
+referenced by `AGENTS.md`. It favors short Markdown blocks, selective bold,
+and meaningful status icons, with explicit evidence, uncertainty, and next-step
+status. Tables and richer visuals are used when they help, rather than for
+every report. Exact skill output contracts take precedence.
+
+The Claude Remote Control launcher, SwiftBar plugin, lifecycle hooks, and
+Claude model settings are product-specific and are not installed here. The
+Codex Usage app above remains separate.
+
+### Retiring the previous setup
+
+`sync-skills.sh` removes the retired `final-implementation-plan`,
+`future-architect-mode`, `implement-plan`, and `verify-implementation` skills
+from `~/.codex/skills/`. It removes the old agent-dependent `commit-message`
+and `pr-changelog` wrappers there and installs their standalone replacements
+under `~/.agents/skills/`.
+
+It also removes the six retired custom agent files and the earlier
+`sol-implementer`, `sol-verifier`, and `luna-implementer` filenames from
+`~/.codex/agents/`. For each current skill, it removes the older same-name
+Codex-only copy so there is one installed definition. Unrelated files remain.
+
+The recommended configuration no longer sets `agents.default_subagent_model`
+or `agents.default_subagent_reasoning_effort`. The config updater only adds
+missing values, so it will not remove these overrides from an existing config.
+To use native defaults, remove those two keys from `~/.codex/config.toml`, keeping
+any other `[agents]` settings, then start a new Codex chat to load the cleanup.
+
 ## Repository structure
 
 ```text
 .
 ├── AGENTS.md
 ├── AGENTS.override.md
-├── agents/
-│   ├── commit-message.toml
-│   ├── future-architect.toml
-│   ├── implementer.toml
-│   ├── light-implementer.toml
-│   ├── pr-changelog.toml
-│   └── verifier.toml
+├── rules/
+├── output-styles/scannable.md
 ├── skills/
+│   ├── apple-hig/
+│   ├── brainstorm/
 │   ├── commit-message/
-│   │   ├── SKILL.md
-│   │   └── agents/
-│   │       └── openai.yaml
-│   ├── final-implementation-plan/
-│   ├── future-architect-mode/
-│   ├── implement-plan/
+│   ├── devrel-voice/
 │   ├── pr-changelog/
 │   ├── session-handoff/
-│   └── verify-implementation/
-├── scripts/
-│   └── update-config.mjs
+│   ├── security-audit/
+│   ├── state-machines/
+│   └── trusted-review/
+├── .agents/skills/release-commit-message/
+├── scripts/update-config.mjs
 ├── recommended-config.toml
 ├── update-config.sh
 ├── sync-skills.sh
 ├── sync-agents-md.sh
 ├── codex-usage/
-├── script/build_and_run.sh
-└── README.md
+└── script/build_and_run.sh
 ```
-
-## Included workflows
-
-| Skill                       | Purpose                                                                                        | Custom agent                                                                              |
-| --------------------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `commit-message`            | Generate one Conventional Commit message from the staged diff.                                 | `commit_message`                                                                          |
-| `final-implementation-plan` | Finalize a completed Plan mode result into a self-contained implementation handoff.            | None                                                                                      |
-| `future-architect-mode`     | Independently review an idea, design, architecture, or implementation plan.                    | `future_architect`                                                                        |
-| `implement-plan`            | Execute a complete approved plan with one implementation agent.                                | Routes contract-heavy work to `implementer`; narrow mechanical work to `light_implementer` |
-| `pr-changelog`              | Generate PR/MR text, review prep, release notes, or a changelog from committed branch changes. | `pr_changelog`                                                                            |
-| `session-handoff`           | Create a self-contained prompt for continuing established work in a fresh Codex session.       | None                                                                                      |
-| `verify-implementation`     | Independently verify completed work against the approved plan and acceptance criteria.         | `verifier`                                                                                |
-
-The repository provides these custom agents:
-
-| Definition                     | Agent name         | Model and reasoning  | Permissions                                 |
-| ------------------------------ | ------------------ | -------------------- | ------------------------------------------- |
-| `agents/commit-message.toml`   | `commit_message`   | GPT-6 Luna, low    | Read-only                                   |
-| `agents/future-architect.toml` | `future_architect` | GPT-6 Sol, medium  | Read-only                                   |
-| `agents/implementer.toml`      | `implementer`      | GPT-6 Sol, medium  | Inherits the invoking workspace permissions |
-| `agents/light-implementer.toml` | `light_implementer` | GPT-6 Luna, xhigh  | Inherits the invoking workspace permissions |
-| `agents/pr-changelog.toml`     | `pr_changelog`     | GPT-6 Luna, medium | Read-only                                   |
-| `agents/verifier.toml`         | `verifier`         | GPT-6 Sol, medium  | `workspace-safe`                            |
-
-The main execution roles use model-agnostic identifiers: `implementer` and
-`verifier`. Their configured model is GPT-6 Sol. `light_implementer` uses GPT-6 Luna
-for narrow mechanical tasks.
-
-## GPT-6 model configuration
-
-Reviewed against OpenAI's [model catalog](https://developers.openai.com/api/docs/models)
-and [Codex subagent guidance](https://developers.openai.com/codex/subagents)
-on September 22, 2026. The [Codex configuration reference](https://developers.openai.com/codex/config-reference)
-defines the configuration fields used here.
-
-### Model settings
-
-The recommended primary model is `gpt-6-astra` with `medium` reasoning.
-The architecture advisor, contract-heavy implementer, and independent verifier
-use `gpt-6-sol` with `medium` reasoning. Luna handles mechanical implementation
-and text workflows. These per-agent choices are independent of the primary model.
-
-OpenAI positions Astra for the hardest work, Sol for complex coding and agentic
-workflows, and Luna for focused, high-volume tasks. This setup uses Sol for
-demanding agent roles and Luna for narrower work.
-
-These are Codex configuration files, not a Responses API client. API features
-such as async tool definitions and `configuration_update` input items are not
-new TOML settings to add here. Permission profiles, network restrictions, and
-approval policy remain unchanged.
-
-### Existing installations
-
-`update-config.sh` adds missing settings but deliberately preserves existing
-values. Running it does **not** replace an existing default subagent model.
-
-1. Confirm that GPT-6 Sol and Luna are available in your Codex account and
-   installation. Keep a backup of `~/.codex/config.toml`, then change the
-   existing `[agents]` `default_subagent_model` value to `"gpt-6-luna"`.
-   Keep `default_subagent_reasoning_effort = "xhigh"` for these defaults;
-   do not append a duplicate key.
-2. After pulling this revision, run `./sync-skills.sh` and
-   `./sync-agents-md.sh` from this repository. The first command updates the
-   custom-agent files and removes the retired `sol-implementer.toml` and
-   `sol-verifier.toml` copies from `~/.codex/agents`.
-3. Restart Codex. The sync scripts do not modify your main configuration, and
-   changing only its default subagent model does not replace a custom agent's
-   explicit model selection.
-
-### Prompt and skill maintenance
-
-Reviewed against [Rethinking skills and prompts for GPT-6 Astra](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra)
-on September 12, 2026. Keep skill descriptions focused on selection, shared
-instructions on meaningful constraints, and conditional detail in references
-loaded only when needed. Preserve the contracts needed by the Sol and Luna
-agents as well as the primary Astra session.
-
-This pass shortens skill descriptions, consolidates repeated instructions, and
-moves verification failure routing into a conditional reference. It preserves
-invocation policies, agent assignments, approval boundaries, and output
-contracts. Structural validation checks packaging; it does not establish model
-quality or latency improvements. The representative tasks below remain manual
-behavioral checks.
-
-### Workflow adjustments
-
-Global instructions distinguish already-authorized actions from decisions that
-still need approval, make skill conflicts traceable, and bound validation by
-acceptance criteria and concrete evidence. They also specify concise writing
-and explicit delegation boundaries. The one-executor implementation workflow
-and opt-in, advisory architecture review remain intact.
-
-After migration, use representative tasks to check behavior: a review-only
-request must not edit files; `$implement-plan` must use its single selected
-executor; required validation must finish without unrelated repeated suites;
-and a request to create a PR must not stop for duplicate authorization or merge
-it without permission. These are manual acceptance checks, not automated model
-evaluation results.
 
 ## Source of truth
 
@@ -325,11 +364,12 @@ Canonical paths:
 
 ```text
 ~/workspace/codex/AGENTS.md
-~/workspace/codex/agents/*
+~/workspace/codex/rules/*
+~/workspace/codex/output-styles/*
 ~/workspace/codex/skills/*
 ```
 
-The copies under `~/.codex` are generated from this repository and should not be treated as canonical.
+The managed copies under `~/.codex` and `~/.agents/skills` are generated from this repository and should not be treated as canonical.
 
 ## What is synchronized
 
@@ -344,18 +384,19 @@ Repository skills live under:
 `sync-skills.sh` copies them into:
 
 ```text
-~/.codex/skills/
+~/.agents/skills/
 ```
 
 Example:
 
 ```text
-~/workspace/codex/skills/commit-message
+~/workspace/codex/skills/session-handoff
         ↓ copy
-~/.codex/skills/commit-message
+~/.agents/skills/session-handoff
 ```
 
-Only skills present in this repository are replaced.
+Only skills present in this repository are replaced; the retired entries listed
+above are removed.
 
 Codex-managed content such as:
 
@@ -364,28 +405,6 @@ Codex-managed content such as:
 ```
 
 is left untouched.
-
-### Custom agents
-
-Custom agent definitions live under:
-
-```text
-./agents/
-```
-
-`sync-skills.sh` also copies them into:
-
-```text
-~/.codex/agents/
-```
-
-Example:
-
-```text
-~/workspace/codex/agents/verifier.toml
-        ↓ copy
-~/.codex/agents/verifier.toml
-```
 
 ### Global `AGENTS.md`
 
@@ -403,51 +422,11 @@ The canonical global instructions live at:
 
 ## `sync-skills.sh`
 
-`sync-skills.sh` synchronizes both:
-
-```text
-skills/* → ~/.codex/skills/*
-agents/* → ~/.codex/agents/*
-```
-
-It copies files and directories rather than using symlinks.
-
-This means Codex always works with normal local files under `~/.codex`.
-
-### Behavior
-
-The script:
-
-1. resolves the repository directory;
-2. creates `~/.codex/skills` if necessary;
-3. creates `~/.codex/agents` if necessary;
-4. copies every repository skill into `~/.codex/skills`;
-5. removes retired repository-managed agent filenames;
-6. copies every repository custom agent into `~/.codex/agents`;
-7. replaces only entries whose names exist in this repository;
-8. leaves unrelated Codex files untouched.
-
-For example, if the repository contains:
-
-```text
-skills/commit-message
-skills/pr-changelog
-```
-
-the script may replace:
-
-```text
-~/.codex/skills/commit-message
-~/.codex/skills/pr-changelog
-```
-
-but it does not remove:
-
-```text
-~/.codex/skills/.system
-```
-
-or other unrelated entries.
+The script removes the explicitly listed retired skills and agent files, then
+copies directories containing `SKILL.md` from `skills/` to `~/.agents/skills/`.
+It replaces only matching skill names, removes their older `~/.codex/skills/`
+copies, and leaves unrelated shared skills and Codex system skills untouched.
+It uses copies rather than symlinks.
 
 ## `sync-agents-md.sh`
 
@@ -459,7 +438,9 @@ or other unrelated entries.
 ~/.codex/AGENTS.md
 ```
 
-The script copies only when the contents differ.
+The script copies only when contents differ. It also copies `rules/*.md` and
+`output-styles/*.md` into matching directories under the Codex home, leaving
+unrelated files untouched.
 
 ## Typical workflow
 
@@ -468,7 +449,7 @@ The script copies only when the contents differ.
 Edit the repository version:
 
 ```bash
-$EDITOR skills/commit-message/SKILL.md
+$EDITOR skills/session-handoff/SKILL.md
 ```
 
 Then synchronize:
@@ -481,29 +462,7 @@ Review and commit:
 
 ```bash
 git diff
-git add skills/commit-message
-git commit
-```
-
-### Update a custom agent
-
-Edit:
-
-```bash
-$EDITOR agents/verifier.toml
-```
-
-Synchronize:
-
-```bash
-./sync-skills.sh
-```
-
-Then commit:
-
-```bash
-git diff
-git add agents/verifier.toml
+git add skills/session-handoff
 git commit
 ```
 
@@ -540,7 +499,7 @@ skills/
 For example:
 
 ```text
-skills/future-architect-mode/
+skills/my-skill/
 ├── SKILL.md
 └── agents/
     └── openai.yaml
@@ -555,40 +514,13 @@ Then run:
 The skill is copied to:
 
 ```text
-~/.codex/skills/future-architect-mode
+~/.agents/skills/my-skill
 ```
 
 Commit it:
 
 ```bash
-git add skills/future-architect-mode
-git commit
-```
-
-## Adding a new custom agent
-
-Create:
-
-```text
-agents/new-agent.toml
-```
-
-Then run:
-
-```bash
-./sync-skills.sh
-```
-
-The agent is copied to:
-
-```text
-~/.codex/agents/new-agent.toml
-```
-
-Commit it:
-
-```bash
-git add agents/new-agent.toml
+git add skills/my-skill
 git commit
 ```
 
@@ -695,20 +627,22 @@ Synchronization is intentionally one-way:
 ```text
 repository
     ↓
-~/.codex
+~/.codex (instructions, rules, reply style)
+~/.agents/skills (skills)
 ```
 
 Changes made directly under:
 
 ```text
-~/.codex/skills
-~/.codex/agents
+~/.agents/skills/*
 ~/.codex/AGENTS.md
+~/.codex/rules/*
+~/.codex/output-styles/*
 ```
 
 may be overwritten the next time the corresponding sync script runs.
 
-If you modify something directly under `~/.codex` and want to keep it, copy the change back into the repository before synchronizing again.
+If you modify managed files under `~/.codex` or `~/.agents/skills` and want to keep them, copy the change back into the repository before synchronizing again.
 
 ## Repository scope
 
@@ -716,8 +650,9 @@ This repository manages:
 
 ```text
 ~/.codex/AGENTS.md
-~/.codex/agents/*
-~/.codex/skills/*
+~/.codex/rules/*
+~/.codex/output-styles/*
+~/.agents/skills/*
 ```
 
 The interactive updater can merge missing recommendations into:

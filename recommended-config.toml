@@ -6,10 +6,6 @@ personality = "pragmatic"
 approval_policy = "never"
 default_permissions = "workspace-safe"
 
-[agents]
-default_subagent_model = "gpt-6-luna"
-default_subagent_reasoning_effort = "xhigh"
-
 [features]
 network_proxy = true
 js_repl = false

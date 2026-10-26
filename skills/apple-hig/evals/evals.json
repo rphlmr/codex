@@ -1,0 +1,23 @@
+{
+  "skill_name": "apple-hig",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I want the search field in the toolbar of my Mac app's main window, next to the item actions. Where does Apple say it should go, and should it be expanded or a button?",
+      "expected_output": "Reads the Toolbars and Search fields pages (macOS considerations), quotes the sentences on toolbar search placement with page titles and URLs, and says which parts are Apple's text and which are interpretation, including where the HIG is silent.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Did Apple change anything recently in the HIG about sidebars or tab bars? I need to know if our iPad app has to change anything.",
+      "expected_output": "Lists the dated revisions of Sidebars and Tab bars from the pages' change logs, reads the current iPadOS and general guidance on both pages, quotes what applies to an iPad app, and says plainly that the change log summaries are Apple's only record of what the earlier text said.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "In SwiftUI on iOS, I delete a whole project from a swipe action. Should I confirm with an alert or an action sheet, and which button is the default?",
+      "expected_output": "Reads Alerts, Action sheets and Buttons for iOS, quotes the guidance on confirming destructive actions, the destructive role and default button placement, cites each page, and keeps Apple's wording apart from the recommendation drawn from it.",
+      "files": []
+    }
+  ]
+}

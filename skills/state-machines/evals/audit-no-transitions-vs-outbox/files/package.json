@@ -1,0 +1,14 @@
+{
+  "name": "notes",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "xstate": "^5.20.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

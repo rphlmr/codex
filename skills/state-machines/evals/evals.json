@@ -1,0 +1,17 @@
+{
+  "skill_name": "state-machines",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "can you review CheckoutWizard.tsx? after a failed payment and a retry, users sometimes see the spinner and the error banner at the same time",
+      "expected_output": "A review that traces the bug to the isLoading, isSubmitting, and isError flags and the retryCount effect, which allow impossible combinations. It recommends an XState machine defined with `setup()` and used through `@xstate/react`, sketches its states, events, guards, and effects (address validation, payment, retry, cancel), and doesn't ask for approval to add XState. The file is not edited.",
+      "files": ["evals/files/CheckoutWizard.tsx"]
+    },
+    {
+      "id": 3,
+      "prompt": "PlayerModel.swift sometimes reports playing and buffering at the same time. How should I restructure it?",
+      "expected_output": "Recommends an in-house state machine with no third-party library: State and Event enums, one pure `(State, Event) -> (State, [Effect])` transition function that leaves the state unchanged for unhandled events, and an `@Observable @MainActor` store that applies events through `send(_:)` and runs effects in Tasks. It explains how the current flags allow the reported combination and notes that the restructure is a design change needing approval.",
+      "files": ["evals/files/PlayerModel.swift"]
+    }
+  ]
+}

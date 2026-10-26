@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: review-labels-unprovable-suspicion
+expected_outcome: |
+  Flags the ORDER BY string interpolation as a possible SQL injection, but labels it a suspicion because the callers are not in the files, says what would confirm it (where sortColumn comes from), and suggests an allowlist; changes no file.
+context:
+  scaffold_script: place-files.sh

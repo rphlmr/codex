@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: upgrade-section-from-release-notes
+expected_outcome: |
+  A section in the user's DevRel voice: in-short opening with versions, action heading, before/after code, the silent consequence (no more retries in JS) made concrete, what to do, no AI tells, no recap.

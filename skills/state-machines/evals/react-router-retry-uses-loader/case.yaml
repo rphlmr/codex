@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: react-router-retry-uses-loader
+expected_outcome: |
+  Fixes the spinner and error banner showing together by moving the orders request into a React Router `loader` or `clientLoader` with an `ErrorBoundary` whose retry revalidates, removing the useEffect and the isLoading, isError, and retryCount flags. Adds no XState machine or other client state machine and doesn't recommend one.
+context:
+  scaffold_script: place-files.sh

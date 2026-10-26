@@ -1,0 +1,241 @@
+[
+  {
+    "id": "commit-feature",
+    "skill": "commit-message",
+    "fixture": "commit:feature",
+    "prompt": "write me a commit message for what i staged",
+    "spawn": {
+      "model": "gpt-6-luna",
+      "effort": "low"
+    },
+    "format": "commit",
+    "patterns": [
+      "^feat: ✨ ",
+      "(?i)retry|retries"
+    ]
+  },
+  {
+    "id": "commit-fix",
+    "skill": "commit-message",
+    "fixture": "commit:fix",
+    "prompt": "Generate a Conventional Commit message for the staged changes. Don't commit anything.",
+    "spawn": {
+      "model": "gpt-6-luna",
+      "effort": "low"
+    },
+    "format": "commit",
+    "patterns": [
+      "^fix: 🐛 ",
+      "(?i)pag|ceil|round"
+    ],
+    "absent": [
+      "(?i)readme"
+    ]
+  },
+  {
+    "id": "commit-empty",
+    "skill": "commit-message",
+    "fixture": "commit:unstaged-only",
+    "prompt": "commit msg for my changes pls",
+    "spawn": {
+      "model": "gpt-6-luna",
+      "effort": "low"
+    },
+    "exact": "No staged diff available."
+  },
+  {
+    "id": "pr-inferred-base",
+    "skill": "pr-changelog",
+    "fixture": "pr",
+    "prompt": "write the PR description for this branch",
+    "spawn": {
+      "model": "gpt-6-luna",
+      "effort": "medium"
+    },
+    "patterns": [
+      "(?i)comparison target:.*main",
+      "## Summary",
+      "(?i)retr",
+      "(?i)uncommitted|unstaged",
+      "(?i)test"
+    ],
+    "absent": [
+      "(?i)tests (?:all )?pass(?:ed)?"
+    ]
+  },
+  {
+    "id": "pr-french",
+    "skill": "pr-changelog",
+    "fixture": "pr",
+    "prompt": "Release notes for this branch against main, in French please.",
+    "spawn": {
+      "model": "gpt-6-luna",
+      "effort": "medium"
+    },
+    "patterns": [
+      "(?i)retr|réessa",
+      "(?i)défaut|fetchJson[^\\n]*une fois"
+    ],
+    "absent": [
+      "(?i)comparison target:",
+      "(?i)## test coverage"
+    ]
+  },
+  {
+    "id": "pr-uncommitted",
+    "skill": "pr-changelog",
+    "fixture": "pr",
+    "prompt": "can you turn my uncommitted changes into a PR summary?",
+    "no_spawn": true,
+    "exact": "PR-changelog supports committed branch changes only.\n\nA different workflow is required to summarize uncommitted work."
+  },
+  {
+    "id": "review-real-bug",
+    "skill": "trusted-review",
+    "fixture": "copy:trusted-review/evals/review-finds-real-bug-skips-fake/files",
+    "prompt": "Audit cart.ts for bugs. Review only; do not fix anything.",
+    "spawn": {},
+    "builtin": true,
+    "patterns": [
+      "(?i)shipping|ship free",
+      "(?i)5000|5_000|50"
+    ],
+    "absent": [
+      "(?i)\\[P[012]\\][^\n]*(?:null|undefined)"
+    ]
+  },
+  {
+    "id": "review-clean",
+    "skill": "trusted-review",
+    "fixture": "repo-copy:evals/behavioral/files/clean-slugify",
+    "prompt": "Audit slugify.ts against its documented contract and tests. Review only; do not edit anything.",
+    "spawn": {},
+    "builtin": true,
+    "patterns": [
+      "(?i)no (?:high or medium |qualifying |actionable |confirmed |concrete )?(?:findings|defects|bugs)|no P[012]"
+    ],
+    "absent": [
+      "\\[P[012]\\]"
+    ]
+  },
+  {
+    "id": "review-extra-checks",
+    "skill": "trusted-review",
+    "fixture": "script:trusted-review/evals/review-premise-guard-and-phrase-logic/place-files.sh",
+    "prompt": "Review the current changes and surrounding draft flow against the recorded project decisions. Do not edit anything.",
+    "spawn": {},
+    "builtin": true,
+    "patterns": [
+      "(?i)display|label|wording",
+      "(?i)legacy|body|premise|never (?:stored|persisted)|unreleased"
+    ]
+  },
+  {
+    "id": "state-simple-request",
+    "skill": "state-machines",
+    "fixture": "copy:state-machines/evals/review-simple-form-no-machine/files",
+    "prompt": "Explain how to fix failed sends in ContactForm.tsx. Should this simple single-request form use a state machine? Do not edit files.",
+    "patterns": [
+      "(?i)error|catch",
+      "(?i)(?:no|not|skip|unnecessary|overkill)[^.\n]{0,100}(?:machine|xstate)|(?:machine|xstate)[^.\n]{0,100}(?:unnecessary|not needed|overkill)"
+    ]
+  },
+  {
+    "id": "state-outbox",
+    "skill": "state-machines",
+    "fixture": "copy:state-machines/evals/audit-no-transitions-vs-outbox/files",
+    "prompt": "Explain which of src/theme-store.ts and src/outbox.ts should be state machines. Nothing is broken; do not edit files.",
+    "patterns": [
+      "(?i)outbox",
+      "(?i)theme",
+      "(?i)xstate|state machine",
+      "(?i)no transitions|stateless|settings|set.*notif|skip"
+    ]
+  },
+  {
+    "id": "devrel-rewrite",
+    "skill": "devrel-voice",
+    "fixture": "empty",
+    "write": [
+      "rewrite.md"
+    ],
+    "prompt": "Rewrite the following paragraph in my voice and save it to rewrite.md. Keep every fact: \"In today's fast-paced development landscape, managing database migrations can be a daunting task. Fortunately, the new folder-based migrations offer a powerful and seamless solution. Let's dive into how this robust feature can transform your workflow! Each migration now lives in its own folder, which means fewer merge conflicts when multiple developers work on different branches. It's worth noting that the old journal file is no longer needed.\"",
+    "artifact": "rewrite.md",
+    "patterns": [
+      "(?i)folder",
+      "(?i)journal",
+      "(?i)conflict"
+    ],
+    "absent": [
+      "(?i)fast-paced|daunting|powerful|seamless|dive into|robust|transform|worth noting",
+      "[!—]"
+    ]
+  },
+  {
+    "id": "brainstorm-no-implementation",
+    "skill": "brainstorm",
+    "fixture": "empty",
+    "prompt": "Help me design a small personal reading-list app. I have not decided whether it is offline-only or synchronizes across devices. Start brainstorming; do not implement yet.",
+    "patterns": [
+      "(?i)offline|sync"
+    ],
+    "no_spawn": true,
+    "asks_question": true
+  },
+  {
+    "id": "handoff-contract",
+    "skill": "session-handoff",
+    "fixture": "empty",
+    "prompt": "Create a handoff for a fresh chat. Established facts: we are planning a CSV importer. It must reject duplicate email addresses and preview changes before saving. No code has been written. The user has authorized planning only. Next action: inspect the target repository and settle CSV column mapping. Do not continue the planning here.",
+    "patterns": [
+      "(?i)duplicate",
+      "(?i)preview",
+      "(?i)planning.only|only.*planning|not.*authoriz.*implement|no.*implement.*authoriz",
+      "(?i)mapping"
+    ],
+    "no_spawn": true
+  },
+  {
+    "id": "security-guidance",
+    "skill": "security-audit",
+    "fixture": "empty",
+    "prompt": "Explain how to distinguish a security vulnerability from a defense-in-depth improvement. I want conceptual guidance only, not a codebase audit or report files.",
+    "patterns": [
+      "(?i)trust boundary|boundary violation|cross.*boundary",
+      "(?i)impact|consequence",
+      "(?i)defense.in.depth|hardening"
+    ],
+    "no_spawn": true
+  },
+  {
+    "id": "apple-toolbar",
+    "skill": "apple-hig",
+    "fixture": "empty",
+    "cache": true,
+    "prompt": "I want a search field in my Mac app's toolbar next to item actions. Read Apple's current HIG and explain where it should go, separating Apple's wording from your interpretation. Do not implement anything.",
+    "patterns": [
+      "https://developer.apple.com/",
+      "(?i)toolbar",
+      "(?i)search"
+    ],
+    "trace_patterns": [
+      "hig.py",
+      "(?i)read.*(?:toolbars|search-fields)"
+    ]
+  },
+  {
+    "id": "release-staged-only",
+    "skill": "release-commit-message",
+    "fixture": "commit:feature",
+    "local": true,
+    "prompt": "Generate a Release Please-compatible commit message from my staged changes. Do not commit.",
+    "patterns": [
+      "^feat(?:\\([^)]*\\))?!?:",
+      "(?i)retr"
+    ],
+    "absent": [
+      "✨|```"
+    ],
+    "no_spawn": true
+  }
+]

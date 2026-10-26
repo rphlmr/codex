@@ -1,0 +1,7 @@
+{
+  "name": "@acme/receipts",
+  "version": "2.3.0",
+  "description": "Plain-text receipts for Acme shop orders.",
+  "main": "index.ts",
+  "license": "MIT"
+}

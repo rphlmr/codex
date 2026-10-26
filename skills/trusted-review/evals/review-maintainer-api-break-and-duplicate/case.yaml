@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: review-maintainer-api-break-and-duplicate
+expected_outcome: |
+  Reports that the exported buildReceipt now requires taxCents, which breaks existing buildReceipt(order) calls in this published package, ranked high or medium with the code that shows it; reports that toMoney duplicates formatCents from money.ts; notes the README usage is out of sync; changes no file.
+context:
+  scaffold_script: place-files.sh

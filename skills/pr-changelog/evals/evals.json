@@ -1,0 +1,26 @@
+{
+  "skill_name": "pr-changelog",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "write the PR description for this branch",
+      "setup": "In an empty directory, run `bash <skill-dir>/evals/files/make-repo.sh` and start the run from that directory.",
+      "expected_output": "Markdown ready to paste into a PR. It opens with the inferred-target blockquote naming `main`, then a `## Summary` of one to four bullets about the new `retries` option for `fetchJson`. It mentions the added retry test without claiming tests ran, notes that staged, unstaged, and untracked changes are excluded, collapses the fixup commit into the final behavior (default of one retry), and contains no commit hashes, author names, or emoji.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Release notes for this branch against main, in French please.",
+      "setup": "In an empty directory, run `bash <skill-dir>/evals/files/make-repo.sh` and start the run from that directory.",
+      "expected_output": "Release notes written in French that describe only the user-visible change: `fetchJson` accepts a `retries` option and retries once by default. No comparison-target blockquote, because the target was given explicitly. Test files and internal details are left out.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "can you turn my uncommitted changes into a PR summary?",
+      "setup": "In an empty directory, run `bash <skill-dir>/evals/files/make-repo.sh` and start the run from that directory.",
+      "expected_output": "Exactly the two lines `PR-changelog supports committed branch changes only.` and `A different workflow is required to summarize uncommitted work.`, separated by a blank line, with nothing else.",
+      "files": []
+    }
+  ]
+}

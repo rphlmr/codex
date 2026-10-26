@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: review-clean-code-no-invented-findings
+expected_outcome: |
+  States there are no high or medium findings; may list a few optional lows or nits; does not invent bugs; changes no file.
+context:
+  scaffold_script: place-files.sh

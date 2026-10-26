@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: review-finds-real-bug-skips-fake
+expected_outcome: |
+  Reports the free-shipping boundary bug (total of exactly 50 is charged shipping, spec says 50 and above is free) as high or medium with the line and a concrete case; does not report the intentional == null check as a bug; lists naming nits apart; changes no file.
+context:
+  scaffold_script: place-files.sh

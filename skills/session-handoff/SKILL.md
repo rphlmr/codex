@@ -1,14 +1,14 @@
 ---
 name: session-handoff
-description: Create a continuation prompt that transfers established work to a fresh Codex session, including another repository.
+description: Creates a continuation prompt that transfers established work to a fresh Codex session, including one in another repository.
 ---
 
 # Session Handoff
 
-Write one self-contained continuation prompt addressed to a fresh Codex session
-with no access to this conversation. Infer the relevant target work; a handoff
-request transfers existing authorization and does not itself authorize edits or
-external actions.
+Write one self-contained continuation prompt addressed to a fresh Codex
+session with no access to this conversation. Infer the relevant target work; a
+handoff request transfers existing authorization and does not itself authorize
+edits or external actions.
 
 Include established information that affects the receiving session's decisions:
 

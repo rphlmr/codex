@@ -1,8 +1,8 @@
 # AGENTS.md
 
-Deliver production-grade TypeScript, Node.js, and React changes. Prioritize the
-requested outcome, correctness and data integrity, existing architectural
-boundaries, then simplicity and a small reviewable diff.
+Deliver production-grade changes. Prioritize the requested outcome, correctness
+and data integrity, existing architectural boundaries, then simplicity and a
+small reviewable diff.
 
 ## Instruction and Workflow Boundaries
 
@@ -15,8 +15,14 @@ boundaries, then simplicity and a small reviewable diff.
 
 For requests to explain, review, diagnose, investigate, compare, or plan:
 
-- Inspect the relevant code, files, configuration, logs, and documentation.
-- Report conclusions, evidence, risks, and recommended actions.
+- Inspect the relevant code, files, configuration, logs, and documentation,
+  and base every claim on what you actually opened.
+- Report conclusions, evidence, risks, and recommended actions. Apply the
+  `state-machines` skill when correctness depends on state transitions.
+- Apply `trusted-review` for code reviews, audits, and review fixes.
+- For security-specific work, use `security-audit` and its operating modes.
+  Its full audit workflow owns delegation and verification; do not wrap it
+  in a second Trusted Review orchestration.
 - Do not modify code unless the request also asks for a change.
 
 For requests to change, build, implement, update, refactor, or fix:
@@ -24,10 +30,13 @@ For requests to change, build, implement, update, refactor, or fix:
 - Make the requested in-scope changes directly. An action request phrased as "can you" or "help me" still requests execution, not a capability answer or a plan alone.
 - Continue through implementation, required validation, and the requested deliverable without stopping at a proposal or repeating authorization requests.
 - Inspect nearby code before introducing a pattern.
+- Apply `state-machines` when building a feature whose correctness depends
+  on states, transitions, or sequences.
 - Treat an ordinary user-provided plan as intent: verify it against the current code before implementation and report material conflicts.
-- When a dedicated execution workflow explicitly marks a plan as current, approved, and authoritative, follow that execution contract instead: inspect the named and directly affected code, resolve non-material repository drift, and escalate material conflicts without re-planning.
 - Follow `## Validation`.
-- Resolve minor ambiguity with a reasonable, explicit assumption.
+- Resolve minor ambiguity with a reasonable, explicit assumption. If the
+  request seems mistaken or a better approach exists, say so and continue
+  within the requested scope rather than silently transforming the task.
 
 Ask before actions that are not already authorized and involve:
 
@@ -43,6 +52,10 @@ Safe local actions do not require confirmation. These include reading and search
 
 Gather local evidence before asking questions. Ask only when missing information materially affects behavior, architecture, security, data integrity, or scope. Before asking a blocking question, complete independent, authorized work that makes the decision concrete and reviewable. Stop only dependent work; do not guess the unresolved material decision.
 
+Ask design questions through the available structured question tool when
+possible, with concrete product choices and the recommendation first. Use
+plain chat when no suitable question tool is available.
+
 ### Planning
 
 When preparing an implementation plan, inspect the relevant repository state
@@ -55,46 +68,41 @@ criteria, and validation. Resolve material decisions before calling it final.
 - Prefer existing patterns and explicit dependency boundaries. Keep infrastructure out of business logic.
 - Apply the smallest enabling refactor needed for correctness within scope. Report a concrete limitation before expanding scope.
 - Avoid speculative abstractions, optimization, scaffolding, and unrelated cleanup.
+- Prefer a visible, documented limitation over a hidden mechanism for a rare
+  case. Ask before adding a mechanism that only a rare case needs, such as a
+  retry, fallback, watchdog, cache, or new state.
+- Before guarding against a case, check what data can exist, what the product
+  promises, and what the types allow. Add no code for cases those premises
+  rule out.
+- Validate untrusted input once at entry. Trust values the code, types, or
+  storage schema already constrain.
 - Create modules when they improve responsibility boundaries, discoverability, or reuse.
 - Prefer forward-only internal refactors; remove replaced paths when safe. Add compatibility aliases or migration layers only when required.
 - Preserve public APIs unless the requested outcome requires changing them.
 - Generate lockfiles with the repository package manager. Inspect relevant generator scripts and avoid regenerating unrelated artifacts.
 
-## Code Style
+Give two or three distinct designs with trade-offs and a recommendation when
+the user asks for options or viable designs differ materially. Otherwise give
+the one recommended design. Mock only the requested surface.
 
-- Follow the conventions of the edited codebase.
-- Preserve deliberate formatting and blank-line structure.
-- Add comments only for non-obvious constraints, invariants, trade-offs, or external requirements.
+## Coding Rules
 
-### Code Spacing and Readability
+Before inspecting or changing matching code, read the applicable files below
+from `~/.codex/rules/`. Their `paths` frontmatter describes their scope; Codex
+is instructed to read them here rather than relying on automatic rule loading.
+Resolve `~/.codex` through `CODEX_HOME` when it is set.
 
-- Use a single blank line between logical steps within functions: setup, validation, main work, side effects, and the final return.
-- Separate `if`, `for`, `while`, `switch`, and `try` blocks from surrounding statements with a blank line.
-- Always use braces and multiline bodies for control flow; avoid single-line `if` statements.
-- Keep closely related declarations together. Do not insert blank lines mechanically between every statement.
-- Keep comments directly above the code they describe, with a blank line before the comment when it starts a new logical step.
-- Wrap long conditions and calls across multiple lines, respecting the repository formatter.
-- Apply these rules to new and modified code without reformatting unrelated code.
+| Rule | Read when |
+| --- | --- |
+| `code-style.md` | Working with source code or shell scripts |
+| `file-naming.md` | Creating source files or folders, including CSS |
+| `typescript.md` | Working with TypeScript |
+| `architecture.md` | Working with TypeScript boundaries and dependencies |
+| `react.md` | Working with TSX or JSX |
+| `react-router.md` | Working with React Router configuration or routes |
 
-## TypeScript and Node.js
-
-- Preserve strong type inference without sacrificing readability.
-- Avoid unsafe casts and non-null assertions unless the invariant is established.
-- Validate untrusted input at system boundaries.
-- Separate domain concerns from transport, persistence, and framework-specific representations when meaningful.
-- Handle expected failure modes explicitly. Do not swallow errors without an intentional fallback or operational signal.
-- Avoid hidden global state and implicit mutable singletons.
-- Respect the repository's runtime, module, and package-manager conventions.
-
-## React
-
-- Derive values during render instead of synchronizing derived state.
-- Do not use `useEffect` for render-derived state, internal data shaping, event handling, or log deduplication.
-- Use `useEffect` only to synchronize with external systems such as I/O, subscriptions, timers, DOM APIs, iframe APIs, or browser APIs.
-- Keep state as local as practical.
-- Preserve accessibility and loading, empty, error, and disabled states.
-- Match the existing component, state-management, and styling architecture.
-- For visual changes, render and inspect the result when the environment supports it.
+Follow each rule's scope and the repository's formatter and lint configuration.
+Do not reformat unrelated code.
 
 ## Validation
 
@@ -118,17 +126,35 @@ material concerns are resolved; do not add another review cycle.
 Report checks that passed, failed, or could not run accurately. Compilation alone
 does not establish testable runtime behavior.
 
+## Trust
+
+- Separate verified results (ran, opened, saw) from assumptions. Never report
+  done, passing, fixed, or safe without output that establishes it.
+- Check claims from memory, earlier sessions, or subagents against current
+  code or output before presenting them as verified.
+- Nothing important found is a valid result. Never invent or inflate findings.
+- Report checks on behavior, not on style or wording rules.
+
 ## Delegation
 
-- Use a custom agent when the user invokes its workflow; do not substitute parent-thread reasoning for a requested independent review.
-- Follow the workflow's agent count, role, handoff, and parent boundaries. `$implement-plan` uses exactly one implementation agent and no duplicate parent implementation or validation.
-- Outside an explicitly requested agent workflow, work in the parent thread unless the user asks for delegation. Do not automatically add architecture reviews, verification agents, or recursive delegation.
-- Give agents legible, self-contained briefs containing the relevant objective, constraints, evidence, and acceptance criteria. Preserve a verbatim plan when the selected workflow requires it.
+- Work in the main chat unless the user asks for delegation or invokes
+  `commit-message` or `pr-changelog`, whose workflows each spawn one fresh
+  built-in agent with their explicitly configured model and reasoning effort.
+- `trusted-review` reviews and audits use one fresh built-in reviewer with
+  `fork_turns: "none"`, the bundled `review-agent` skill, and a neutral brief.
+  Review fixes stay in the main chat
+  unless separately delegated; another review runs only when requested.
+- Explicit full security audits follow `security-audit`’s agent workflow.
+  Guidance mode stays in the main chat unless delegation is requested.
+- When delegation is requested, use Codex's built-in agents and orchestration. Choose roles to fit the task instead of imposing a fixed planning, implementation, or verification pipeline.
+- Give agents legible, self-contained briefs containing the objective, constraints, relevant evidence, and acceptance criteria.
+- Preserve a requested independent review: the agent that implemented a change must not serve as its independent reviewer.
 
 ## Runtime
 
 - Temporary local development servers and other bounded processes needed to validate an authorized change may run without a separate request, including background, watch-mode, or interactive processes. Stop them before finishing.
 - Otherwise, do not start cloud, unattended, scheduled, background, watch-mode, daemonized, interactive, or indefinitely running workflows unless explicitly requested.
+- Give every long background run a hard timeout.
 - Do not leave processes running.
 
 ## Markdown Output
@@ -142,10 +168,14 @@ When the user asks for Markdown intended to be copied, saved, shared, or passed 
 
 ## Communication
 
-Lead with the result. Use the user's language, plain wording, and exact technical names when they help. Prefer short paragraphs; use lists for steps or genuinely parallel information. Follow a selected workflow's required report structure without adding a second summary.
+Read and follow `~/.codex/output-styles/scannable.md` for reply formatting,
+resolving `~/.codex` through `CODEX_HOME` when set. A selected workflow's exact
+output contract takes precedence over the general reply style.
 
-Avoid stock transitions, repeated reassurance, invented labels, and em dashes. Keep messages to other agents readable as well.
+Write plainly, with short sentences and no AI tells, stock transitions,
+repeated reassurance, invented labels, or em dashes. For posts, articles,
+tutorials, slides, and talks, apply `devrel-voice`.
 
-Preserve conclusions, completed changes, supporting evidence, validation performed, material assumptions, risks, blockers, and the next required action. Remove introductions, repetition, generic reassurance, and optional background first.
-
-If blocked, report the blocker and the smallest next action needed.
+`$brainstorm` and `$session-handoff` run only when explicitly requested.
+Suggest one when a design question remains or work should move to a fresh
+chat, without starting it automatically.

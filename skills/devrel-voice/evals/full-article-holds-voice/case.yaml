@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: full-article-holds-voice
+expected_outcome: |
+  A full article in the user's DevRel voice: in-short block with both versions, one action heading per change with before/after code and its real consequence, at least one senior judgment call, a closing checklist or next step, no AI tells, no recap.

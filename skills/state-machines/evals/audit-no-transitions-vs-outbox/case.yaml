@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: audit-no-transitions-vs-outbox
+expected_outcome: |
+  Recommends an XState machine for the small, bug-free Outbox (idle, draining, waiting to retry), because a push while it drains or waits is handled differently. Calls the theme store fine because it has no transitions: every setTheme is handled the same way whatever came before, even though it notifies subscribers. Invents no bug and changes no file.
+context:
+  scaffold_script: place-files.sh
