@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.0.0](https://github.com/rphlmr/codex/compare/v1.9.0...v2.0.0) (2026-10-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* retire the custom implementation, architecture, and verification agents and workflow skills. Use native Codex workflows and the shared skill replacements instead.
+
+### Features
+
+* add native macOS Codex usage menu bar app ([a1a002d](https://github.com/rphlmr/codex/commit/a1a002d309d3d8bc5a0a9f402ba8399c124a929a))
+* **agents:** use gpt-6 sol and luna for subagents ([9d8fc63](https://github.com/rphlmr/codex/commit/9d8fc63266bab17178daab73fc8ff27983da486f))
+* align Codex skills with native workflows ([a2d1110](https://github.com/rphlmr/codex/commit/a2d11102c6354ed0e9d26aef7f314ba01ebf3631))
+
+
+### Bug Fixes
+
+* **instructions:** avoid loading global guidance twice in this repository ([9d8fc63](https://github.com/rphlmr/codex/commit/9d8fc63266bab17178daab73fc8ff27983da486f))
+
 ## [1.9.0](https://github.com/rphlmr/codex/compare/v1.8.0...v1.9.0) (2026-09-09)
 
 
