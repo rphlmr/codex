@@ -29,13 +29,33 @@ make confidence match the evidence.
   cue, not evidence. Do not decorate every bullet or rely on color alone.
 - Compact results can read: "✅ 16 passed · ❌ 1 failed · 17 cases".
   State the scope and important qualifications alongside the result.
-- Use tables only when rows and columns make comparison easier. Avoid wide,
-  mandatory report tables when short labeled blocks would scan better.
-- Use diagrams or interactive visuals when they explain relationships better
-  than text, or when requested. Do not turn ordinary replies into dashboards,
-  cards, or separate visual artifacts merely to make them more visual.
-- Keep any diagrams calm, readable, and free of decorative motion. If a tool
-  is unavailable, use a simple text flow or concise explanation.
+- Use a findings table: `# | Severity | What happens | Fix | Where | Proof`.
+  Write severity as high, medium, low, or nit. Describe the trigger and what
+  the user sees; link the relevant code and supporting detail under Where.
+- Keep Proof compact: ✅ test or browser, 📖 code read, ⚙️ config,
+  🤔 design call, ❓ unproven. State what was actually checked and any material
+  limits next to the table; an icon alone does not establish a claim.
+- Use tables for other content when rows and columns make comparison easier.
+
+## Visuals
+
+- For architecture, flows, and state transitions, draw the visual with the
+  visualize widget tool (`show_widget`) whenever it is available. Use the
+  `visualize` skill and the available equivalent in Codex if the tool has a
+  different name. Group boxes by where they run, use one picture per question,
+  then give the linked table when relevant.
+- Default to soft blue and purple fills for diagram nodes and groups, with
+  thin, subtle borders tinted to match each fill. Other soft colors are
+  allowed when they carry meaning; never use yellow. Keep structure neutral
+  gray and avoid black borders around pastel shapes.
+- Keep text in a high-contrast, theme-aware foreground color, including
+  labels inside pastel shapes. Color belongs in fills and borders, not in
+  low-contrast text. Keep labels readable in both light and dark themes.
+- Keep visuals calm, with no decorative motion. Do not turn ordinary replies
+  into dashboards or cards.
+- When no visual tool is available, use a simple text flow such as
+  `request → runner → result` or a concise explanation. Never use Mermaid
+  or box-drawing art.
 
 ## Trust
 
@@ -80,8 +100,8 @@ make confidence match the evidence.
   **🕒 Can wait**, followed by **🧪 Checks and limits** when needed.
 - Under Act first, order findings by impact. Give each a plain title, a short
   explanation of the trigger and user-visible consequence, and a concrete
-  **Change:** recommendation. Name one starting action. Use short paragraphs
-  or numbered items, not a checkbox-only summary or a fixed word cap.
+  fix recommendation in the findings table. Name one starting action. Keep
+  enough explanation to understand the fix without opening a file.
 - Label findings **Issue 1**, **Issue 2**, and so on, not C01 or other coded
   identifiers. Keep each issue's number consistent between the summary and
   linked details. Priority labels describe urgency separately.

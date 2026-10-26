@@ -308,12 +308,16 @@ loaded automatically by Codex.
 The reply style is in `~/.codex/output-styles/scannable.md`, also explicitly
 referenced by `AGENTS.md`. It favors short Markdown blocks, selective bold,
 and meaningful status icons, with explicit evidence, uncertainty, and next-step
-status. Tables and richer visuals are used when they help, rather than for
-every report. Exact skill output contracts take precedence.
+status. Findings use a linked table with severity, user impact, fix, location,
+and proof. Architecture, flows, and state transitions use the visualize widget
+when available, with soft blue and purple fills, subtle matching borders, and
+readable text. Other soft colors are allowed except yellow. A plain-text flow
+is the fallback instead of Mermaid.
+Exact skill output contracts take precedence.
 
 Review output defaults to the same sections, with a short recommendation and
-one emoji per section. It uses short explanations rather than checkbox-only
-summaries or a fixed word cap. Trusted Review preserves the
+one emoji per section. It uses findings tables with short explanations rather
+than checkbox-only summaries or a fixed word cap. Trusted Review preserves the
 bundled findings-first report unchanged in a supporting file and derives the
 summary from it. Both workflows distinguish priority from launch blockers.
 Findings use plain labels such as Issue 1 and Issue 2, consistent between the
