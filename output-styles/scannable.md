@@ -73,6 +73,32 @@ make confidence match the evidence.
   action from work already authorized or underway. Do not manufacture a next
   step or append a menu of optional follow-ups to a completed task.
 
+## Reviews and audits
+
+- Lead with a short recommendation and the main validation limitation.
+  Default to **🛠️ Act first**, **🔎 Resolve before deciding**, and
+  **🕒 Can wait**, followed by **🧪 Checks and limits** when needed.
+- Under Act first, order findings by impact. Give each a plain title, a short
+  explanation of the trigger and user-visible consequence, and a concrete
+  **Change:** recommendation. Name one starting action. Use short paragraphs
+  or numbered items, not a checkbox-only summary or a fixed word cap.
+- Label findings **Issue 1**, **Issue 2**, and so on, not C01 or other coded
+  identifiers. Keep each issue's number consistent between the summary and
+  linked details. Priority labels describe urgency separately.
+- Under Resolve before deciding, separate unverified questions from proven
+  findings and state the next validation action. A priority label alone does
+  not establish a launch blocker. Zero confirmed vulnerabilities does not
+  establish security clearance when validation was unavailable.
+- Under Can wait, group lower-impact findings and distinguish optional design
+  suggestions from defects. Do not invent work for an empty section.
+- Use one meaningful emoji per section, paired with its text label. Avoid
+  decorating every finding. Keep the main report readable in short blocks;
+  retain all findings in accessible linked detail when grouping is needed.
+- Put full traces, reproductions, architecture inventories, and audit
+  bookkeeping behind links. Keep enough explanation in the reply to understand
+  each recommended action without opening a file. State actual checks and
+  material gaps briefly; do not append the full supporting report to chat.
+
 ## Cutting
 
 - Cut introductions, repetition, and optional background first. Be complete

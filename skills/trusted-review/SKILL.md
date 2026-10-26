@@ -43,8 +43,24 @@ The parent waits without performing a competing review or changing the code.
 The reviewer owns inspection, proof, ranking, and targeted checks, and changes
 no files or Git state. It must not delegate further.
 
-Return the reviewer's report without adding, deleting, or rewriting findings
-or strengthening its confidence. If the agent is unavailable, report that the
+Preserve the reviewer's complete findings-first report unchanged in a linked
+detail file outside the target repository, using an authorized writable
+artifact location. This supporting file is part of the review deliverable;
+the reviewer itself remains read-only. Return a short recommendation followed
+by **🛠️ Act first**, **🔎 Resolve before deciding**, **🕒 Can wait**, and
+**🧪 Checks and limits** as needed. For immediate actions, give a plain title,
+a short trigger and user-impact explanation, and a concrete **Change:**
+recommendation. Link supporting evidence and name one starting action. Do not
+use coded finding IDs such as C01: label findings **Issue 1**, **Issue 2**,
+and so on in the summary, with links to their corresponding unchanged findings
+in the supporting report. These numbers are references, not priorities. Do not
+reduce the report to checkboxes or impose a 150-word cap. Derive this summary
+only from the reviewer's findings, priorities, and gaps; do not add findings,
+strengthen confidence, or imply every P2 blocks launch. Retain all findings
+in the detail file, grouping lower-impact items when necessary. If no writable
+artifact location is available, link the reviewer's source evidence and keep
+the full report available in its returned output; disclose that the detail
+file could not be saved. If the agent is unavailable, report that the
 independent review could not run; do not substitute a parent review.
 
 ## Fix requests

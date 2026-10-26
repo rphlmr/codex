@@ -55,6 +55,11 @@ Use the bundled `[P0]`–`[P3]` finding format. For the parent fix workflow,
 `P0` and `P1` are high, `P2` is medium, and `P3` is low. Explain concrete
 impact; do not upgrade a finding merely to place it in the default fix set.
 
+Use plain numbered references alongside the bundled priority format, such as
+`[P2] Issue 1: Preserve the pending edit after a failed save`. Do not use coded
+finding IDs such as C01. Keep issue numbers consistent with the summary and
+linked details; numbers identify findings and do not indicate severity.
+
 Preserve the extra checks' review of fit and public contracts, including
 maintainability issues supported by concrete code evidence. Put harmless
 naming, style, and wording nits in a short optional list, separate from defects.
@@ -63,3 +68,21 @@ Do not invent findings or optional comments to fill a report.
 After findings, give the scope and comparison base, actual checks and results,
 and anything unverified or blocked. State when no high or medium findings
 exist. Review the whole affected flow once and do not start another round.
+
+Keep the report easy to act on without changing the bundled findings-first
+format or omitting actionable findings:
+
+- Use a plain title describing what to fix. In the short finding paragraph,
+  explain the trigger, user-visible consequence, and smallest recommended
+  correction. Link the exact source location; avoid unexplained internal terms.
+- After findings, give a brief recommendation and name the first action.
+  Distinguish priority from release readiness: P2 means an ordinary defect,
+  not automatically a reason to block launch. Explain any release blocker in
+  terms of the user's intended use and demonstrated impact.
+- Keep checks and gaps compact and explicit. Label source-only conclusions
+  and unverified questions. Do not turn missing validation into a proven bug.
+- Avoid architecture inventories, coverage statistics, and optional design
+  essays unless requested. Keep necessary evidence with its finding. The
+  parent preserves this complete report in linked detail and presents an
+  action-oriented summary with short explanations and section emojis. Do not
+  omit findings to shorten that summary.

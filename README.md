@@ -279,11 +279,17 @@ the assertions when comparing a later skill change against this baseline.
 
 ### Cloudflare security audit
 
-`skills/security-audit/` is vendored unchanged from
+`skills/security-audit/` is based on
 [cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill),
 revision `c1c8a8c1471069fb0e188eeaff69b8e8db6564a8`
 (`skills/security-audit/`). Its MIT license is included. The sync script manages
 its single installed copy under `~/.agents/skills/security-audit/`.
+
+Local reporting changes replace the long audit overview with an action-oriented
+report: 🛠️ Act first, 🔎 Resolve before deciding, 🕒 Can wait, and 🧪 Checks
+and limits. Short explanations cover the trigger, user impact, and recommended
+change; full evidence stays behind links. Audit bookkeeping stays in an
+appendix. Evidence standards and execution safeguards are unchanged.
 
 A security question uses guidance mode. An explicit full codebase audit or
 requested audit report uses Cloudflare's multi-phase workflow, including its
@@ -304,6 +310,14 @@ referenced by `AGENTS.md`. It favors short Markdown blocks, selective bold,
 and meaningful status icons, with explicit evidence, uncertainty, and next-step
 status. Tables and richer visuals are used when they help, rather than for
 every report. Exact skill output contracts take precedence.
+
+Review output defaults to the same sections, with a short recommendation and
+one emoji per section. It uses short explanations rather than checkbox-only
+summaries or a fixed word cap. Trusted Review preserves the
+bundled findings-first report unchanged in a supporting file and derives the
+summary from it. Both workflows distinguish priority from launch blockers.
+Findings use plain labels such as Issue 1 and Issue 2, consistent between the
+summary and linked details. Priority labels remain separate.
 
 The Claude Remote Control launcher, SwiftBar plugin, lifecycle hooks, and
 Claude model settings are product-specific and are not installed here. The

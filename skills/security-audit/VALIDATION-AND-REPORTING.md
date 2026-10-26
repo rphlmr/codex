@@ -154,21 +154,53 @@ Only after Phase 5 passes for every record retained in `findings.json`, derive p
 
 #### `REPORT.md`
 
-Write:
+Open with a short recommendation and the main validation limitation. Use
+short blocks with one meaningful emoji per section:
 
-1. Run profile, scope, budget (if set) with agents spent versus planned, source ref, sandboxed source-and-local-only execution statement, prior-run use, and explicit deferred and out-of-scope coverage. Name carried same-source confirmations and changed-source revalidations. A `quick`, scoped, budget-limited, or incomplete run states plainly that it is a partial pass. If candidate validation exhausted a strict budget, state that the run is incomplete and list every unvalidated fingerprint and linked unit; do not describe those candidates as findings. If the budget prevented a mandatory critic, state which critic did not run and make no clean-coverage claim.
-2. One short security posture summary.
-3. A confirmed-findings table: severity, title, affected boundary, and one-line observed result.
-4. Each confirmed finding: repository source location, lower-trust principal, target-native bounded reproduction, conditions, actual result, impact, priority rationale, and smallest source fix.
-5. A separate `NEEDS VALIDATION` table. Give each lead's title, repository trace, exact blocker, bounded local next step, and safe owner-observed deployment check. Do not assign severity or call it a confirmed vulnerability.
-6. Separate hardening notes and positive source patterns.
-7. Coverage summary from the ledger: covered, candidate, blocked, and deferred counts, plus important exclusions and the final critic result.
+1. **🛠️ Act first.** Order confirmed issues by impact. For each, give a plain
+   numbered label (Issue 1, Issue 2, and so on), priority, plain title, short explanation of the trigger and user/data
+   consequence, and a concrete **Change:** recommendation. Link evidence in
+   `FINDINGS-DETAIL.md` and name one starting action.
+2. **🔎 Resolve before deciding.** Explain material unresolved questions and
+   the next safe validation action. Link to `NEEDS-VALIDATION.md`. Keep
+   uncertainty explicit and do not assign severity to leads. Disclose
+   incomplete validation with a link to the appendix.
+3. **🕒 Can wait.** Briefly group lower-impact fixes and optional hardening,
+   clearly distinguished and linked to detail.
+4. **🧪 Checks and limits.** State what actually ran, what did not, and
+   material scope exclusions. Keep conclusions qualified by those limits.
+
+Use short explanations rather than a checkbox-only summary or a fixed word
+cap. Retain every finding in linked detail even when grouping actions. Keep
+full traces, reproductions, and priority rationale behind links, while leaving
+enough context in the main report to understand each recommended action.
+Do not invent work for empty sections or infer launch clearance from zero
+confirmed findings or a launch blocker from a priority label alone.
+
+Use the same Issue number in the summary and linked details, not coded labels
+such as C01. These numbers identify findings, not severity. Keep machine
+fingerprints in structured records and the bookkeeping appendix; do not rename
+schema fields or replace fingerprints with display numbers.
+
+Put audit bookkeeping in a final, clearly labeled appendix in this file:
+profile, scope, source ref, budget and agents spent versus planned, execution
+policy, prior-run use, carried confirmations and revalidations, ledger counts,
+deferred/out-of-scope coverage, and final critic result. For incomplete runs,
+list every unresolved candidate fingerprint and linked unit here and link this
+appendix from the opening limitation. State which mandatory critic did not
+run, if any. Never imply complete coverage.
+
+The final chat reply uses the same action-oriented format with short
+explanations and accessible detail links, including when rewriting an earlier
+report. Do not paste the appendix, full evidence, or a directory of artifacts
+into chat. The user should understand the recommendation without reading
+every audit artifact.
 
 Do not describe rejected records as findings. Mention their fingerprints only when they explain a prior disagreement or coverage decision.
 
 #### `FINDINGS-DETAIL.md`
 
-For each confirmed `medium`, `high`, or `critical` record, copy the complete source path and target-neutral local reproduction:
+For every confirmed record, retain its Issue number from the summary and copy the complete source path and target-neutral local reproduction. Include priority rationale and the affected trust boundary:
 
 - ordered repository-relative trace and evidence;
 - dummy attacker/principal and affected dummy resource;
