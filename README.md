@@ -8,6 +8,20 @@ This repository is the source of truth for:
 - custom agents;
 - global `AGENTS.md`.
 
+## Codex Usage for macOS
+
+The self-contained [`codex-usage/`](codex-usage/README.md) Swift package is a
+native Liquid Glass menu bar viewer for Codex usage limits. It uses the official
+Codex CLI to manage authentication and read account limits. Requires macOS 26+
+and Xcode 26+ to build; no third-party package dependencies are needed.
+
+Run `./script/build_and_run.sh` from this repository, or use the Codex **Run**
+action. Use `--demo` for a preview with sample data, `--build-only` to package
+locally, and `swift test --package-path codex-usage` to run its tests. See the
+app README for sign-in, packaging, and distribution requirements.
+Run `./script/build_and_run.sh --install` to install it in `~/Applications` and
+enable native launch at login, subject to macOS approval.
+
 ## Installation
 
 Clone the repository:
@@ -200,6 +214,8 @@ instead of loading the repository copy of the synced global `AGENTS.md` again.
 ├── update-config.sh
 ├── sync-skills.sh
 ├── sync-agents-md.sh
+├── codex-usage/
+├── script/build_and_run.sh
 └── README.md
 ```
 
