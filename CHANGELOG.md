@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/rphlmr/codex/compare/v2.0.0...v2.0.1) (2026-10-26)
+
+
+### Bug Fixes
+
+* make review reports easier to act on ([616e503](https://github.com/rphlmr/codex/commit/616e50321435167d66b7ea383075fbc53a9af4aa))
+
 ## [2.0.0](https://github.com/rphlmr/codex/compare/v1.9.0...v2.0.0) (2026-10-26)
 
 
