@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/rphlmr/codex/compare/v2.0.1...v2.0.2) (2026-10-27)
+
+
+### Bug Fixes
+
+* preserve native file-change reporting for manual edits ([aeac545](https://github.com/rphlmr/codex/commit/aeac545b2a08fab04d55b5a899c824c1b04dde1f))
+
 ## [2.0.1](https://github.com/rphlmr/codex/compare/v2.0.0...v2.0.1) (2026-10-26)
 
 
