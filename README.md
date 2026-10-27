@@ -299,6 +299,10 @@ this skill does not run an audit.
 
 ### Coding rules and reply style
 
+Manual text-file edits use the dedicated `apply_patch` tool for native
+file-change reporting. Formatters, generators, package managers, and binary or
+rich-document tools keep their own workflows.
+
 `AGENTS.md` explicitly routes matching work to the six files in
 `~/.codex/rules/`: architecture, code style, file naming, React, React Router,
 and TypeScript. Their `paths` frontmatter records the intended scope; these

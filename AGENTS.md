@@ -87,6 +87,15 @@ the one recommended design. Mock only the requested surface.
 
 ## Coding Rules
 
+Always use the dedicated `apply_patch` tool for manual creation, modification,
+renaming, or deletion of text files, including code, documentation, instructions,
+configuration, and tests. This keeps edits available to Codex's native
+file-change reporting. Do not make manual edits through shell redirection,
+`sed`, Python, or other file-writing scripts, or invoke `apply_patch` through
+the shell. Use their own tools for formatter output, generated files, lockfiles,
+and binary or rich-document assets. If the dedicated tool is unavailable,
+report the limitation before using another editing method.
+
 Before inspecting or changing matching code, read the applicable files below
 from `~/.codex/rules/`. Their `paths` frontmatter describes their scope; Codex
 is instructed to read them here rather than relying on automatic rule loading.
