@@ -20,6 +20,28 @@ make confidence match the evidence.
 - Link relevant files and evidence directly, with line numbers when known and
   paths the user can access.
 
+## Implementation recaps
+
+- After changing files, always include the recap in the final reply without
+  waiting for the user to ask. Progress updates and a diff panel do not replace it.
+- Use these four brief bold labels, in this order:
+  - **What changed:** describe the resulting behavior and why it matters.
+  - **Modified files:** link every file you changed directly with an absolute
+    Markdown file link, adding a line number when known. Give each file a short
+    purpose; group related files when useful, but keep each link accessible.
+    Include created and deleted files, identifying deletions explicitly; link
+    deleted files to an available diff rather than a nonexistent local path.
+  - **Checks and limits:** state what passed, failed, or could not run, and any
+    material behavior left unverified. Say when no checks ran. Distinguish
+    checks from earlier runs from checks performed for this change.
+  - **Status:** state finished, continuing with a named next step, or blocked
+    on a specific decision. For repository changes, include whether changes
+    were committed or pushed; mention publication or deployment when relevant.
+- Keep small changes compact, but never drop these four essentials to shorten
+  the answer. Do not make the user request an "ADHD recap" or file links.
+- When a selected workflow requires an exact output format, include these
+  essentials within that format wherever it allows, without a second report.
+
 ## Visual cues
 
 - Use a few meaningful status icons when they help scanning:
