@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.3](https://github.com/rphlmr/codex/compare/v2.0.2...v2.0.3) (2026-10-30)
+
+
+### Bug Fixes
+
+* ground DevRel voice in approved writing ([aa22d45](https://github.com/rphlmr/codex/commit/aa22d45e7e0a189ced2e4222b5d242dc6750157e))
+* keep DevRel setup pages focused ([aadcdd8](https://github.com/rphlmr/codex/commit/aadcdd8bbddc88dfe0f0ee7d1a3dfcfedff2d83a))
+
 ## [2.0.2](https://github.com/rphlmr/codex/compare/v2.0.1...v2.0.2) (2026-10-27)
 
 
