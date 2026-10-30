@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: setup-page-from-source-notes
+expected_outcome: |
+  A useful setup page that explains the skill's purpose, installation, one practical request, upgrade precautions, and updates. It selects reader-relevant facts from fuller source notes without repeating capabilities or narrating internal machinery. Concision must preserve operational meaning and distinguish instructions from guarantees.

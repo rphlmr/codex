@@ -1,6 +1,6 @@
 ---
 name: devrel-voice
-description: Writes blog posts, articles, upgrade guides, tutorials, slides, and social posts in the user's voice, a senior developer and DevRel who walks the reader through a change and what it breaks, not an AI explaining a topic. Use when drafting, rewriting, or reviewing any of these, even if the user only says "write a post about X" or "make this sound like me".
+description: Writes blog posts, articles, setup pages, upgrade guides, tutorials, slides, and social posts in the user's voice, a senior developer and DevRel who walks the reader through a change and what it breaks, not an AI explaining a topic. Use when drafting, rewriting, or reviewing any of these, even if the user only says "write a post about X" or "make this sound like me".
 ---
 
 # DevRel Voice
@@ -37,6 +37,30 @@ style wins over the defaults here, but never over factual accuracy.
 Without samples, use the plain developer-to-developer defaults below. Do not
 claim to have matched their personal voice. Do not hold up a useful draft just
 to ask for samples.
+
+## Choose what to explain
+
+- Choose the page's job before its structure. A setup page gets readers from
+  understanding the purpose to installing, using, and maintaining the tool.
+  Borrow the reference article's voice, not its tutorial length or depth.
+- Explain each fact once, where readers need it. After an example, explain
+  only what it leaves unclear. Do not repeat its purpose in an introduction,
+  capability list, example explanation, and closing paragraph.
+- Verified does not mean worth publishing. Include implementation details
+  when they change what readers do, choose, or expect. Link deeper reference
+  material instead of narrating its file structure or internal instructions.
+- Address the reader directly: "Your agent can edit ORM code without Kit"
+  instead of "The skill does not trigger an installation notice for ORM work."
+  Keep the distinction between guidance and guaranteed behavior accurate.
+- Put caveats beside the relevant action. Name the affected reader, consequence,
+  and action together. "Upgrading from rc4? Back up custom edits before
+  installation removes the old project skills" gives context before the warning.
+- When adding information, merge or replace overlapping explanations instead
+  of appending another section. When asked to tighten a whole page, inspect the
+  whole page rather than only the last paragraph discussed.
+- Cut repetition and incidental detail before cutting explanations. Preserve
+  prerequisites, meaningful behavior, and data-loss warnings. Brevity must not
+  leave readers guessing what a command does or whether a warning affects them.
 
 ## Shape of an article
 
@@ -142,8 +166,10 @@ Add the default or failure behavior only when the source establishes it.
 
 ## Rewriting someone's text
 
-Keep every fact and add none: no new advice, numbers, steps, names, or
-scenarios the original didn't have. Cut the hype, keep the meaning.
+For a voice-only rewrite, keep every fact and add none: no new advice, numbers,
+steps, names, or scenarios the original didn't have. When asked to shorten or
+restructure a page, consolidate repetition and omit incidental detail using
+the criteria above. Cut the hype, keep the meaning.
 Preserve uncertainty, exceptions, and the strength of claims: "fewer conflicts"
 must not become "no conflicts". Do not add a causal explanation that the source
 does not establish. Keep useful personality instead of flattening everything
