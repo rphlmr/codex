@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-article.md ends with a checklist or a next step, not a recap paragraph.
+article.md ends when the useful content ends, without a recap paragraph or engagement bait. A concrete next step or checklist is welcome when useful but is not mandatory.
