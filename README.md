@@ -260,6 +260,29 @@ python3 scripts/run_skill_evals.py
 python3 scripts/run_skill_evals.py --case review-real-bug
 ```
 
+Select a model and reasoning effort explicitly when comparing profiles:
+
+```bash
+python3 scripts/run_skill_evals.py --case review-repeated-reassurance --model gpt-6-astra --effort high
+```
+
+The manifest records the requested profile. Checks compare it with the actual
+parent and inherited reviewer contexts; an unrecorded or different value fails
+the profile check. Skills that explicitly select their own delegated model keep
+that contract.
+
+Recalculate report-delivery checks from a saved run without calling models:
+
+```bash
+python3 scripts/run_skill_evals.py --regrade /absolute/path/to/saved-run --output /absolute/path/to/new-results
+```
+
+This uses the saved answers and original session traces. Other recorded checks,
+including fixture side effects and runtime errors, are retained, not rerun.
+The original run remains unchanged. The new report records its source and
+grading provenance. Without `--output`, results go in a new timestamped
+subdirectory of the original run. The original session logs must still exist.
+
 The runner uses the installed `codex` CLI and existing sign-in. It launches
 finite non-interactive sessions, with two concurrent cases and a 180-second
 timeout per case by default. Model runs consume account usage. It leaves the
@@ -284,6 +307,11 @@ effort. Fresh-context checks require `fork_turns: "none"` and verify that a
 random parent-only marker is absent from child user inputs. Trusted Review
 checks the child's executed calls for both the bundled reviewer and the extra
 checks. File hashes, staged entries, and HEAD detect unintended changes.
+Commit-message and PR-changelog require the parent's final output to match the
+delegated output exactly. Trusted Review permits a summary and checks that a
+nonempty completed reviewer report reached the parent; it does not use exact
+answer equality as a proxy for summary fidelity. Reading the summary and
+reviewer report is still necessary to assess fidelity and artifact handling.
 The commit-message grader also rejects forbidden Git inspection, even when
 the final message looks correct. Missing traces or runtime failures are
 reported as errors, not passes.

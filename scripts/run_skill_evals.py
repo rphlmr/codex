@@ -104,7 +104,11 @@ def session_trace(thread_id):
         kind = payload.get("type")
 
         if record_type == "turn_context":
-            contexts.append({"model": payload.get("model"), "effort": payload.get("effort")})
+            settings = payload.get("collaboration_mode", {}).get("settings", {})
+            contexts.append({
+                "model": payload.get("model"),
+                "effort": payload.get("effort", settings.get("reasoning_effort")),
+            })
 
         if kind in {"function_call", "custom_tool_call"}:
             arguments = payload.get("arguments", payload.get("input", ""))
@@ -129,13 +133,42 @@ def session_trace(thread_id):
             "starts": starts, "user_text": user_text, "messages": messages}
 
 
-def grade(case, answer, artifact, before, after, trace, children, marker):
+def report_delivery_check(case, answer, trace):
+    """Check the skill's delivery contract without grading summary fidelity."""
+    reports = []
+
+    for message in trace["messages"]:
+        header, separator, report = message.partition("Payload:\n")
+
+        if header.startswith("Message Type: FINAL_ANSWER\n") and separator and report.strip():
+            reports.append(report.strip())
+
+    if case["skill"] == "trusted-review":
+        return {
+            "name": "reviewer_report_available",
+            "passed": bool(reports),
+            "evidence": "Completed reviewer report received; summary fidelity requires reading the answer and report",
+        }
+
+    return {
+        "name": "parent_preserves_child_report",
+        "passed": bool(answer.strip()) and answer.strip() in reports,
+        "evidence": "Final answer compared with child completion notification",
+    }
+
+
+def grade(case, answer, artifact, before, after, trace, children, marker, profile=None):
     checks = []
+    requested_profile = profile or {}
 
     def check(name, passed, evidence):
         checks.append({"name": name, "passed": bool(passed), "evidence": evidence})
 
     content = artifact if case.get("artifact") else answer
+
+    for key, expected in requested_profile.items():
+        contexts = trace["contexts"]
+        check(f"effective_parent_{key}", bool(contexts) and all(context.get(key) == expected for context in contexts), contexts)
 
     if "exact" in case:
         check("exact_output", answer.strip() == case["exact"], answer)
@@ -175,12 +208,11 @@ def grade(case, answer, artifact, before, after, trace, children, marker):
             check("parent_marker_not_in_child_context", marker not in "\n".join(child["user_text"]), "Child user inputs checked; marker withheld from retained traces")
             check("no_recursive_delegation", not child["starts"] and not any(call["name"] == "spawn_agent" for call in child["calls"]), child["thread_id"])
 
-            for key, expected in case["spawn"].items():
+            for key, expected in {**requested_profile, **case["spawn"]}.items():
                 check(f"effective_child_{key}", bool(child["contexts"]) and all(context.get(key) == expected for context in child["contexts"]), child["contexts"])
 
         if children:
-            reports = trace["messages"]
-            check("parent_preserves_child_report", any(message.endswith("Payload:\n" + answer.strip()) for message in reports), "Final answer compared with child completion notification")
+            checks.append(report_delivery_check(case, answer, trace))
 
     if case.get("no_spawn"):
         check("no_delegation", not spawns and not children, len(spawns))
@@ -235,7 +267,26 @@ def retained_trace(trace):
     return result
 
 
-def run_case(case, results, timeout):
+def codex_arguments(case, work, answer_path, profile):
+    arguments = ["codex", "--no-daemon", "-a", "never", "exec", "--ignore-user-config",
+                 "-s", "workspace-write" if case.get("write") or case.get("cache") else "read-only",
+                 "--json", "-C", str(work), "-c", "features.multi_agent=true",
+                 "-c", "features.apps=false", "-c", "features.remote_plugin=false",
+                 "-o", str(answer_path)]
+
+    if profile.get("model"):
+        arguments.extend(["--model", profile["model"]])
+
+    if profile.get("effort"):
+        arguments.extend(["-c", "model_reasoning_effort=" + json.dumps(profile["effort"])])
+
+    if case.get("cache"):
+        arguments.extend(["-c", "sandbox_workspace_write.network_access=true"])
+
+    return [*arguments, "-"]
+
+
+def run_case(case, results, timeout, profile):
     destination = results / case["id"]
     destination.mkdir()
     started = time.monotonic()
@@ -250,14 +301,7 @@ def run_case(case, results, timeout):
             marker = "PARENT_ONLY_CONTEXT_" + uuid.uuid4().hex
             prompt = (f"Use ${case['skill']} at {skill_root / 'SKILL.md'}.\n\n{case['prompt']}\n\n"
                       f"Parent-only irrelevant context note: {marker}. Do not forward this context note when delegating.")
-            arguments = ["codex", "--no-daemon", "-a", "never", "exec", "--ignore-user-config",
-                         "-s", "workspace-write" if case.get("write") or case.get("cache") else "read-only",
-                         "--json", "-C", str(work), "-c", "features.multi_agent=true",
-                         "-c", "features.apps=false", "-c", "features.remote_plugin=false",
-                         "-o", str(destination / "answer.txt"), "-"]
-
-            if case.get("cache"):
-                arguments[-1:-1] = ["-c", "sandbox_workspace_write.network_access=true"]
+            arguments = codex_arguments(case, work, destination / "answer.txt", profile)
             environment = dict(os.environ)
             environment["HIG_CACHE_DIR"] = str(work / ".hig-cache")
 
@@ -302,7 +346,7 @@ def run_case(case, results, timeout):
             if artifact:
                 (destination / case["artifact"]).write_text(artifact)
 
-            result["checks"] = grade(case, answer, artifact, before, snapshot(work), trace, children, marker)
+            result["checks"] = grade(case, answer, artifact, before, snapshot(work), trace, children, marker, profile)
             result["status"] = "PASS" if all(check["passed"] for check in result["checks"]) else "FAIL"
             result["thread_id"] = thread_id
             result["parent_context"] = trace["contexts"]
@@ -317,6 +361,70 @@ def run_case(case, results, timeout):
     return result
 
 
+def write_summary(results, outcomes, stamp, provenance=None):
+    summary = {"created_at": stamp, "cases": outcomes,
+               "passed": sum(outcome["status"] == "PASS" for outcome in outcomes),
+               "failed": sum(outcome["status"] == "FAIL" for outcome in outcomes),
+               "errors": sum(outcome["status"] == "ERROR" for outcome in outcomes),
+               **(provenance or {})}
+    (results / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n")
+    lines = ["# Skill behavioral evaluation", "", f"{summary['passed']} passed; {summary['failed']} failed; {summary['errors']} errors."]
+
+    if provenance:
+        lines.extend(["", f"Regraded from {provenance['regraded_from']} without model calls.",
+                      "Only report-delivery checks were recalculated; all other recorded checks were retained."])
+
+    lines.extend(["", "| Case | Result | Failed checks |", "| --- | --- | --- |"])
+
+    for outcome in outcomes:
+        failed = [check["name"] for check in outcome["checks"] if not check["passed"]]
+        lines.append(f"| {outcome['id']} | {outcome['status']} | {', '.join(failed) or outcome.get('error', '')} |")
+
+    (results / "report.md").write_text("\n".join(lines) + "\n")
+    print(f"Finished: {summary['passed']} passed, {summary['failed']} failed, {summary['errors']} errors", flush=True)
+
+    return 0 if summary["failed"] == summary["errors"] == 0 else 1
+
+
+def regrade_results(source, results):
+    """Recalculate report delivery from recorded sessions, preserving other checks and originals."""
+    original = json.loads((source / "summary.json").read_text())
+    cases = {case["id"]: case for case in json.loads((source / "cases.json").read_text())}
+    outcomes = []
+
+    for outcome in original["cases"]:
+        case = cases[outcome["id"]]
+
+        if outcome["status"] == "ERROR" or "spawn" not in case:
+            outcomes.append(outcome)
+            continue
+
+        trace = session_trace(outcome["thread_id"])
+        answer = (source / outcome["id"] / "answer.txt").read_text()
+        checks = [check for check in outcome["checks"]
+                  if check["name"] not in {"parent_preserves_child_report", "reviewer_report_available"}]
+        checks.append(report_delivery_check(case, answer, trace))
+        outcomes.append({**outcome, "checks": checks,
+                         "status": "PASS" if all(check["passed"] for check in checks) else "FAIL"})
+
+    results.mkdir(parents=True, exist_ok=False)
+    shutil.copyfile(source / "cases.json", results / "cases.json")
+    manifest = json.loads((source / "manifest.json").read_text())
+    manifest.update({"regraded_from": str(source), "original_runner_sha256": manifest["runner_sha256"],
+                     "runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()})
+    (results / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+
+    for outcome in outcomes:
+        destination = results / outcome["id"]
+        destination.mkdir()
+        (destination / "result.json").write_text(json.dumps(outcome, indent=2, ensure_ascii=False) + "\n")
+
+    return write_summary(results, outcomes, original["created_at"], {
+        "regraded_from": str(source),
+        "regraded_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    })
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--case", action="append", help="Run only this case; repeatable")
@@ -324,11 +432,25 @@ def main():
     parser.add_argument("--timeout", type=int, default=180)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--list", action="store_true")
+    parser.add_argument("--model", help="Explicit parent model; recorded parent and inherited child profiles are checked")
+    parser.add_argument("--effort", choices=("low", "medium", "high", "xhigh", "max", "ultra"))
+    parser.add_argument("--regrade", type=Path, help="Recalculate report-delivery checks from a saved run without model calls")
     options = parser.parse_args()
 
     if options.timeout <= 0:
         parser.error("--timeout must be positive")
 
+    if options.regrade:
+        if options.case or options.list or options.model or options.effort:
+            parser.error("--regrade cannot be combined with case selection or model options")
+
+        source = options.regrade.resolve()
+        stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        results = (options.output or source / ("regraded-" + stamp)).resolve()
+
+        return regrade_results(source, results)
+
+    profile = {key: value for key, value in {"model": options.model, "effort": options.effort}.items() if value is not None}
     cases = json.loads(CASES.read_text())
 
     if options.case:
@@ -359,6 +481,7 @@ def main():
         "source_hashes": source_hashes,
         "timeout_seconds": options.timeout,
         "concurrency": options.jobs,
+        "requested_profile": profile,
         "scope": "Explicit skill invocation; one sample per case, no optimization baseline",
         "runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "fixture_hashes": {
@@ -372,23 +495,9 @@ def main():
     print(f"Results: {results}", flush=True)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=options.jobs) as pool:
-        outcomes = list(pool.map(lambda case: run_case(case, results, options.timeout), cases))
+        outcomes = list(pool.map(lambda case: run_case(case, results, options.timeout, profile), cases))
 
-    summary = {"created_at": stamp, "cases": outcomes,
-               "passed": sum(outcome["status"] == "PASS" for outcome in outcomes),
-               "failed": sum(outcome["status"] == "FAIL" for outcome in outcomes),
-               "errors": sum(outcome["status"] == "ERROR" for outcome in outcomes)}
-    (results / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n")
-    lines = ["# Skill behavioral evaluation", "", f"{summary['passed']} passed; {summary['failed']} failed; {summary['errors']} errors.",
-             "", "| Case | Result | Failed checks |", "| --- | --- | --- |"]
-
-    for outcome in outcomes:
-        failed = [check["name"] for check in outcome["checks"] if not check["passed"]]
-        lines.append(f"| {outcome['id']} | {outcome['status']} | {', '.join(failed) or outcome.get('error', '')} |")
-
-    (results / "report.md").write_text("\n".join(lines) + "\n")
-    print(f"Finished: {summary['passed']} passed, {summary['failed']} failed, {summary['errors']} errors", flush=True)
-    return 0 if summary["failed"] == summary["errors"] == 0 else 1
+    return write_summary(results, outcomes, stamp)
 
 
 if __name__ == "__main__":

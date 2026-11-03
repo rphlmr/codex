@@ -2,9 +2,12 @@
 
 import copy
 import json
+from pathlib import Path
+import tempfile
 import unittest
+from unittest.mock import patch
 
-from run_skill_evals import CASES, grade, retained_trace
+from run_skill_evals import CASES, codex_arguments, grade, main, retained_trace, session_trace
 
 
 class BehavioralGraderTests(unittest.TestCase):
@@ -23,8 +26,8 @@ class BehavioralGraderTests(unittest.TestCase):
             "calls": [{"name": "exec", "arguments": 'git diff --cached --no-ext-diff'}],
         }
 
-    def failures(self, after=None):
-        checks = grade(self.case, "feat: ✨ add retries", "", self.before,
+    def failures(self, after=None, answer="feat: ✨ add retries"):
+        checks = grade(self.case, answer, "", self.before,
                        after or self.before, self.trace, [self.child], "PRIVATE_CANARY")
         return {check["name"] for check in checks if not check["passed"]}
 
@@ -61,6 +64,25 @@ class BehavioralGraderTests(unittest.TestCase):
         self.trace["messages"] = ["Message Type: FINAL_ANSWER\nPayload:\nfeat: ✨ something else"]
         self.assertIn("parent_preserves_child_report", self.failures())
 
+    def test_should_allow_trusted_review_summary_when_reviewer_report_is_available(self):
+        self.case = {"skill": "trusted-review", "spawn": {}}
+        self.trace["messages"] = ["Message Type: FINAL_ANSWER\nPayload:\n[P2] Include the free-shipping threshold."]
+        self.assertEqual(self.failures(answer="The threshold defect is confirmed. Review complete."), set())
+
+    def test_should_reject_trusted_review_without_a_completed_reviewer_report(self):
+        self.case = {"skill": "trusted-review", "spawn": {}}
+
+        for messages in ([], ["Message Type: FINAL_ANSWER\nPayload:\n"], ["Message Type: MESSAGE\nPayload:\nWorking."]):
+            with self.subTest(messages=messages):
+                self.trace["messages"] = messages
+                self.assertIn("reviewer_report_available", self.failures(answer="No findings."))
+
+    def test_should_keep_pr_changelog_output_exact(self):
+        self.case = {"skill": "pr-changelog", "spawn": {}}
+        self.trace["messages"] = ["Message Type: FINAL_ANSWER\nPayload:\nA complete PR description."]
+        self.assertEqual(self.failures(answer="A complete PR description."), set())
+        self.assertIn("parent_preserves_child_report", self.failures(answer="A shortened PR description."))
+
     def test_should_reject_missing_child_context(self):
         self.child["contexts"] = []
         self.assertTrue({"effective_child_model", "effective_child_effort"} <= self.failures())
@@ -93,6 +115,90 @@ class BehavioralGraderTests(unittest.TestCase):
 
         self.trace["calls"][0]["arguments"]["exit_code"] = 1
         self.assertIn("hig_page_read_success:toolbars", self.failures())
+
+    def test_should_forward_the_requested_model_and_effort_with_read_only_sandboxing(self):
+        arguments = codex_arguments({}, Path("fixture"), Path("answer.txt"), {
+            "model": "gpt-6-astra", "effort": "xhigh",
+        })
+        self.assertEqual(arguments[arguments.index("--model") + 1], "gpt-6-astra")
+        self.assertIn('model_reasoning_effort="xhigh"', arguments)
+        self.assertEqual(arguments[arguments.index("-s") + 1], "read-only")
+        self.assertEqual(arguments[-1], "-")
+
+    def test_should_reject_a_profile_mismatch_in_the_parent_or_inherited_reviewer(self):
+        profile = {"model": "gpt-6-astra", "effort": "high"}
+        self.trace["contexts"] = [profile]
+        self.case = {"skill": "trusted-review", "spawn": {}}
+        self.child["contexts"] = [profile]
+        checks = grade(self.case, "Summary", "", self.before, self.before,
+                       self.trace, [self.child], "PRIVATE_CANARY", profile)
+        self.assertTrue(all(check["passed"] for check in checks))
+
+        self.trace["contexts"] = [{"model": "gpt-6.1-sol", "effort": None}]
+        self.child["contexts"] = [{"model": "gpt-6-astra", "effort": "medium"}]
+        checks = grade(self.case, "Summary", "", self.before, self.before,
+                       self.trace, [self.child], "PRIVATE_CANARY", profile)
+        failures = {check["name"] for check in checks if not check["passed"]}
+        self.assertTrue({"effective_parent_model", "effective_parent_effort", "effective_child_effort"} <= failures)
+
+    def test_should_read_effort_from_the_recorded_collaboration_settings(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            codex_dir = Path(temporary)
+            session = codex_dir / "sessions/2026/11/03/rollout-profile.jsonl"
+            session.parent.mkdir(parents=True)
+            session.write_text(json.dumps({"type": "turn_context", "payload": {
+                "model": "gpt-6-astra",
+                "collaboration_mode": {"settings": {"reasoning_effort": "max"}},
+            }}) + "\n")
+
+            with patch.dict("os.environ", {"CODEX_HOME": str(codex_dir)}):
+                self.assertEqual(session_trace("profile")["contexts"], [{"model": "gpt-6-astra", "effort": "max"}])
+
+    def test_should_regrade_offline_without_erasing_originals_other_failures_or_errors(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary) / "original"
+            destination = Path(temporary) / "regraded"
+            source.mkdir()
+            cases = [{"id": name, "skill": "trusted-review", "spawn": {}}
+                     for name in ("summary", "real-failure", "runtime-error")]
+            outcomes = []
+
+            for case in cases:
+                case_dir = source / case["id"]
+                case_dir.mkdir()
+                (case_dir / "answer.txt").write_text("A concise summary.")
+                outcomes.append({"id": case["id"], "skill": case["skill"], "thread_id": case["id"],
+                                 "status": "FAIL", "checks": [
+                                     {"name": "one_fresh_agent", "passed": case["id"] != "real-failure"},
+                                     {"name": "parent_preserves_child_report", "passed": False},
+                                 ]})
+
+            outcomes[-1] = {**outcomes[-1], "status": "ERROR", "error": "Timed out"}
+            (source / "cases.json").write_text(json.dumps(cases))
+            (source / "summary.json").write_text(json.dumps({"created_at": "original-time", "cases": outcomes}))
+            (source / "manifest.json").write_text(json.dumps({"runner_sha256": "original-runner"}))
+            originals = {path: path.read_bytes() for path in source.rglob("*") if path.is_file()}
+            trace = {"messages": ["Message Type: FINAL_ANSWER\nPayload:\nThe complete reviewer report."]}
+
+            with patch("sys.argv", ["runner", "--regrade", str(source), "--output", str(destination)]), \
+                    patch("run_skill_evals.session_trace", return_value=trace) as read_trace, \
+                    patch("run_skill_evals.run_case", side_effect=AssertionError("Must not run models")) as run_model, \
+                    patch("run_skill_evals.subprocess.Popen", side_effect=AssertionError("Must not launch processes")):
+                self.assertEqual(main(), 1)
+                run_model.assert_not_called()
+                self.assertEqual(read_trace.call_count, 2)
+
+            summary = json.loads((destination / "summary.json").read_text())
+            self.assertEqual((summary["passed"], summary["failed"], summary["errors"]), (1, 1, 1))
+            self.assertEqual(summary["created_at"], "original-time")
+            self.assertEqual(summary["regraded_from"], str(source.resolve()))
+            self.assertEqual(summary["cases"][2], outcomes[2])
+            self.assertEqual(originals, {path: path.read_bytes() for path in source.rglob("*") if path.is_file()})
+
+            with patch("sys.argv", ["runner", "--regrade", str(source), "--output", str(destination)]), \
+                    patch("run_skill_evals.session_trace", return_value=trace):
+                with self.assertRaises(FileExistsError):
+                    main()
 
     def test_should_omit_user_context_and_spawn_messages_from_selected_traces(self):
         self.trace["user_text"] = ["PRIVATE_CANARY"]
