@@ -259,7 +259,7 @@
     "no_spawn": true,
     "patterns": [
       "(?i)complete|closed",
-      "(?i)no (?:remaining|pending|further|unfinished) (?:work|tasks)|nothing (?:remains|pending)|remaining (?:work|tasks):?\\s*(?:none|0)",
+      "(?i)\\b(?:no (?:remaining|pending|further|unfinished) (?:work|tasks)|no (?:work remains|tasks remain)|nothing (?:remains|pending)|remaining (?:work|tasks):?\\s*(?:none|0))\\b",
       "(?i)deploy[^.\n]{0,80}(?:not authorized|unauthorized)|(?:not authorized|no authorization)[^.\n]{0,80}deploy"
     ]
   },
