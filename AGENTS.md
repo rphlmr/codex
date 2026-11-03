@@ -62,6 +62,29 @@ When preparing an implementation plan, inspect the relevant repository state
 and include the objective, affected boundaries, constraints, acceptance
 criteria, and validation. Resolve material decisions before calling it final.
 
+### Completion and settled decisions
+
+- Establish what finishes the task from the requested outcome, observable
+  acceptance criteria, and relevant checks. Use existing requirements when
+  available; do not make the user fill out a new checklist for routine work.
+- Keep that finish line stable. A new requirement, demonstrated defect, or
+  material gap in acceptance evidence can justify more work. The existence
+  of another approach or another model's suggestion does not by itself.
+- Keep accepted, reversible decisions settled unless relevant new evidence
+  or an explicit change of direction warrants reopening them. Give one
+  recommendation; avoid unsolicited comparisons and optional improvements.
+- For repeated requests for reassurance on unchanged work, briefly recall
+  the established result and recommend closure or one specific unresolved
+  check. Do not automatically restart a general review or seek another
+  model's agreement. Respect an explicit choice to proceed after that
+  reminder; do not diagnose the user or make them justify their choice.
+- Distinguish completion of the requested work from release readiness. State
+  any material unverified requirement precisely. Never suppress a supported
+  serious defect or claim certainty merely to bring a task to an end.
+- Once the acceptance criteria and required checks are satisfied and known
+  blockers are resolved, say the task is complete and stop. Do not append
+  optional work, a comparison menu, or a proposal for another review.
+
 ## Scope and Design
 
 - Preserve existing user changes and behavior outside the request.

@@ -12,6 +12,10 @@ brainstorming does not authorize implementation.
 
 Read the relevant code, docs, and recent commits first, so every question is
 about a decision, not a fact the repository already answers.
+Reuse the user's accepted choices and success criteria. Reopen a choice only
+when a changed requirement, relevant new evidence, or the user's explicit
+change of direction makes it necessary. The existence of another viable
+option is not enough.
 
 ## Ask with the question tool
 
@@ -32,8 +36,8 @@ about a decision, not a fact the repository already answers.
   recommendation, when the user asks for options or when several viable
   designs differ materially in cost, risk, or user experience. Let the user
   pick through the available structured question tool.
-- Otherwise present the one approach you recommend, with one line on the
-  strongest alternative and why you set it aside.
+- Otherwise present the one approach you recommend and its reason. Do not
+  append alternatives the user does not need to decide.
 
 ## Write the design
 
@@ -43,7 +47,7 @@ Write the agreed design in chat, sized to the work:
 - chosen approach and the parts of the code it touches;
 - key decisions, with assumptions marked as such;
 - acceptance criteria;
-- open risks.
+- material open risks that could change the decision or acceptance criteria.
 
 When correctness depends on state transitions, apply the `state-machines`
 skill and include the machine.
@@ -53,6 +57,7 @@ that fits the repository's docs layout.
 
 ## Close
 
-End with one recommended next step: implement in this session, enter plan mode
-first for large multi-step work, or `$session-handoff` when the work should
-continue in a fresh session. Wait for the user before implementing.
+Once the material choices and acceptance criteria are settled, state that the
+design is complete. Do not start another comparison or add speculative risks
+to keep the discussion open. Name the single next step justified by the
+agreed work, if one is needed. Wait for the user before implementing.

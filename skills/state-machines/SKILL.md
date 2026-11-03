@@ -15,17 +15,17 @@ the UI.
 
 ## When building
 
-When implementing or changing such a feature, model it as a machine first, as
-the first choice rather than a later refactor. Reach for flags, status strings,
-or chained effects only for the cases listed under "When to skip".
+When implementing a new feature of this kind, model it as a machine first.
+Reach for flags, status strings, or chained effects only for the cases listed
+under "When to skip". For an existing flow, extend its machine when it has one;
+a focused correction does not itself authorize converting the whole flow.
+Use the review criteria below to decide whether a conversion is needed.
 
-## When to recommend one
+## When reviewing existing code
 
-When analyzing, reviewing, auditing, or planning code, every unit that moves
-through phases on events, messages, callbacks, timers, or async results
-counts: a class, a factory closure, a hook or component, a module with
-top-level state, or a worker entry. Its size and the absence of a known bug
-don't exempt it. These signals show an implicit machine:
+Read the transitions in the requested scope, including those in a class,
+factory closure, hook, module, or worker. These signals can reveal an implicit
+machine and help locate behavior that needs verification:
 
 - boolean flag clusters (`isLoading`, `isError`, `isSubmitting`) that allow
   impossible combinations;
@@ -38,19 +38,22 @@ don't exempt it. These signals show an implicit machine:
 
 A machine that only mirrors status counts too. When the code decides first
 and then sends the machine an event, the machine refuses nothing and the real
-transitions stay implicit, so recommend moving the decisions into its guards
-and actors.
+transitions stay implicit. Inspect the code that actually makes the decisions
+before drawing a conclusion about correctness.
 
-For each unit, recommend a state machine and sketch its states, events,
-guards, and effects. Call a unit fine only when "When to skip" covers it, and
-name that reason. When you delegate an audit, give the subagent this bar
-instead of a stricter one of your own, such as "only risky code".
+For a defect review, establish the reachable event sequence, violated
+requirement, and concrete impact. Rank that impact using the review workflow's
+evidence bar. The absence of a machine, or use of a passive one, alone does not
+justify a finding, minimum severity, mandatory refactor, or release blocker.
+Do not turn a fix verification into an architecture audit.
 
-Rank each implicit machine, and each machine the code decides around, as a
-medium finding at least, even with no proven bug, so it lands in the default
-fix set. The missing machine is the risk, not only the bug it hides. This
-floor overrides an impact-only ranking, such as the `trusted-review` skill's.
-Findings that "When to skip" covers keep their impact rank.
+When architecture advice or a state-machine audit is explicitly requested,
+recommend machines for applicable units and sketch their states, events,
+guards, and effects. Distinguish an architectural recommendation from a proven
+defect. Otherwise recommend a conversion only when needed for the requested
+change or a supported fix, keeping the refactor within that boundary. Leave
+working, out-of-scope flows and settled designs alone. The machine-first
+preference for new features remains unchanged.
 
 ## When to skip
 
@@ -89,9 +92,10 @@ Use XState rather than hand-rolled reducers or other state libraries:
   `dot.case` for XState v5 events, since it enables wildcards like
   `editor.*`
   ([What's in a name?](https://stately.ai/blog/2024-01-23-state-machines-whats-in-a-name#what-style-should-that-name-be-in)).
-  Rename UPPER_CASE events in a machine you touch. State names and machine
-  ids cannot contain dots; keep them camelCase. Wire protocol message types
-  are not machine events and keep their own names.
+  Apply this convention to new machines; do not rename existing events as a
+  side effect of a focused fix. State names and machine ids cannot contain
+  dots; keep them camelCase. Wire protocol message types are not machine
+  events and keep their own names.
 - Export actor ids as constants when transitions or tests refer to them.
 - Test transitions without the UI, following Stately's
   [testing](https://stately.ai/docs/testing) and

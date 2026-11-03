@@ -216,6 +216,20 @@ suspected findings, or proposed fixes. It reads the code and establishes proof
 itself. Fixing existing findings stays in the parent unless separately
 delegated; fixes do not automatically start another review.
 
+Reviews and fixes use stable acceptance criteria and an explicit stopping
+point. Fix verification covers the corrected behavior, related regressions,
+and required project gates. Repeated reassurance requests about unchanged work
+get a reminder of the established result before another general review; an
+explicit choice to continue is respected. A severity label or an architectural
+preference alone does not establish a release blocker. `state-machines` keeps
+its machine-first design preference for new features, without assigning a
+minimum severity to existing code solely because it lacks a machine.
+
+Brainstorming preserves settled choices, handoffs preserve completed review
+scope, and the reply style filters unsolicited optional work. Once the agreed
+task is complete, the assistant states that and stops. Supported defects and
+material validation gaps remain visible.
+
 The repository-local `release-commit-message` skill stays in `.agents/skills/`.
 Existing evaluation prompts, fixtures, and graders are carried over with the
 skills. Run behavioral evaluations only when requested; packaging checks
@@ -228,6 +242,9 @@ repository skills and the local release-commit-message skill. It reuses the
 existing disposable Git and source fixtures. It explicitly invokes skills;
 it does not measure automatic skill selection or compare against a no-skill
 baseline. Each case is one sample, not a reliability estimate.
+The completion scenarios cover repeated reassurance, reopening on new defect
+evidence, an explicit request to review again, architectural preferences,
+settled design choices, and completed-work handoffs.
 
 Run the grader regression tests without model calls:
 

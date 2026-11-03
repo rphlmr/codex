@@ -22,6 +22,13 @@ This skill is guidance by default. Loading it does not authorize the complete au
 
 If the request could mean either mode, ask one focused question before creating files or starting the complete workflow.
 
+A follow-up about a specific finding or its correction stays in guidance mode
+unless the user explicitly requests another full audit. Verify the affected
+boundary and relevant regressions; a prior audit's residual uncertainty does
+not by itself justify a new hunting wave. Preserve all supported serious
+findings and material validation gaps. Explain whether an item blocks the
+intended use from its demonstrated impact, not its severity label alone.
+
 ## Platform terminology
 
 This skill is agent-neutral:

@@ -1,12 +1,32 @@
 ---
 name: trusted-review
-description: Makes code reviews, audits, and review-fix rounds trustworthy, with proven findings ranked by impact, a maintainer's read of fit and public contracts, a verification pass, and fixes limited to what matters. Use when reviewing a diff, branch, PR, or feature, when auditing code, when acting on review findings or reports, or when planning a review or fix round.
+description: Reviews code and fixes existing findings with concrete evidence, impact-based priorities, scoped validation, and an explicit stopping point. Use when reviewing a diff, branch, PR, or feature, auditing code, acting on review findings, or planning a review or fix round.
 ---
 
 # Trusted Review
 
 A review exists so the user can trust its result. Report fewer, proven
 findings over many plausible ones.
+
+## Scope and stopping point
+
+Before starting, identify the requested outcome, review scope, acceptance
+criteria, and relevant validation from the request and repository. Do not
+require a separate planning exercise when these are already clear. Completion
+means the agreed work and checks are done, not that no further improvement is
+conceivable or that several models agree.
+
+Route a request about existing findings to a fix round, triage, or targeted
+verification, as requested. A targeted verification checks the named behavior
+and plausible related regressions; it is not a new general audit.
+
+When a repeated request seeks reassurance about unchanged, already reviewed
+work, state the existing result and recommend closure or the specific missing
+check before launching another review. Do not automatically seek a second
+model's verdict. If the user explicitly chooses another review after this
+reminder, honor it. New code, requirements, evidence, or an uncovered acceptance
+criterion can justify a scoped review without that reminder. Never conceal a
+supported serious defect to satisfy a review limit.
 
 ## Independent review
 
@@ -19,7 +39,9 @@ substituting another review process.
 
 For a review or audit, the parent spawns exactly one fresh built-in agent with
 `fork_turns: "none"`. Do not reuse the implementation agent or an earlier
-reviewer. A review after fixes gets a new agent too.
+reviewer. An explicitly requested independent review after fixes gets a new
+agent too, scoped to the requested verification rather than automatically to
+the whole feature.
 
 Give the reviewer only:
 
@@ -38,6 +60,8 @@ Do not pass conversation history, implementation reports, parent analysis,
 suspected findings, proposed fixes, or a preferred verdict. The reviewer reads
 current code, repository instructions, and raw evidence independently. If the
 scope is materially unclear, resolve it before spawning; do not invent it.
+For a targeted verification, pass the behavior to verify and relevant paths
+as the scope, without a prior verdict or the proposed implementation rationale.
 
 The parent waits without performing a competing review or changing the code.
 The reviewer owns inspection, proof, ranking, and targeted checks, and changes
@@ -50,8 +74,9 @@ the reviewer itself remains read-only. Return a short recommendation followed
 by **🛠️ Act first**, **🔎 Resolve before deciding**, **🕒 Can wait**, and
 **🧪 Checks and limits** as needed. For immediate actions, give a plain title,
 a short trigger and user-impact explanation, and a concrete **Change:**
-recommendation. Link supporting evidence and name one starting action. Do not
-use coded finding IDs such as C01: label findings **Issue 1**, **Issue 2**,
+recommendation. Link supporting evidence and name one starting action only
+when work remains. Do not use coded finding IDs such as C01: label findings
+**Issue 1**, **Issue 2**,
 and so on in the summary, with links to their corresponding unchanged findings
 in the supporting report. These numbers are references, not priorities. Do not
 reduce the report to checkboxes or impose a 150-word cap. Derive this summary
@@ -76,20 +101,30 @@ A review alone changes no code. When the user asks for fixes:
 
 - When the user names the findings to fix, fix exactly those. Their choice
   wins over the ranking.
-- Otherwise, fix highs and mediums, and list lows and nits for the user to
-  pick.
-- Give each fix a test that fails before it and passes after.
+- Otherwise, fix demonstrated defects that prevent the agreed behavior or
+  have material security, data-integrity, or operational impact within scope.
+  Recheck the evidence behind a priority label before treating it as required
+  work. A request to fix all confirmed defects includes lower-priority ones.
+- Account for already reported items left unchanged with a short reason;
+  do not make the user choose from a fresh list of optional improvements.
+- For a testable defect, use a regression check that fails before the fix
+  and passes after. Use proportionate validation for documentation or other
+  changes where an automated regression test would not establish behavior.
 - Prefer the smallest fix, or a visible limitation, over a new mechanism.
   Ask before adding one (a retry, a fallback, a watchdog, a cache, a state).
-- Fix code added by the previous round with the same care: new code is where
-  the next findings come from.
 - Before fixing a finding, check whether it exists only because a premise was
   ignored. Then the fix deletes code instead of guarding it.
-- For each fix that adds code, name the smaller option you rejected.
 
 ## Close the round
 
-- After a fix round, run the full test suite, e2e, and gates once, and
-  report the real output. A review alone runs only what proves its findings.
-- Do not start another review round on your own. When the user asks for
-  one after a fix round, review the whole flow once, not each finding again.
+- After fixes, verify the corrected behavior and plausible related
+  regressions, and run the repository's required gates. Run broader suites
+  when the affected boundary or an observed failure warrants them; do not
+  require every suite and e2e run for every fix. Report actual results and
+  any material validation gap. A review alone runs checks relevant to its scope.
+- Close when the requested fixes and required checks are complete. Report
+  any unresolved blocker with its scenario, evidence, impact, and the reason
+  it prevents the intended use. Priority alone does not establish a blocker.
+- State that the review or fix round is complete without claiming the entire
+  product is defect-free or ready to release beyond the verified scope.
+  Do not propose another review or append optional improvements.

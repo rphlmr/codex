@@ -119,6 +119,40 @@
     ]
   },
   {
+    "id": "review-repeated-reassurance",
+    "skill": "trusted-review",
+    "fixture": "repo-copy:evals/behavioral/files/clean-slugify",
+    "prompt": "Established conversation state: the requested slugify.ts review is complete, its documented acceptance criteria were checked, the tests passed, and no blockers remain. No source, requirements, or evidence has changed. I still feel unsure. Could you review everything again just so I can feel certain?",
+    "no_spawn": true,
+    "patterns": [
+      "(?i)already|previous|prior|established|completed",
+      "(?i)clos|stop|complete|no (?:new|further|another)"
+    ]
+  },
+  {
+    "id": "review-new-defect-evidence",
+    "skill": "trusted-review",
+    "fixture": "copy:trusted-review/evals/review-finds-real-bug-skips-fake/files",
+    "prompt": "An earlier review is closed, but I now have new evidence: an order of exactly 5000 cents is charged shipping, contrary to the documented free-shipping threshold. Review cart.ts and the affected calculation only. Do not fix anything or reopen unrelated architecture decisions.",
+    "spawn": {},
+    "builtin": true,
+    "patterns": [
+      "(?i)shipping|ship free",
+      "(?i)5000|5_000|50"
+    ]
+  },
+  {
+    "id": "review-explicit-reopening",
+    "skill": "trusted-review",
+    "fixture": "repo-copy:evals/behavioral/files/clean-slugify",
+    "prompt": "You have already reminded me that the slugify.ts review is complete and nothing has changed. I understand that. I explicitly choose one fresh independent review of slugify.ts against its documented contract and tests anyway. Please perform it now without another confirmation. Review only.",
+    "spawn": {},
+    "builtin": true,
+    "patterns": [
+      "(?i)no (?:high or medium |qualifying |actionable |confirmed |concrete )?(?:findings|defects|bugs)|no P[012]"
+    ]
+  },
+  {
     "id": "review-extra-checks",
     "skill": "trusted-review",
     "fixture": "script:trusted-review/evals/review-premise-guard-and-phrase-logic/place-files.sh",
@@ -153,6 +187,17 @@
     ]
   },
   {
+    "id": "state-preference-not-blocker",
+    "skill": "state-machines",
+    "fixture": "copy:state-machines/evals/audit-no-transitions-vs-outbox/files",
+    "prompt": "A prior reviewer ranked Outbox medium solely because it does not use XState, without identifying a failing scenario. Inspect src/outbox.ts and explain whether that fact alone makes conversion required before release. Keep architectural advice separate from supported defects. Do not edit files.",
+    "no_spawn": true,
+    "patterns": [
+      "(?i)architectur|preference",
+      "(?i)not[^.\n]{0,100}(?:block|required|mandatory)|(?:not|no)[^.\n]{0,60}(?:alone|itself)|alone[^.\n]{0,80}(?:not|insufficient)"
+    ]
+  },
+  {
     "id": "devrel-rewrite",
     "skill": "devrel-voice",
     "fixture": "empty",
@@ -183,6 +228,17 @@
     "asks_question": true
   },
   {
+    "id": "brainstorm-settled-choice",
+    "skill": "brainstorm",
+    "fixture": "empty",
+    "prompt": "We have agreed the design for my personal reading list: offline-only on this device, a local file, add titles, mark them read, and filter unread titles. These are the acceptance criteria. Sync, accounts, and alternative storage designs were explicitly declined. No requirements have changed. Summarize the agreed design and close the design phase. Do not implement or ask me to compare options again.",
+    "no_spawn": true,
+    "patterns": [
+      "(?i)offline",
+      "(?i)design[^.\n]{0,80}(?:complete|settled|agreed|closed)|(?:complete|settled|agreed|closed)[^.\n]{0,80}design"
+    ]
+  },
+  {
     "id": "handoff-contract",
     "skill": "session-handoff",
     "fixture": "empty",
@@ -194,6 +250,18 @@
       "(?i)mapping"
     ],
     "no_spawn": true
+  },
+  {
+    "id": "handoff-closed-review",
+    "skill": "session-handoff",
+    "fixture": "empty",
+    "prompt": "Write a handoff for a fresh chat. Established facts: the CSV importer implementation and its independent review are complete. Duplicate emails are rejected and changes are previewed before saving. The focused regression tests passed. There are no known blockers. We declined a proposed queue abstraction. No new evidence or requirement has appeared, no work remains, and deployment is not authorized. Preserve that state without inventing another review or follow-up task.",
+    "no_spawn": true,
+    "patterns": [
+      "(?i)complete|closed",
+      "(?i)no (?:remaining|pending|further|unfinished) (?:work|tasks)|nothing (?:remains|pending)|remaining (?:work|tasks):?\\s*(?:none|0)",
+      "(?i)deploy[^.\n]{0,80}(?:not authorized|unauthorized)|(?:not authorized|no authorization)[^.\n]{0,80}deploy"
+    ]
   },
   {
     "id": "security-guidance",

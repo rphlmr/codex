@@ -19,6 +19,13 @@ Include established information that affects the receiving session's decisions:
 - validation performed, with exact commands, results, and unverified checks;
 - acceptance criteria, blockers, material risks, dependencies, and next action.
 
+Preserve the stopping point: identify closed decisions, completed reviews and
+their scope, accepted limitations, and any remaining targeted verification.
+Do not turn optional suggestions or declined directions into pending tasks.
+A new session is not itself a reason to restart a completed review. If the
+requested work is complete, say so rather than inventing a continuation task;
+new code, requirements, or evidence can still justify reopening the affected part.
+
 Keep concrete technical details when they affect correctness. Distinguish facts,
 requirements, and assumptions. Remove superseded decisions, unrelated history,
 repeated rationale, and rejected directions that no longer constrain the work.

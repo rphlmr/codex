@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: fix-round-fixes-high-lists-nit
 expected_outcome: |
-  Fixes finding 1 with a test that covers it (written or run failing before the fix), runs the tests and reports their real output; does not apply the nit or the jitter change but lists them for the user to pick.
+  Fixes finding 1 with a regression check, runs the relevant tests and reports their real output; leaves the nit and speculative jitter change unchanged, accounts for them briefly, and closes without asking the user to choose optional work.
 context:
   scaffold_script: place-files.sh
