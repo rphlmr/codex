@@ -183,6 +183,52 @@ class BehavioralGraderTests(unittest.TestCase):
                     [f"matches:{case['patterns'][1]}"],
                 )
 
+    def test_should_allow_zero_or_one_scoped_reviewer_for_architecture_triage(self):
+        case = next(case for case in json.loads(CASES.read_text()) if case["id"] == "state-preference-not-blocker")
+        answer = "An architectural preference alone does not require conversion."
+        self.child["calls"] = [{"name": "exec", "arguments": (
+            "cat skills/.system/review-agent/SKILL.md trusted-review/references/review.md src/outbox.ts"
+        )}]
+
+        for trace, children in (({"calls": []}, []), (self.trace, [self.child])):
+            with self.subTest(reviewers=len(children)):
+                checks = grade(case, answer, "", self.before, self.before, trace, children, "PRIVATE_CANARY")
+                self.assertEqual([check["name"] for check in checks if not check["passed"]], [])
+
+    def test_should_reject_multiple_or_untraced_optional_reviewers(self):
+        case = {"skill": "state-machines", "optional_review": True}
+        spawn = self.trace["calls"][0]
+
+        for calls, children in (
+            ([spawn, spawn], [self.child, self.child]),
+            ([spawn], []),
+            ([], [self.child]),
+        ):
+            with self.subTest(spawns=len(calls), children=len(children)):
+                trace = {**self.trace, "calls": calls}
+                checks = grade(case, "Summary", "", self.before, self.before, trace, children, "PRIVATE_CANARY")
+                failures = {check["name"] for check in checks if not check["passed"]}
+                self.assertIn("at_most_one_fresh_reviewer", failures)
+
+    def test_should_require_optional_reviewer_isolation_and_scope_evidence(self):
+        self.case = {
+            "skill": "state-machines", "optional_review": True,
+            "builtin": True, "review_scope": ["src/outbox.ts"],
+        }
+        self.trace["calls"][0]["arguments"]["fork_turns"] = "all"
+        self.child["calls"] = [{"name": "spawn_agent", "arguments": {}}]
+        self.child["user_text"].append("PRIVATE_CANARY")
+        self.trace["messages"] = []
+        self.assertTrue({
+            "fork_turns_none", "parent_marker_not_in_child_context", "no_recursive_delegation",
+            "child_loads_bundled_review_agent", "child_loads_extra_checks",
+            "reviewer_scope_reference:src/outbox.ts", "reviewer_report_available",
+        } <= self.failures())
+
+    def test_should_still_reject_delegation_for_repeated_reassurance(self):
+        self.case = next(case for case in json.loads(CASES.read_text()) if case["id"] == "review-repeated-reassurance")
+        self.assertIn("no_delegation", self.failures(answer="Review complete. Recommend closure."))
+
     def test_should_regrade_offline_without_erasing_originals_other_failures_or_errors(self):
         with tempfile.TemporaryDirectory() as temporary:
             source = Path(temporary) / "original"

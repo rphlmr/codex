@@ -143,7 +143,7 @@ def report_delivery_check(case, answer, trace):
         if header.startswith("Message Type: FINAL_ANSWER\n") and separator and report.strip():
             reports.append(report.strip())
 
-    if case["skill"] == "trusted-review":
+    if case["skill"] == "trusted-review" or case.get("optional_review"):
         return {
             "name": "reviewer_report_available",
             "passed": bool(reports),
@@ -193,14 +193,20 @@ def grade(case, answer, artifact, before, after, trace, children, marker, profil
 
     spawns = [call for call in trace["calls"] if call["name"] == "spawn_agent"]
 
-    if "spawn" in case:
-        check("one_fresh_agent", len(spawns) == 1 and len(children) == 1, {"calls": len(spawns), "sessions": len(children)})
+    if "spawn" in case or case.get("optional_review"):
+        counts = {"calls": len(spawns), "sessions": len(children)}
+        spawn_profile = case.get("spawn", {})
+
+        if case.get("optional_review"):
+            check("at_most_one_fresh_reviewer", len(spawns) == len(children) <= 1, counts)
+        else:
+            check("one_fresh_agent", len(spawns) == len(children) == 1, counts)
 
         if spawns:
             arguments = spawns[0]["arguments"]
             check("fork_turns_none", arguments.get("fork_turns") == "none", arguments.get("fork_turns"))
 
-            for key, expected in case["spawn"].items():
+            for key, expected in spawn_profile.items():
                 argument_key = "reasoning_effort" if key == "effort" else key
                 check(f"requested_{key}", arguments.get(argument_key) == expected, arguments.get(argument_key))
 
@@ -208,7 +214,7 @@ def grade(case, answer, artifact, before, after, trace, children, marker, profil
             check("parent_marker_not_in_child_context", marker not in "\n".join(child["user_text"]), "Child user inputs checked; marker withheld from retained traces")
             check("no_recursive_delegation", not child["starts"] and not any(call["name"] == "spawn_agent" for call in child["calls"]), child["thread_id"])
 
-            for key, expected in {**requested_profile, **case["spawn"]}.items():
+            for key, expected in {**requested_profile, **spawn_profile}.items():
                 check(f"effective_child_{key}", bool(child["contexts"]) and all(context.get(key) == expected for context in child["contexts"]), child["contexts"])
 
         if children:
@@ -234,10 +240,16 @@ def grade(case, answer, artifact, before, after, trace, children, marker, profil
         unstaged_diffs = [arguments for arguments in diff_arguments if not re.search(r"--(?:cached|staged)\b", arguments)]
         check("staged_only_git_inspection", not forbidden and not unstaged_diffs, forbidden or unstaged_diffs or "staged-only commands")
 
-    if case.get("builtin"):
-        child_calls = "\n".join(json.dumps(child["calls"]) for child in children)
+    child_calls = "\n".join(json.dumps(child["calls"]) for child in children)
+
+    if case.get("builtin") and (children or not case.get("optional_review")):
         check("child_loads_bundled_review_agent", "skills/.system/review-agent/SKILL.md" in child_calls, "Child tool calls inspected")
         check("child_loads_extra_checks", "trusted-review/references/review.md" in child_calls, "Child tool calls inspected")
+
+    if children:
+        for path in case.get("review_scope", []):
+            check(f"reviewer_scope_reference:{path}", path in child_calls,
+                  "Reviewer calls reference the requested file; actual scope requires reading the trace and report")
 
     for pattern in case.get("trace_patterns", []):
         check(f"trace_matches:{pattern}", re.search(pattern, call_text) is not None, "Executed tool calls")

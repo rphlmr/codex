@@ -307,6 +307,12 @@ effort. Fresh-context checks require `fork_turns: "none"` and verify that a
 random parent-only marker is absent from child user inputs. Trusted Review
 checks the child's executed calls for both the bundled reviewer and the extra
 checks. File hashes, staged entries, and HEAD detect unintended changes.
+The architecture-triage case permits zero or one fresh reviewer, without
+recursive delegation. If a reviewer is used, its calls must load the review
+instructions and reference `src/outbox.ts`, and its completed report must reach
+the parent. The file-reference check is a scope signal; reading the trace and
+report is still necessary to establish that the review stayed focused.
+Repeated reassurance still forbids delegation.
 Commit-message and PR-changelog require the parent's final output to match the
 delegated output exactly. Trusted Review permits a summary and checks that a
 nonempty completed reviewer report reached the parent; it does not use exact

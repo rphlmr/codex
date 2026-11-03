@@ -191,7 +191,11 @@
     "skill": "state-machines",
     "fixture": "copy:state-machines/evals/audit-no-transitions-vs-outbox/files",
     "prompt": "A prior reviewer ranked Outbox medium solely because it does not use XState, without identifying a failing scenario. Inspect src/outbox.ts and explain whether that fact alone makes conversion required before release. Keep architectural advice separate from supported defects. Do not edit files.",
-    "no_spawn": true,
+    "optional_review": true,
+    "builtin": true,
+    "review_scope": [
+      "src/outbox.ts"
+    ],
     "patterns": [
       "(?i)architectur|preference",
       "(?i)not[^.\n]{0,100}(?:block|required|mandatory)|(?:not|no)[^.\n]{0,60}(?:alone|itself)|alone[^.\n]{0,80}(?:not|insufficient)"
