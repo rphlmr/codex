@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.3](https://github.com/rphlmr/codex/compare/v2.0.2...v2.0.3) (2026-11-03)
+
+
+### Bug Fixes
+
+* accept equivalent handoff closure wording ([fba0e7a](https://github.com/rphlmr/codex/commit/fba0e7ad7fddc1cbb8e3917d6f3f123a6168cf18))
+* allow one scoped reviewer in architecture eval ([5c4b4a6](https://github.com/rphlmr/codex/commit/5c4b4a6b531e617382822df6390ed2cb4bfb88e0))
+* bound reviews and preserve settled decisions ([628b951](https://github.com/rphlmr/codex/commit/628b95176cdbf0aa3c13501f429fc1b80a07227f))
+* grade review summaries and replay saved evals ([a4ab08e](https://github.com/rphlmr/codex/commit/a4ab08eb9addac8fbce714169a8c754b41953be4))
+* ground DevRel voice in approved writing ([aa22d45](https://github.com/rphlmr/codex/commit/aa22d45e7e0a189ced2e4222b5d242dc6750157e))
+* keep DevRel setup pages focused ([aadcdd8](https://github.com/rphlmr/codex/commit/aadcdd8bbddc88dfe0f0ee7d1a3dfcfedff2d83a))
+
 ## [2.0.2](https://github.com/rphlmr/codex/compare/v2.0.1...v2.0.2) (2026-10-27)
 
 
