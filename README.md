@@ -224,6 +224,9 @@ explicit choice to continue is respected. A severity label or an architectural
 preference alone does not establish a release blocker. `state-machines` keeps
 its machine-first design preference for new features, without assigning a
 minimum severity to existing code solely because it lacks a machine.
+It identifies implicit machines by scattered transition decisions and makes
+allowed events, invariants, and forbidden transitions explicit. A library alone
+does not make a model authoritative; callers must let it decide transitions.
 
 Brainstorming preserves settled choices, handoffs preserve completed review
 scope, and the reply style filters unsolicited optional work. Once the agreed
@@ -245,6 +248,11 @@ baseline. Each case is one sample, not a reliability estimate.
 The completion scenarios cover repeated reassurance, reopening on new defect
 evidence, an explicit request to review again, architectural preferences,
 settled design choices, and completed-work handoffs.
+State-machine cases also cover cancellation followed by a new operation with
+late callbacks, and an authoritative switch-based machine without a library.
+Their automated text checks are smoke checks; assess transition completeness,
+effect gating, and validation sequences against the fixture contracts by reading
+the answers.
 
 Run the grader regression tests without model calls:
 

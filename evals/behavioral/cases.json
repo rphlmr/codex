@@ -165,6 +165,33 @@
     ]
   },
   {
+    "id": "state-cancellable-export-plan",
+    "skill": "state-machines",
+    "fixture": "copy:state-machines/evals/plan-cancellable-export/files",
+    "prompt": "Read requirements.md and give a concrete implementation plan for this new export flow. Include the transition design and validation needed before implementation. Plan only; do not edit files or delegate.",
+    "no_spawn": true,
+    "patterns": [
+      "(?i)idle",
+      "(?i)exporting|running",
+      "(?i)operation.{0,20}(?:id|identity)|(?:id|identity).{0,20}operation",
+      "(?i)late|stale",
+      "(?i)test|assert|verif"
+    ]
+  },
+  {
+    "id": "state-explicit-switch",
+    "skill": "state-machines",
+    "fixture": "copy:state-machines/evals/explicit-switch-machine/files",
+    "prompt": "Read approval-machine.mjs and requirements.md. Is this an implicit or explicit state machine, and what makes that distinction? Does this design require a library conversion to meet the contract? Explain the evidence and give concrete validation sequences. Do not edit files or delegate.",
+    "no_spawn": true,
+    "patterns": [
+      "(?i)explicit",
+      "(?i)pending",
+      "(?i)effect",
+      "(?i)repeat|duplicat|twice|again|\\b(accept|submit)\\s*(?:→|->)\\s*\\1\\b"
+    ]
+  },
+  {
     "id": "state-simple-request",
     "skill": "state-machines",
     "fixture": "copy:state-machines/evals/review-simple-form-no-machine/files",

@@ -9,9 +9,22 @@ Explicit state machines are the default architecture for features whose
 correctness depends on states, transitions, or sequences: multi-step workflows,
 wizards, and ordered steps, async lifecycles with retry or cancellation,
 connection, session, sync, and playback lifecycles, and UI with mutually
-exclusive modes. A machine makes impossible states unrepresentable, keeps every
-transition rule in one reviewable place, and lets transitions be tested without
-the UI.
+exclusive modes. Model mutually exclusive states so invalid combinations cannot
+be represented, keep transition rules in one reviewable place, and test them
+without the UI.
+
+## Recognize the existing machine
+
+Stateful behavior has transition rules even when the code never names a
+machine. An implicit machine leaves those rules scattered across assignments,
+handlers, and effects, making it hard to enumerate which events are permitted
+in each state. That can hide reachable combinations or transitions the product
+should forbid.
+
+An explicit model lets a reader determine the next state and effects from the
+current state, event, and relevant context. A switch, reducer, or transition
+table can express this; using a library alone does not establish it. Preserve
+the implementation preferences below when building new machines.
 
 ## When building
 
@@ -20,6 +33,18 @@ Reach for flags, status strings, or chained effects only for the cases listed
 under "When to skip". For an existing flow, extend its machine when it has one;
 a focused correction does not itself authorize converting the whole flow.
 Use the review criteria below to decide whether a conversion is needed.
+
+Before wiring handlers or effects, enumerate the states, events, and allowed
+transitions, with guards and effects where needed. State the invariants the
+flow must preserve and what happens to events a state does not accept. Keep
+the transition model authoritative: callers send events instead of deciding
+the next state themselves.
+
+Test meaningful rules as current state + event + relevant context -> next
+state and effects. Include plausible event sequences that could violate an
+invariant, such as a repeated submission or a completion after cancellation
+when the flow supports those events. Verify that refused events cannot cause
+forbidden transitions or effects.
 
 ## When reviewing existing code
 
@@ -57,14 +82,14 @@ preference for new features remains unchanged.
 
 ## When to skip
 
-Skip a machine for units with no transitions, where every event is handled
-the same way whatever happened before: a toggle, a field value, a settings
-store that sets and notifies, a stateless transform. To tell, ask: can this
-event arrive at a moment when it must be refused or handled differently? If
-never, the unit is not a state machine, and a machine adds ceremony without
-removing risk. A single request's pending and error states are not transitions
-of their own: leave them to the framework, below, or to one status value where
-no framework owns the request, as in a CRUD form.
+Skip a separate machine for simple values and stateless units: a toggle, a
+field value, a settings store that sets and notifies, a stateless transform.
+To tell, ask: can an event arrive at a moment when the flow's rules require
+refusing it or handling it differently? If never, a separate transition model
+adds ceremony without removing risk. A single request's pending and error
+states do not by themselves justify a
+separate machine: leave them to the framework, below, or to one status value
+where no framework owns the request, as in a CRUD form.
 
 Skip it for data loading and mutations that the framework or a data library
 already owns, such as React Router loaders, actions, and fetchers, or a query

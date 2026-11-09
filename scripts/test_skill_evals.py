@@ -105,6 +105,21 @@ class BehavioralGraderTests(unittest.TestCase):
         checks = grade(case, answer, "", self.before, self.before, self.trace, [], "PRIVATE_CANARY")
         self.assertTrue(all(check["passed"] for check in checks if check["name"].startswith("matches:")))
 
+    def test_should_recognize_repeated_events_without_a_repeat_keyword(self):
+        case = next(case for case in json.loads(CASES.read_text()) if case["id"] == "state-explicit-switch")
+
+        for sequence in ("accept → accept", "submit -> submit", "submit again", "duplicate acceptance"):
+            with self.subTest(sequence=sequence):
+                answer = f"Explicit machine. Effects are gated by pending state. Validate {sequence}."
+                checks = grade(case, answer, "", self.before, self.before,
+                               {"calls": []}, [], "PRIVATE_CANARY")
+                self.assertEqual([check["name"] for check in checks if not check["passed"]], [])
+
+        answer = "Explicit machine. Effects are gated by pending state. Validate submit → accept."
+        checks = grade(case, answer, "", self.before, self.before, {"calls": []}, [], "PRIVATE_CANARY")
+        self.assertEqual([check["name"] for check in checks if not check["passed"]],
+                         ["matches:" + case["patterns"][-1]])
+
     def test_should_require_successful_hig_reads_not_just_attempted_commands(self):
         self.case = {"skill": "apple-hig", "cache": True}
         self.trace["calls"] = [
