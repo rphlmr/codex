@@ -68,11 +68,15 @@ instead of loading the repository copy of the synced global `AGENTS.md` again.
 > ## Codex configuration
 >
 > The example below provides optional defaults for the primary model, features,
-> and workspace permissions. Subagents use Codex's native defaults.
+> and workspace permissions. Subagent model selection uses Codex's native defaults.
+> The session permits up to six concurrent subagents; the synced instructions
+> keep the total at three whenever any active subagent uses Astra. This model
+> restriction is instruction-based, not a per-model runtime limit.
 >
 > It configures:
 >
 > - GPT-6 Astra with medium reasoning as the primary model;
+> - up to six concurrent subagents, subject to the Astra restriction above;
 > - approval prompts disabled;
 > - workspace-scoped permissions;
 > - protection for common secret and credential files;
@@ -86,6 +90,9 @@ instead of loading the repository copy of the synced global `AGENTS.md` again.
 > personality = "pragmatic"
 > approval_policy = "never"
 > default_permissions = "workspace-safe"
+>
+> [agents]
+> max_concurrent_threads_per_session = 6
 >
 > [features]
 > network_proxy = true

@@ -169,6 +169,10 @@ does not establish testable runtime behavior.
 
 ## Delegation
 
+- Allow up to six concurrent subagents only when every active subagent uses a
+  model other than Astra. If any active subagent uses Astra, keep the total at
+  three or fewer. Count all descendants, excluding the main agent. Treat an
+  unknown subagent model as Astra until resolved, including inherited models.
 - Work in the main chat unless the user asks for delegation or invokes
   `commit-message` or `pr-changelog`, whose workflows each spawn one fresh
   built-in agent with their explicitly configured model and reasoning effort.
