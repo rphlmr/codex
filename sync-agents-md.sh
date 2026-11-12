@@ -30,7 +30,7 @@ mkdir -p "$CODEX_DIR"
 
 copy_if_changed "$SOURCE" "$TARGET"
 
-for directory in rules output-styles; do
+for directory in output-styles; do
   source_dir="$REPO_DIR/$directory"
   target_dir="$CODEX_DIR/$directory"
 
@@ -45,4 +45,19 @@ for directory in rules output-styles; do
 
     copy_if_changed "$source" "$target_dir/$(basename "$source")"
   done
+done
+
+# Remove unchanged copies of the rules now maintained by coding-preferences.
+for name in architecture code-style file-naming react react-router typescript; do
+  source="$REPO_DIR/skills/coding-preferences/references/$name.md"
+  target="$CODEX_DIR/rules/$name.md"
+
+  if [[ -f "$source" && -f "$target" ]]; then
+    if cmp -s "$source" "$target"; then
+      rm -f "$target"
+      echo "Removed migrated rule: $target"
+    else
+      echo "Preserved modified legacy rule: $target"
+    fi
+  fi
 done

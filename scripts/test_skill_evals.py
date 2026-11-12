@@ -198,7 +198,7 @@ class BehavioralGraderTests(unittest.TestCase):
                     [f"matches:{case['patterns'][1]}"],
                 )
 
-    def test_should_allow_zero_or_one_scoped_reviewer_for_architecture_triage(self):
+    def test_should_keep_architecture_triage_in_the_main_chat(self):
         case = next(case for case in json.loads(CASES.read_text()) if case["id"] == "state-preference-not-blocker")
         answer = "An architectural preference alone does not require conversion."
         self.child["calls"] = [{"name": "exec", "arguments": (
@@ -208,7 +208,8 @@ class BehavioralGraderTests(unittest.TestCase):
         for trace, children in (({"calls": []}, []), (self.trace, [self.child])):
             with self.subTest(reviewers=len(children)):
                 checks = grade(case, answer, "", self.before, self.before, trace, children, "PRIVATE_CANARY")
-                self.assertEqual([check["name"] for check in checks if not check["passed"]], [])
+                expected = ["no_delegation"] if children else []
+                self.assertEqual([check["name"] for check in checks if not check["passed"]], expected)
 
     def test_should_reject_multiple_or_untraced_optional_reviewers(self):
         case = {"skill": "state-machines", "optional_review": True}

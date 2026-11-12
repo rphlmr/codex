@@ -49,8 +49,8 @@ Write the agreed design in chat, sized to the work:
 - acceptance criteria;
 - material open risks that could change the decision or acceptance criteria.
 
-When correctness depends on state transitions, apply the `state-machines`
-skill and include the machine.
+If the user also invokes `state-machines`, apply that skill to the transition
+design. Do not automatically activate other personal skills.
 
 Save the design to a file only when the user asks, at the path they name or one
 that fits the repository's docs layout.

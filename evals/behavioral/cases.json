@@ -4,25 +4,18 @@
     "skill": "commit-message",
     "fixture": "commit:feature",
     "prompt": "write me a commit message for what i staged",
-    "spawn": {
-      "model": "gpt-6-luna",
-      "effort": "low"
-    },
     "format": "commit",
     "patterns": [
       "^feat: ✨ ",
       "(?i)retry|retries"
-    ]
+    ],
+    "no_spawn": true
   },
   {
     "id": "commit-fix",
     "skill": "commit-message",
     "fixture": "commit:fix",
     "prompt": "Generate a Conventional Commit message for the staged changes. Don't commit anything.",
-    "spawn": {
-      "model": "gpt-6-luna",
-      "effort": "low"
-    },
     "format": "commit",
     "patterns": [
       "^fix: 🐛 ",
@@ -30,48 +23,38 @@
     ],
     "absent": [
       "(?i)readme"
-    ]
+    ],
+    "no_spawn": true
   },
   {
     "id": "commit-empty",
     "skill": "commit-message",
     "fixture": "commit:unstaged-only",
     "prompt": "commit msg for my changes pls",
-    "spawn": {
-      "model": "gpt-6-luna",
-      "effort": "low"
-    },
-    "exact": "No staged diff available."
+    "exact": "No staged diff available.",
+    "no_spawn": true
   },
   {
     "id": "pr-inferred-base",
     "skill": "pr-changelog",
     "fixture": "pr",
     "prompt": "write the PR description for this branch",
-    "spawn": {
-      "model": "gpt-6-luna",
-      "effort": "medium"
-    },
     "patterns": [
       "(?i)comparison target:.*main",
-      "## Summary",
       "(?i)retr",
       "(?i)uncommitted|unstaged",
       "(?i)test"
     ],
     "absent": [
       "(?i)tests (?:all )?pass(?:ed)?"
-    ]
+    ],
+    "no_spawn": true
   },
   {
     "id": "pr-french",
     "skill": "pr-changelog",
     "fixture": "pr",
     "prompt": "Release notes for this branch against main, in French please.",
-    "spawn": {
-      "model": "gpt-6-luna",
-      "effort": "medium"
-    },
     "patterns": [
       "(?i)retr|réessa",
       "(?i)défaut|fetchJson[^\\n]*une fois"
@@ -79,7 +62,8 @@
     "absent": [
       "(?i)comparison target:",
       "(?i)## test coverage"
-    ]
+    ],
+    "no_spawn": true
   },
   {
     "id": "pr-uncommitted",
@@ -94,29 +78,27 @@
     "skill": "trusted-review",
     "fixture": "copy:trusted-review/evals/review-finds-real-bug-skips-fake/files",
     "prompt": "Audit cart.ts for bugs. Review only; do not fix anything.",
-    "spawn": {},
-    "builtin": true,
     "patterns": [
       "(?i)shipping|ship free",
       "(?i)5000|5_000|50"
     ],
     "absent": [
       "(?i)\\[P[012]\\][^\n]*(?:null|undefined)"
-    ]
+    ],
+    "no_spawn": true
   },
   {
     "id": "review-clean",
     "skill": "trusted-review",
     "fixture": "repo-copy:evals/behavioral/files/clean-slugify",
     "prompt": "Audit slugify.ts against its documented contract and tests. Review only; do not edit anything.",
-    "spawn": {},
-    "builtin": true,
     "patterns": [
       "(?i)no (?:high or medium |qualifying |actionable |confirmed |concrete )?(?:findings|defects|bugs)|no P[012]"
     ],
     "absent": [
       "\\[P[012]\\]"
-    ]
+    ],
+    "no_spawn": true
   },
   {
     "id": "review-repeated-reassurance",
@@ -134,12 +116,11 @@
     "skill": "trusted-review",
     "fixture": "copy:trusted-review/evals/review-finds-real-bug-skips-fake/files",
     "prompt": "An earlier review is closed, but I now have new evidence: an order of exactly 5000 cents is charged shipping, contrary to the documented free-shipping threshold. Review cart.ts and the affected calculation only. Do not fix anything or reopen unrelated architecture decisions.",
-    "spawn": {},
-    "builtin": true,
     "patterns": [
       "(?i)shipping|ship free",
       "(?i)5000|5_000|50"
-    ]
+    ],
+    "no_spawn": true
   },
   {
     "id": "review-explicit-reopening",
@@ -157,12 +138,11 @@
     "skill": "trusted-review",
     "fixture": "script:trusted-review/evals/review-premise-guard-and-phrase-logic/place-files.sh",
     "prompt": "Review the current changes and surrounding draft flow against the recorded project decisions. Do not edit anything.",
-    "spawn": {},
-    "builtin": true,
     "patterns": [
       "(?i)display|label|wording",
       "(?i)legacy|body|premise|never (?:stored|persisted)|unreleased"
-    ]
+    ],
+    "no_spawn": true
   },
   {
     "id": "state-cancellable-export-plan",
@@ -218,15 +198,11 @@
     "skill": "state-machines",
     "fixture": "copy:state-machines/evals/audit-no-transitions-vs-outbox/files",
     "prompt": "A prior reviewer ranked Outbox medium solely because it does not use XState, without identifying a failing scenario. Inspect src/outbox.ts and explain whether that fact alone makes conversion required before release. Keep architectural advice separate from supported defects. Do not edit files.",
-    "optional_review": true,
-    "builtin": true,
-    "review_scope": [
-      "src/outbox.ts"
-    ],
     "patterns": [
       "(?i)architectur|preference",
       "(?i)not[^.\n]{0,100}(?:block|required|mandatory)|(?:not|no)[^.\n]{0,60}(?:alone|itself)|alone[^.\n]{0,80}(?:not|insufficient)"
-    ]
+    ],
+    "no_spawn": true
   },
   {
     "id": "devrel-rewrite",

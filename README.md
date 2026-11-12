@@ -5,7 +5,7 @@ Personal Codex skills, global instructions, and recommended configuration tracke
 This repository is the source of truth for:
 
 - custom skills and their evaluation fixtures;
-- global `AGENTS.md`, scoped coding rules, and reply style;
+- global `AGENTS.md`, the coding-preferences skill, and reply style;
 - recommended Codex configuration.
 
 ## Codex Usage for macOS
@@ -39,7 +39,8 @@ Make the management scripts executable:
 chmod +x sync-skills.sh sync-agents-md.sh update-config.sh
 ```
 
-Preview the recommended Codex configuration, then consent to applying it:
+The recommended runtime configuration is optional; skip it to retain Codex's
+runtime defaults. To preview and consent to these settings:
 
 ```bash
 ./update-config.sh
@@ -54,8 +55,8 @@ Synchronize skills and global instructions, and remove retired custom workflows 
 ./sync-agents-md.sh
 ```
 
-Synchronization copies skills to `~/.agents/skills/`, and instructions, rules,
-and reply style to `~/.codex/`. Both scripts honor `CODEX_HOME` for the Codex
+Synchronization copies skills, including coding preferences, to `~/.agents/skills/`,
+and global instructions and reply style to `~/.codex/`. Both scripts honor `CODEX_HOME` for the Codex
 configuration directory; user skills remain in `~/.agents/skills/`. The skill
 sync removes older Codex-only copies and retired custom workflows and agents.
 Unrelated entries and bundled skills remain.
@@ -69,14 +70,13 @@ instead of loading the repository copy of the synced global `AGENTS.md` again.
 >
 > The example below provides optional defaults for the primary model, features,
 > and workspace permissions. Subagent model selection uses Codex's native defaults.
-> The session permits up to six concurrent subagents; the synced instructions
-> keep the total at three whenever any active subagent uses Astra. This model
-> restriction is instruction-based, not a per-model runtime limit.
+> The session permits up to six concurrent subagents. No model-specific
+> concurrency rule is imposed by the global instructions.
 >
 > It configures:
 >
 > - GPT-6 Astra with medium reasoning as the primary model;
-> - up to six concurrent subagents, subject to the Astra restriction above;
+> - up to six concurrent subagents when delegation is requested;
 > - approval prompts disabled;
 > - workspace-scoped permissions;
 > - protection for common secret and credential files;
@@ -190,76 +190,51 @@ custom agents are always worse.
 
 ## Included skills
 
-These workflows carry over the Claude configuration's behavior, with Codex tool
-names and invocation policies. Commit messages and PR changelogs each spawn
-one fresh built-in agent with an explicit model and reasoning effort,
-independent of the parent chat:
-
-| Workflow | Model | Reasoning effort |
-| --- | --- | --- |
-| `commit-message` | `gpt-6-luna` | `low` |
-| `pr-changelog` | `gpt-6-luna` | `medium` |
-
-Both return the agent’s output unchanged. If the configured model or effort
-is unavailable, they report that instead of substituting the parent settings.
-No custom agent definitions are needed.
+All personal skills are explicit-only: invoke them with `$skill-name` when
+you want their guidance. They do not activate automatically based on the task.
+The global `AGENTS.md` always applies the ADHD-aware scannable reply style.
+Personal coding preferences, writing skills, and workflows remain opt-in.
+Bundled skills and plugin configuration are left unchanged.
+Commit messages and PR descriptions run in the current chat. An independent
+review delegates only when the user asks for independence or delegation.
 
 | Skill | Purpose | Invocation |
 | --- | --- | --- |
-| `apple-hig` | Read current Apple design guidance with the lookup script | Automatic or explicit |
+| `apple-hig` | Look up current Apple design guidance when the decision needs it | Explicit `$apple-hig` |
 | `brainstorm` | Reach an agreed design before implementation | Explicit `$brainstorm` |
-| `commit-message` | Produce one staged-only Conventional Commit message | Automatic or explicit |
-| `devrel-voice` | Write articles and tutorials in the user's voice | Automatic or explicit |
-| `pr-changelog` | Describe the complete committed branch changeset | Automatic or explicit |
-| `session-handoff` | Prepare context for a fresh Codex chat | Explicit `$session-handoff` |
-| `security-audit` | Run Cloudflare’s source-first security audit workflow | Automatic or explicit |
-| `state-machines` | Model workflows as explicit transitions | Automatic or explicit |
-| `trusted-review` | Run bundled `review-agent` with extra checks in a fresh agent | Automatic or explicit |
+| `commit-message` | Produce one staged-only Conventional Commit message | Explicit `$commit-message` |
+| `coding-preferences` | Apply personal code style and scoped language/framework preferences | Explicit `$coding-preferences` |
+| `devrel-voice` | Write developer content using the approved voice reference | Explicit `$devrel-voice` |
+| `openai-reference` | Answer factual OpenAI questions from relevant official sources | Explicit `$openai-reference` |
+| `pr-changelog` | Describe the complete committed branch changeset | Explicit `$pr-changelog` |
+| `session-handoff` | Prepare context for a fresh chat | Explicit `$session-handoff` |
+| `security-audit` | Use the source-first security guidance or full audit workflow | Explicit `$security-audit` |
+| `state-machines` | Design or assess transitions for a requested workflow | Explicit `$state-machines` |
+| `trusted-review` | Review code or fix existing findings with scoped validation | Explicit `$trusted-review` |
 
-`trusted-review` uses the installed bundled `review-agent` procedure plus
-`references/review.md` for the additional maintainer, evidence, impact, and fix
-checks. It uses `fork_turns: "none"` and a neutral scope/requirements brief. The reviewer receives no parent conversation, implementation report,
-suspected findings, or proposed fixes. It reads the code and establishes proof
-itself. Fixing existing findings stays in the parent unless separately
-delegated; fixes do not automatically start another review.
+The state-machine skill accepts authoritative switches or reducers and existing
+repository patterns. It does not pre-approve a library dependency. Trusted
+Review keeps its evidence standards without requiring an agent, saved report,
+or fixed report template for every review. Its independent mode uses a fresh
+reviewer and the bundled review procedure when available.
 
-Reviews and fixes use stable acceptance criteria and an explicit stopping
-point. Fix verification covers the corrected behavior, related regressions,
-and required project gates. Repeated reassurance requests about unchanged work
-get a reminder of the established result before another general review; an
-explicit choice to continue is respected. A severity label or an architectural
-preference alone does not establish a release blocker. `state-machines` keeps
-its machine-first design preference for new features, without assigning a
-minimum severity to existing code solely because it lacks a machine.
-It identifies implicit machines by scattered transition decisions and makes
-allowed events, invariants, and forbidden transitions explicit. A library alone
-does not make a model authoritative; callers must let it decide transitions.
-
-Brainstorming preserves settled choices, handoffs preserve completed review
-scope, and the reply style filters unsolicited optional work. Once the agreed
-task is complete, the assistant states that and stops. Supported defects and
-material validation gaps remain visible.
-
-The repository-local `release-commit-message` skill stays in `.agents/skills/`.
-Existing evaluation prompts, fixtures, and graders are carried over with the
-skills. Run behavioral evaluations only when requested; packaging checks
-alone do not establish equivalent model behavior.
+The local `release-commit-message` skill stays in `.agents/skills/` and is also
+explicit-only. Invoking one personal skill does not automatically opt into
+another personal skill.
 
 ### Behavioral evaluations
 
-The bounded suite in `evals/behavioral/cases.json` covers all nine global
-repository skills and the local release-commit-message skill. It reuses the
-existing disposable Git and source fixtures. It explicitly invokes skills;
-it does not measure automatic skill selection or compare against a no-skill
-baseline. Each case is one sample, not a reliability estimate.
-The completion scenarios cover repeated reassurance, reopening on new defect
-evidence, an explicit request to review again, architectural preferences,
-settled design choices, and completed-work handoffs.
-State-machine cases also cover cancellation followed by a new operation with
-late callbacks, and an authoritative switch-based machine without a library.
-Their automated text checks are smoke checks; assess transition completeness,
-effect gating, and validation sequences against the fixture contracts by reading
-the answers.
+The bounded suite in `evals/behavioral/cases.json` exercises the original nine
+custom skills and the local release-commit-message skill. It explicitly invokes
+skills and does not measure automatic selection, the new openai-reference or
+coding-preferences triggers, or a no-skill baseline. Each case is one sample, not a reliability
+estimate. Run model-based evaluations only when explicitly requested.
+
+Commit and PR cases check direct execution without delegation. Ordinary review
+cases do the same; cases explicitly requesting independence require a fresh
+reviewer. Transition, cancellation, settled-decision, and handoff scenarios
+retain their behavior assertions. Text assertions are smoke checks and still
+require reading the answers to assess semantics.
 
 Run the grader regression tests without model calls:
 
@@ -283,8 +258,7 @@ python3 scripts/run_skill_evals.py --case review-repeated-reassurance --model gp
 
 The manifest records the requested profile. Checks compare it with the actual
 parent and inherited reviewer contexts; an unrecorded or different value fails
-the profile check. Skills that explicitly select their own delegated model keep
-that contract.
+the profile check. Only explicitly independent cases require a delegated reviewer.
 
 Recalculate report-delivery checks from a saved run without calling models:
 
@@ -317,25 +291,13 @@ The runner reads only sessions identified by its own run and child IDs; it
 does not copy session metadata, credentials, or global instructions into the
 selected `trace.json`. Treat full CLI event files as local diagnostic data.
 
-Delegation checks compare spawn arguments with the child's recorded model and
-effort. Fresh-context checks require `fork_turns: "none"` and verify that a
-random parent-only marker is absent from child user inputs. Trusted Review
-checks the child's executed calls for both the bundled reviewer and the extra
-checks. File hashes, staged entries, and HEAD detect unintended changes.
-The architecture-triage case permits zero or one fresh reviewer, without
-recursive delegation. If a reviewer is used, its calls must load the review
-instructions and reference `src/outbox.ts`, and its completed report must reach
-the parent. The file-reference check is a scope signal; reading the trace and
-report is still necessary to establish that the review stayed focused.
-Repeated reassurance still forbids delegation.
-Commit-message and PR-changelog require the parent's final output to match the
-delegated output exactly. Trusted Review permits a summary and checks that a
-nonempty completed reviewer report reached the parent; it does not use exact
-answer equality as a proxy for summary fidelity. Reading the summary and
-reviewer report is still necessary to assess fidelity and artifact handling.
-The commit-message grader also rejects forbidden Git inspection, even when
-the final message looks correct. Missing traces or runtime failures are
-reported as errors, not passes.
+For independent-review cases, delegation checks compare spawn arguments with
+recorded child context and verify the fresh-context boundary. Reviewer traces
+must reference the bundled review procedure and the extra maintainer checks.
+Reading the report remains necessary to assess fidelity and scope.
+Direct execution cases reject delegation. File hashes, staged entries, and
+HEAD detect unintended fixture changes. The commit-message grader also rejects
+unstaged Git inspection. Missing traces and runtime failures are errors.
 
 Output assertions are deliberately small, deterministic checks. A pass does
 not establish all semantic qualities in the original prose rubrics, guarantee
@@ -369,29 +331,22 @@ Manual text-file edits use the dedicated `apply_patch` tool for native
 file-change reporting. Formatters, generators, package managers, and binary or
 rich-document tools keep their own workflows.
 
-`AGENTS.md` explicitly routes matching work to the six files in
-`~/.codex/rules/`: architecture, code style, file naming, React, React Router,
-and TypeScript. Their `paths` frontmatter records the intended scope; these
-files are read through the instruction router rather than assumed to be
-loaded automatically by Codex.
-
-The reply style is in `~/.codex/output-styles/scannable.md`, also explicitly
-referenced by `AGENTS.md`. It favors short Markdown blocks, selective bold,
-and meaningful status icons, with explicit evidence, uncertainty, and next-step
-status. Findings use a linked table with severity, user impact, fix, location,
-and proof. Architecture, flows, and state transitions use the visualize widget
-when available, with soft blue and purple fills, subtle matching borders, and
-readable text. Other soft colors are allowed except yellow. A plain-text flow
-is the fallback instead of Mermaid.
-Exact skill output contracts take precedence.
-
-Review output defaults to the same sections, with a short recommendation and
-one emoji per section. It uses findings tables with short explanations rather
-than checkbox-only summaries or a fixed word cap. Trusted Review preserves the
-bundled findings-first report unchanged in a supporting file and derives the
-summary from it. Both workflows distinguish priority from launch blockers.
-Findings use plain labels such as Issue 1 and Issue 2, consistent between the
-summary and linked details. Priority labels remain separate.
+The global `AGENTS.md` preserves the default Codex behavior except for the
+always-on scannable reply style.
+The `coding-preferences` skill groups all six original rule files under
+`skills/coding-preferences/references/`, with their contents and paths metadata
+preserved. Its entrypoint loads only the references relevant to the task.
+Invoke `$coding-preferences` when you want these preferences applied. It does
+not automatically activate during coding or review.
+When invoked, these preferences also supply defaults for new projects.
+Repository formatter, lint rules, and explicit project requirements take precedence.
+The separate `$state-machines` skill is on demand too: it covers machine-first
+design and identifying implicit transitions, without changing ordinary coding tasks.
+`output-styles/scannable.md` is always applied through the global instructions,
+with its path resolved under `CODEX_HOME` when set. Explicit user-requested
+formats and exact output contracts still take precedence.
+Replies and findings scale to the task instead of requiring a particular
+table, section list, or separate report artifact.
 
 The Claude Remote Control launcher, SwiftBar plugin, lifecycle hooks, and
 Claude model settings are product-specific and are not installed here. The
@@ -422,13 +377,14 @@ any other `[agents]` settings, then start a new Codex chat to load the cleanup.
 .
 ├── AGENTS.md
 ├── AGENTS.override.md
-├── rules/
 ├── output-styles/scannable.md
 ├── skills/
 │   ├── apple-hig/
 │   ├── brainstorm/
 │   ├── commit-message/
+│   ├── coding-preferences/
 │   ├── devrel-voice/
+│   ├── openai-reference/
 │   ├── pr-changelog/
 │   ├── session-handoff/
 │   ├── security-audit/
@@ -452,7 +408,7 @@ Canonical paths:
 
 ```text
 ~/workspace/codex/AGENTS.md
-~/workspace/codex/rules/*
+~/workspace/codex/skills/coding-preferences/references/*
 ~/workspace/codex/output-styles/*
 ~/workspace/codex/skills/*
 ```
@@ -526,9 +482,12 @@ It uses copies rather than symlinks.
 ~/.codex/AGENTS.md
 ```
 
-The script copies only when contents differ. It also copies `rules/*.md` and
-`output-styles/*.md` into matching directories under the Codex home, leaving
-unrelated files untouched.
+The script copies global instructions and `output-styles/*.md` only when
+contents differ. Coding preferences are installed by `sync-skills.sh`.
+For migration, it removes only the six old `~/.codex/rules/*.md` files whose
+contents exactly match their new skill references. Modified legacy copies
+and unrelated files are preserved, with a message for each modified copy.
+Run `sync-skills.sh` before `sync-agents-md.sh` when installing this migration.
 
 ## Typical workflow
 
@@ -715,7 +674,7 @@ Synchronization is intentionally one-way:
 ```text
 repository
     ↓
-~/.codex (instructions, rules, reply style)
+~/.codex (instructions and reply style)
 ~/.agents/skills (skills)
 ```
 
@@ -724,7 +683,6 @@ Changes made directly under:
 ```text
 ~/.agents/skills/*
 ~/.codex/AGENTS.md
-~/.codex/rules/*
 ~/.codex/output-styles/*
 ```
 
@@ -738,7 +696,6 @@ This repository manages:
 
 ```text
 ~/.codex/AGENTS.md
-~/.codex/rules/*
 ~/.codex/output-styles/*
 ~/.agents/skills/*
 ```

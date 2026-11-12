@@ -1,6 +1,6 @@
 ---
 name: apple-hig
-description: Apple's current Human Interface Guidelines for iOS, iPadOS and macOS, read from developer.apple.com through a lookup script that quotes Apple's latest wording. Use whenever a question or change touches how an Apple-platform app should look, read or behave (toolbars, sidebars, split views, sheets, popovers, alerts, menus, buttons, lists, search, notifications, onboarding, settings, Liquid Glass, materials, color, typography, SF Symbols, layout, writing, accessibility, localization), when reviewing SwiftUI, UIKit or AppKit UI against platform conventions, or when asking what Apple changed recently, even if the user never says "HIG".
+description: Look up Apple's current Human Interface Guidelines when answering a platform design question, assessing HIG compliance, or checking recent guidance for iOS, iPadOS, or macOS.
 ---
 
 # Apple Human Interface Guidelines
@@ -9,9 +9,10 @@ This skill reads Apple's HIG for iOS, iPadOS and macOS from developer.apple.com.
 Guidance for tvOS, visionOS and watchOS is left out, as are pages that apply to
 none of the three platforms.
 
-Answer design questions from Apple's text, not from memory. Apple revises the
-HIG in place several times a year and remembered guidance is often a release
-old, so read the page, then quote it.
+Use the lookup script when a design decision depends on Apple's guidance.
+Routine UI implementation or a requested visual tweak does not by itself
+require a HIG consultation. Read the relevant page before attributing a rule
+to Apple; quote only the wording needed to support the decision.
 
 ## Looking things up
 
