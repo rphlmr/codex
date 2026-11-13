@@ -1,0 +1,52 @@
+[
+  {
+    "name": "AI [FR] — Démarrer une tâche",
+    "keyword": ";aistart-fr",
+    "text": "Nous échangeons en français. Écris le code, ses commentaires et les livrables en anglais.\n\nAide-moi à transformer la demande ci-dessous en une tâche claire. Je peux m’exprimer de façon informelle ou en français. Commence par consulter le contexte disponible du projet. Présente brièvement le résultat attendu, le périmètre et jusqu’à trois critères de réussite observables. Pose une question seulement si une décision manquante change sensiblement le travail ; sinon, indique tes hypothèses et avance. Pour un travail conséquent, réalise d’abord une petite partie représentative de bout en bout et montre les éléments qui permettent de la valider avant de généraliser. Prends les décisions courantes de façon autonome et signale rapidement tout changement important de périmètre.\n\nMa demande :\n{cursor}"
+  },
+  {
+    "name": "AI [EN] — Start a task",
+    "keyword": ";aistart-en",
+    "text": "Discuss the task in English. Write code, code comments, and deliverables in English.\n\nHelp me turn the request below into a clear task. I may explain it informally or in French. Use the available project context first. Briefly state the intended outcome, the scope, and up to three observable acceptance criteria. Ask only if a missing decision materially changes the work; otherwise state your assumptions and proceed. For substantial work, complete one representative slice before scaling and report its evidence. Keep routine decisions autonomous and surface material scope changes early.\n\nMy request:\n{cursor}"
+  },
+  {
+    "name": "AI [FR] — Vérifier le résultat",
+    "keyword": ";aicheck-fr",
+    "text": "Nous échangeons en français. Écris le code, ses commentaires et les livrables en anglais.\n\nVérifie le résultat actuel par rapport à notre objectif et aux critères de réussite convenus. Indique ce qui est vérifié, ce qui reste incomplet et ce qui est inconnu. Appuie chaque affirmation sur des éléments concrets ; distingue les vérifications antérieures de celles effectuées maintenant. Lorsque c’est pertinent, recherche les cas manquants, les éléments exclus des vérifications, les mécanismes de repli qui masquent un échec et la complexité inutile. Ne modifie rien pendant cette vérification. Termine par un état d’avancement clair et la prochaine action nécessaire, s’il y en a une."
+  },
+  {
+    "name": "AI [EN] — Check the result",
+    "keyword": ";aicheck-en",
+    "text": "Discuss the task in English. Write code, code comments, and deliverables in English.\n\nCheck the current result against our agreed goal and acceptance criteria. Report what is verified, what remains incomplete, and what is unknown. Match evidence to each claim; distinguish historical checks from checks run now. Look for missing cases, skipped coverage, fallbacks hiding failure, and unnecessary complexity where relevant. Do not edit during this check. End with a clear completion status and the next necessary action, if any."
+  },
+  {
+    "name": "AI [FR] — Reprendre le fil",
+    "keyword": ";aireset-fr",
+    "text": "Nous échangeons en français. Écris le code, ses commentaires et les livrables en anglais.\n\nMets l’implémentation en pause. Je ne vois plus comment ce travail sert mon objectif. Explique simplement le résultat initialement attendu, ce qui est réellement terminé, ce qui a dépassé le périmètre de départ et les incertitudes restantes. Illustre le problème principal par un exemple concret. Recommande la plus petite prochaine étape utile et attends ma réponse avant de reprendre les modifications."
+  },
+  {
+    "name": "AI [EN] — Reset when lost",
+    "keyword": ";aireset-en",
+    "text": "Discuss the task in English. Write code, code comments, and deliverables in English.\n\nPause implementation. I have lost track of how this work serves my goal. In plain language, state the original outcome, what is actually complete, what changed beyond the initial scope, and the remaining uncertainty. Explain the main issue with one concrete example. Recommend the smallest useful next step and wait for my response before resuming changes."
+  },
+  {
+    "name": "AI [FR] — Je ne comprends pas",
+    "keyword": ";aiexplain-fr",
+    "text": "Nous échangeons en français. Écris le code, ses commentaires et les livrables en anglais.\n\nJe ne comprends pas encore. Mets les modifications en pause et explique la proposition actuelle simplement, avec un exemple concret avant/après. Explique pourquoi elle aide à atteindre mon objectif, le principal compromis et s’il existe une approche plus simple. Distingue les faits vérifiés des hypothèses. Reste bref, explique les termes techniques nécessaires et attends ma réponse avant de poursuivre les modifications. Ma demande d’explication ne vaut pas approbation de la proposition."
+  },
+  {
+    "name": "AI [EN] — Explain this",
+    "keyword": ";aiexplain-en",
+    "text": "Discuss the task in English. Write code, code comments, and deliverables in English.\n\nI do not understand yet. Pause changes and explain the current proposal in plain language using one concrete before-and-after example. Explain why it helps my goal, the main tradeoff, and whether there is a simpler approach. Separate verified facts from assumptions. Keep it short, explain necessary technical terms, and wait for my response before continuing changes. My request for an explanation is not approval of the proposal."
+  },
+  {
+    "name": "AI [FR] — Avant de généraliser",
+    "keyword": ";aipilot-fr",
+    "text": "Nous échangeons en français. Écris le code, ses commentaires et les livrables en anglais.\n\nAvant de généraliser ce travail, identifie l’hypothèse qui risque le plus de rendre l’effort global inutile ou de le faire échouer. Teste-la avec le plus petit essai représentatif de bout en bout, en réutilisant les éléments déjà vérifiés lorsque c’est pertinent. Inclus un cas difficile pertinent. Définis les critères de réussite avant de lancer l’essai, puis indique le résultat réel, le temps et les ressources consommés lorsqu’ils sont mesurables, ainsi que ce qui reste à démontrer. Ne généralise pas au-delà des éléments vérifiés. Recommande de généraliser, d’ajuster ou d’arrêter, et attends ma réponse avant de lancer le travail à grande échelle."
+  },
+  {
+    "name": "AI [EN] — Before scaling",
+    "keyword": ";aipilot-en",
+    "text": "Discuss the task in English. Write code, code comments, and deliverables in English.\n\nBefore scaling this work, identify the assumption most likely to make the larger effort unnecessary or unsuccessful. Test it with the smallest representative end-to-end pilot, reusing existing evidence where appropriate. Include a relevant difficult case. Define success before running it, then report the actual result, time and resource cost where measurable, and what remains unproven. Do not generalize beyond the evidence. Recommend whether to scale, adjust, or stop, and wait for my response before launching the larger effort."
+  }
+]

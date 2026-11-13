@@ -6,7 +6,33 @@ This repository is the source of truth for:
 
 - custom skills and their evaluation fixtures;
 - global `AGENTS.md`, the coding-preferences skill, and reply style;
-- recommended Codex configuration.
+- recommended Codex configuration;
+- bilingual Raycast snippets for AI collaboration.
+
+## Raycast snippets
+
+Import [`raycast/ai-collaboration-snippets.json`](raycast/ai-collaboration-snippets.json)
+with Raycast's **Import Snippets** command. It contains five prompts in French
+and English. French variants request discussion in French; English variants
+request discussion in English. Both keep code, code comments, and deliverables
+in English.
+
+| Purpose | French keyword | English keyword |
+| --- | --- | --- |
+| Start a task | `;aistart-fr` | `;aistart-en` |
+| Check the result | `;aicheck-fr` | `;aicheck-en` |
+| Reset when lost | `;aireset-fr` | `;aireset-en` |
+| Explain a proposal | `;aiexplain-fr` | `;aiexplain-en` |
+| Run a pilot before scaling | `;aipilot-fr` | `;aipilot-en` |
+
+Use **Search Snippets** and search for `AI [FR]` or `AI [EN]` if you forget a
+keyword. Optional tags are `AI` and `FR` or `EN`; add them in Raycast after
+importing, since the [documented JSON import format](https://manual.raycast.com/snippets)
+does not specify a tags field.
+
+Importing is manual; the repository sync scripts do not install these snippets.
+The earlier unsuffixed keywords, such as `;aistart`, are separate entries and
+can be removed manually after importing the bilingual versions.
 
 ## Codex Usage for macOS
 
@@ -378,6 +404,7 @@ any other `[agents]` settings, then start a new Codex chat to load the cleanup.
 ├── AGENTS.md
 ├── AGENTS.override.md
 ├── output-styles/scannable.md
+├── raycast/ai-collaboration-snippets.json
 ├── skills/
 │   ├── apple-hig/
 │   ├── brainstorm/
@@ -410,6 +437,7 @@ Canonical paths:
 ~/workspace/codex/AGENTS.md
 ~/workspace/codex/skills/coding-preferences/references/*
 ~/workspace/codex/output-styles/*
+~/workspace/codex/raycast/ai-collaboration-snippets.json
 ~/workspace/codex/skills/*
 ```
 
