@@ -218,7 +218,9 @@ custom agents are always worse.
 
 All personal skills are explicit-only: invoke them with `$skill-name` when
 you want their guidance. They do not activate automatically based on the task.
-The global `AGENTS.md` always applies the ADHD-aware scannable reply style.
+The global `AGENTS.md` always applies the ADHD-aware scannable reply style
+and language preferences: English code and comments, with familiar English
+developer terminology retained in French discussions.
 Personal coding preferences, writing skills, and workflows remain opt-in.
 Bundled skills and plugin configuration are left unchanged.
 Commit messages and PR descriptions run in the current chat. An independent
@@ -358,7 +360,11 @@ file-change reporting. Formatters, generators, package managers, and binary or
 rich-document tools keep their own workflows.
 
 The global `AGENTS.md` preserves the default Codex behavior except for the
-always-on scannable reply style.
+always-on scannable reply style and language preferences. Code and code
+comments are written in English regardless of the conversation language.
+French discussions retain familiar English developer terms and borrowed
+words rather than forcing French translations, including "tests red", "buzz",
+and "spoiler".
 The `coding-preferences` skill groups all six original rule files under
 `skills/coding-preferences/references/`, with their contents and paths metadata
 preserved. Its entrypoint loads only the references relevant to the task.
