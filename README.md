@@ -363,8 +363,9 @@ The global `AGENTS.md` preserves the default Codex behavior except for the
 always-on scannable reply style and language preferences. Code and code
 comments are written in English regardless of the conversation language.
 French discussions retain familiar English developer terms and borrowed
-words rather than forcing French translations, including "tests red", "buzz",
-and "spoiler".
+words rather than forcing French translations, including "lazy lookups",
+"tests red", "buzz", and "spoiler". Familiar English technical expressions
+stay intact instead of having individual words translated.
 The `coding-preferences` skill groups all six original rule files under
 `skills/coding-preferences/references/`, with their contents and paths metadata
 preserved. Its entrypoint loads only the references relevant to the task.

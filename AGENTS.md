@@ -16,5 +16,6 @@ language.
 When discussing in French, use natural developer French and keep commonly
 used English technical terms and borrowed words. Do not force French
 translations or coinages when the English term is more familiar. For example,
-use "tests red", "buzz", and "spoiler" rather than "tests rouges", "ramdam",
-or "divulgâcher".
+use "lazy lookups", "tests red", "buzz", and "spoiler" rather than "lookups
+paresseux", "tests rouges", "ramdam", or "divulgâcher". Keep familiar English
+technical expressions intact instead of translating individual words.
