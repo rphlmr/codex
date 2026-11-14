@@ -94,111 +94,40 @@ instead of loading the repository copy of the synced global `AGENTS.md` again.
 >
 > ## Codex configuration
 >
-> The example below provides optional defaults for the primary model, features,
-> and workspace permissions. Subagent model selection uses Codex's native defaults.
-> The session permits up to six concurrent subagents. No model-specific
-> concurrency rule is imposed by the global instructions.
->
-> It configures:
->
-> - GPT-6 Astra with medium reasoning as the primary model;
-> - up to six concurrent subagents when delegation is requested;
-> - approval prompts disabled;
-> - workspace-scoped permissions;
-> - protection for common secret and credential files;
-> - network access restricted to explicitly allowed development domains;
+> The optional configuration enables **Approve for me** with Codex's built-in
+> workspace permission profile. It also keeps the pragmatic personality setting,
+> a limit of six concurrent subagents, and prevents idle sleep while Codex runs.
+> Models, reasoning effort, and other features use Codex's native defaults unless
+> configured elsewhere.
 >
 > ```toml
 > #:schema https://developers.openai.com/codex/config-schema.json
 >
-> model = "gpt-6-astra"
-> model_reasoning_effort = "medium"
 > personality = "pragmatic"
-> approval_policy = "never"
-> default_permissions = "workspace-safe"
+> approval_policy = "on-request"
+> approvals_reviewer = "auto_review"
+> default_permissions = ":workspace"
 >
 > [agents]
 > max_concurrent_threads_per_session = 6
 >
 > [features]
-> network_proxy = true
-> js_repl = false
 > prevent_idle_sleep = true
->
-> [permissions.workspace-safe]
-> extends = ":workspace"
->
-> [permissions.workspace-safe.filesystem.":workspace_roots"]
-> "**/.env.p*" = "deny"
-> "**/.env.s*" = "deny"
-> "**/.env.d*" = "deny"
->
-> # Private keys / certificates
-> "**/*.key" = "deny"
-> "**/*.pem" = "deny"
-> "**/*.p12" = "deny"
-> "**/*.pfx" = "deny"
-> "**/*.jks" = "deny"
-> "**/*.keystore" = "deny"
->
-> # SSH material accidentally stored in a repo
-> "**/id_rsa" = "deny"
-> "**/id_ed25519" = "deny"
-> "**/id_ecdsa" = "deny"
-> "**/id_dsa" = "deny"
->
-> # Common secret directories
-> "**/.ssh/**" = "deny"
-> "**/certs/**" = "deny"
-> "**/certificates/**" = "deny"
-> "**/secrets/**" = "deny"
->
-> [permissions.workspace-safe.network]
-> enabled = true
-> allow_local_binding = true
->
-> [permissions.workspace-safe.network.domains]
-> "localhost" = "allow"
-> "127.0.0.1" = "allow"
->
-> # npm / Yarn / pnpm / Bun / Deno npm: imports
-> "**.npmjs.org" = "allow"
->
-> # Pull-request package previews
-> "pkg.pr.new" = "allow"
-> "**.pkg.pr.new" = "allow"
->
-> # Deno / JSR packages
-> "**.jsr.io" = "allow"
->
-> # Node distributions / tooling that downloads Node
-> "**.nodejs.org" = "allow"
->
-> # Bun installer / Bun binaries
-> "**.bun.sh" = "allow"
->
-> # Playwright browser downloads
-> "**.playwright.dev" = "allow"
->
-> # Chromium / browser artifacts used by some tooling
-> "**.googleapis.com" = "allow"
->
-> "github.com" = "allow"
-> "**.github.com" = "allow"
-> "**.githubusercontent.com" = "allow"
->
-> "gitlab.com" = "allow"
-> "**.gitlab.com" = "allow"
-> "**.gitlab.io" = "allow"
->
-> "pypi.org" = "allow"
-> "**.pypi.org" = "allow"
-> "files.pythonhosted.org" = "allow"
 > ```
 >
-> Restart Codex after changing the configuration to ensure all new settings, including permission profiles, are loaded. With `approval_policy = "never"`, a missing domain or filesystem permission fails immediately instead of presenting an approval prompt.
+> Eligible approval requests go through automatic review. The built-in sandbox
+> remains active. See OpenAI's [configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference).
 >
-> The complete example is also stored in [`recommended-config.toml`](recommended-config.toml), which is the updater's source configuration.
+> The complete example is stored in [`recommended-config.toml`](recommended-config.toml).
+> Restart Codex after changing the configuration.
+>
+> **Existing installations:** the updater only adds missing values and preserves
+> existing overrides. It does not migrate the old configuration automatically.
+> To adopt this setup, set the values above and remove the old recommendation's
+> `model`, `model_reasoning_effort`,
+> `features.network_proxy`, and `features.js_repl` overrides, plus the
+> `[permissions.workspace-safe]` profile and its nested tables if no other config
+> references it. Preserve unrelated settings and any overrides you still want.
 
 ## Native workflows
 
